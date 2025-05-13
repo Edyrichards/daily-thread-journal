@@ -10,6 +10,7 @@ import JournalPage from "./pages/JournalPage";
 import PrayerPage from "./pages/PrayerPage";
 import NewJournalEntry from "./pages/NewJournalEntry";
 import JournalEntryDetail from "./pages/JournalEntryDetail";
+import GrowthDashboard from "./pages/GrowthDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/journal/new" element={<NewJournalEntry />} />
           <Route path="/journal/:id" element={<JournalEntryDetail />} />
           <Route path="/prayer" element={<PrayerPage />} />
+          <Route path="/growth" element={<GrowthDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
