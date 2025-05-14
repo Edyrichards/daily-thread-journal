@@ -21,22 +21,22 @@ const MoodPicker = ({ selectedMood, onSelectMood }: MoodPickerProps) => {
   ];
 
   return (
-    <div className="mb-6">
-      <h3 className="text-sm font-medium text-gray-700 mb-2">How are you feeling today?</h3>
-      <div className="grid grid-cols-5 gap-2">
+    <div className="mb-8">
+      <h3 className="text-sm font-medium text-gray-700 mb-3 font-serif">How are you feeling today?</h3>
+      <div className="grid grid-cols-5 gap-3">
         {moods.map((mood) => (
           <button
             key={mood}
             type="button"
             onClick={() => onSelectMood(mood)}
-            className={`p-2 rounded-lg flex flex-col items-center 
-              ${selectedMood === mood 
-                ? 'bg-grace-300 border-2 border-grace-400' 
-                : 'bg-white border border-grace-200 hover:bg-grace-100'
-              }`}
+            className={`p-3 rounded-xl flex flex-col items-center transition-all duration-200 transform ${
+              selectedMood === mood 
+                ? 'bg-grace-300 border-2 border-grace-400 scale-105 shadow-md' 
+                : 'bg-white border border-grace-200 hover:bg-grace-100 hover:scale-102'
+            }`}
           >
             <span className="text-2xl mb-1">{moodEmojis[mood]}</span>
-            <span className="text-xs capitalize">{mood}</span>
+            <span className="text-xs capitalize font-medium">{mood}</span>
           </button>
         ))}
       </div>

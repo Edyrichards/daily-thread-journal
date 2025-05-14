@@ -43,9 +43,9 @@ const JournalEntryDetail = () => {
 
   if (!entry) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-grace-100">
         <Header title="Journal Entry" />
-        <main className="flex-1 container max-w-2xl mx-auto px-4 py-8">
+        <main className="flex-1 container max-w-2xl mx-auto px-6 py-12">
           <p className="text-center text-grace-500">Loading entry...</p>
         </main>
       </div>
@@ -53,10 +53,10 @@ const JournalEntryDetail = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-grace-100">
       <Header title="Journal Entry" />
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-6">
+      <main className="flex-1 container max-w-2xl mx-auto px-6 py-12 animate-fade-in">
+        <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-serif text-grace-700 flex items-center">
               <span className="mr-2 text-2xl">{moodEmojis[entry.mood]}</span>
@@ -69,7 +69,7 @@ const JournalEntryDetail = () => {
               variant="outline"
               size="sm"
               onClick={() => navigate("/journal")}
-              className="border-grace-300"
+              className="border-grace-300 rounded-full"
             >
               Back
             </Button>
@@ -77,23 +77,24 @@ const JournalEntryDetail = () => {
               variant="outline"
               size="sm"
               onClick={handleDelete}
-              className="text-red-500 border-red-200 hover:bg-red-50"
+              className="text-red-500 border-red-200 hover:bg-red-50 rounded-full"
             >
               Delete
             </Button>
           </div>
         </div>
         
-        <Card className="mb-6 border-grace-200 shadow-sm">
-          <CardContent className="p-6">
-            <p className="text-grace-700 whitespace-pre-wrap">{entry.content}</p>
+        <Card className="mb-8 border-grace-200 shadow-sm bg-white/70 backdrop-blur-sm">
+          <CardContent className="p-8">
+            <p className="text-grace-700 whitespace-pre-wrap leading-relaxed">{entry.content}</p>
           </CardContent>
         </Card>
         
         {entry.verse && (
-          <Card className="mb-6 bg-grace-100 border-grace-200">
+          <Card className="mb-6 bg-grace-100 border-grace-200 shadow-sm">
             <CardContent className="p-6 relative">
-              <h3 className="text-sm font-medium text-grace-600 mb-2">Scripture for Reflection</h3>
+              <h3 className="text-sm font-medium text-grace-600 mb-3 font-serif">Scripture for Reflection</h3>
+              <div className="absolute -right-8 -top-8 text-4xl opacity-5 rotate-12">✝️</div>
               <p className="verse-text mb-4 italic leading-relaxed text-grace-700">
                 "{entry.verse.text.trim()}"
               </p>

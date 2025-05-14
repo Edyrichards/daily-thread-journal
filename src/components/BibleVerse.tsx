@@ -24,7 +24,7 @@ const BibleVerse = () => {
   }, []);
 
   return (
-    <Card className="mb-8 bg-grace-100 border-grace-200 overflow-hidden">
+    <Card className="mb-8 bg-grace-100 border-grace-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
       <CardContent className="p-6 relative">
         {loading ? (
           <div className="flex items-center justify-center min-h-[150px]">
@@ -34,6 +34,7 @@ const BibleVerse = () => {
           </div>
         ) : (
           <>
+            <div className="absolute -right-8 -top-8 text-6xl opacity-5 rotate-12">✝️</div>
             <p className="verse-text mb-4 italic leading-relaxed text-grace-700">
               "{verse?.text.trim()}"
             </p>

@@ -27,50 +27,50 @@ const Journal = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="animate-fade-in">
+      <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-serif text-grace-700">Your Journal</h2>
         <Button 
           onClick={handleNewEntry}
-          className="bg-grace-400 hover:bg-grace-500 text-white"
+          className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-5"
         >
           New Entry
         </Button>
       </div>
 
       {entries.length === 0 ? (
-        <Card className="border-grace-200 shadow-sm">
-          <CardContent className="p-6 text-center">
-            <p className="text-grace-500 mb-4">No journal entries yet.</p>
+        <Card className="border-grace-200 shadow-sm bg-white/70 backdrop-blur-sm">
+          <CardContent className="p-8 text-center">
+            <p className="text-grace-500 mb-6 font-serif">Begin your spiritual journey with a journal entry.</p>
             <Button 
               onClick={handleNewEntry}
-              className="bg-grace-400 hover:bg-grace-500 text-white"
+              className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-6 shadow-sm"
             >
               Create Your First Entry
             </Button>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-5">
           {entries.map((entry) => (
             <Card 
               key={entry.id} 
-              className="border-grace-200 hover:border-grace-300 cursor-pointer"
+              className="border-grace-200 hover:border-grace-300 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
               onClick={() => handleViewEntry(entry.id)}
             >
-              <CardHeader className="pb-2 pt-4 px-4 flex flex-row items-center justify-between">
+              <CardHeader className="pb-2 pt-4 px-5 flex flex-row items-center justify-between">
                 <CardTitle className="text-md font-medium flex items-center">
                   <span className="mr-2 text-xl">{moodEmojis[entry.mood]}</span>
-                  <span>{format(new Date(entry.date), "MMMM d, yyyy")}</span>
+                  <span className="font-serif">{format(new Date(entry.date), "MMMM d, yyyy")}</span>
                 </CardTitle>
-                <span className="text-xs text-grace-500 capitalize bg-grace-100 px-2 py-1 rounded-full">
+                <span className="text-xs text-grace-500 capitalize bg-grace-100 px-3 py-1 rounded-full">
                   {entry.mood}
                 </span>
               </CardHeader>
-              <CardContent className="px-4 pb-4">
+              <CardContent className="px-5 pb-5">
                 <p className="text-grace-600 line-clamp-2">{entry.content}</p>
                 {entry.verse && (
-                  <p className="text-xs text-grace-500 mt-2 italic">
+                  <p className="text-xs text-grace-500 mt-2 italic font-serif">
                     Verse: {entry.verse.reference}
                   </p>
                 )}

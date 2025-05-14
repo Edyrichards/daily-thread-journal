@@ -78,30 +78,44 @@ const NewJournalEntry = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-grace-100">
       <Header title="New Journal Entry" />
-      <main className="flex-1 container max-w-2xl mx-auto px-4 py-8">
-        <h2 className="text-2xl font-serif text-grace-700 mb-6">New Journal Entry</h2>
+      <main className="flex-1 container max-w-2xl mx-auto px-6 py-12 animate-fade-in">
+        <h2 className="text-2xl font-serif text-grace-700 mb-8">New Journal Entry</h2>
         
         <form onSubmit={handleSubmit}>
           <MoodPicker selectedMood={mood} onSelectMood={setMood} />
           
-          <div className="mb-6">
-            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2">
+          <div className="mb-8 relative">
+            <label htmlFor="content" className="block text-sm font-medium text-gray-700 mb-2 font-serif">
               What's on your heart today?
             </label>
-            <Textarea
-              id="content"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="Write your thoughts, feelings, or prayers here..."
-              className="min-h-[200px] border-grace-200"
-            />
+            <div className="relative">
+              <Textarea
+                id="content"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="Write your thoughts, feelings, or prayers here..."
+                className="min-h-[200px] border-grace-200 shadow-sm focus:border-grace-300 focus:ring focus:ring-grace-200 focus:ring-opacity-50 rounded-xl"
+              />
+              {verse ? null : (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleAddVerse}
+                  disabled={isLoadingVerse}
+                  className="absolute top-2 right-2 text-grace-500 border-grace-300 rounded-full px-4 py-1 text-xs bg-white shadow-sm hover:bg-grace-100"
+                >
+                  {isLoadingVerse ? "Loading..." : "+ Add Verse"}
+                </Button>
+              )}
+            </div>
           </div>
           
           {verse ? (
-            <Card className="mb-6 bg-grace-100 border-grace-200">
-              <CardContent className="p-4 relative">
+            <Card className="mb-8 bg-grace-100 border-grace-200 shadow-sm">
+              <CardContent className="p-5 relative">
+                <div className="absolute -right-8 -top-8 text-4xl opacity-5 rotate-12">✝️</div>
                 <p className="verse-text mb-2 italic leading-relaxed text-grace-700 text-sm">
                   "{verse.text.trim()}"
                 </p>
@@ -109,32 +123,30 @@ const NewJournalEntry = () => {
                   — {verse.reference}
                 </p>
                 <div className="absolute top-0 left-0 h-full w-1 bg-grace-300"></div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setVerse(null)}
+                  className="absolute top-0 right-0 text-xs text-grace-500 hover:text-grace-700 p-1"
+                >
+                  ✕
+                </Button>
               </CardContent>
             </Card>
-          ) : (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleAddVerse}
-              disabled={isLoadingVerse}
-              className="mb-6 text-grace-500 border-grace-300"
-            >
-              {isLoadingVerse ? "Loading..." : "+ Add Verse"}
-            </Button>
-          )}
+          ) : null}
           
           <div className="flex justify-end space-x-4">
             <Button
               type="button"
               variant="outline"
               onClick={() => navigate("/journal")}
-              className="border-grace-300"
+              className="border-grace-300 rounded-full px-6"
             >
               Cancel
             </Button>
             <Button 
               type="submit"
-              className="bg-grace-400 hover:bg-grace-500 text-white"
+              className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-6 shadow-sm"
               disabled={!mood || !content.trim()}
             >
               Save Entry
