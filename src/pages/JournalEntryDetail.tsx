@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -72,7 +73,7 @@ const JournalEntryDetail = () => {
       
       <Card className="mb-8 border-[#e8e8e0] shadow-sm bg-white rounded-xl">
         <CardContent className="p-8">
-          <p className="text-[#333] whitespace-pre-wrap leading-relaxed">{entry.content}</p>
+          <p className="text-[#333] whitespace-pre-wrap leading-relaxed font-serif">{entry.content}</p>
         </CardContent>
       </Card>
       

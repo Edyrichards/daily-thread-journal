@@ -1,7 +1,7 @@
 
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Home, BookOpen, FileEdit, Heart, Users } from "lucide-react";
+import { Home, BookOpen, Heart, Users } from "lucide-react";
 
 const BottomNav = () => {
   const location = useLocation();
@@ -46,7 +46,7 @@ const BottomNav = () => {
             key={item.path}
             onClick={() => navigate(item.path)}
             className={`flex flex-col items-center justify-center p-2 ${
-              isActive(item.path) ? "text-[#c3d1b8]" : "text-[#999]"
+              isActive(item.path) ? "text-[#a3b198]" : "text-[#999]"
             }`}
           >
             <item.icon size={20} stroke={isActive(item.path) ? "#a3b198" : "#999"} />

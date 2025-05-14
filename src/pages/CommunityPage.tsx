@@ -1,3 +1,4 @@
+
 import React from "react";
 import Layout from "@/components/Layout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,35 +14,33 @@ const CommunityPage = () => {
   const posts: CommunityPost[] = [
     {
       id: "1",
-      content: "Sharing my gratitude for a beautiful sunrise this morning. 🌅 Feeling blessed!",
-      reactions: 15,
+      content: "I'm struggling with doubt, and I need clarity. Prayers appreciated!!",
+      reactions: 12,
+      hasAudio: true
     },
     {
       id: "2",
-      content: "Just finished reading Psalm 23. What a comforting reminder of God's presence. 🙏",
-      reactions: 22,
+      content: "Getting to worship with others today was such a blessing!",
+      reactions: 5,
+      hasAudio: false
     },
     {
       id: "3",
-      content: "Is anyone else struggling with finding time for prayer? Would love to hear your tips! 💬",
+      content: "When I feel overwhelmed, I hold onto the promise that Jesus is with me",
       reactions: 8,
+      hasAudio: true
     },
     {
       id: "4",
-      content: "I'm starting a 30-day gratitude challenge. Join me in posting something you're thankful for each day! #gratitude 🌟",
-      reactions: 30,
-    },
-    {
-      id: "5",
-      content: "Feeling overwhelmed today, but remembering to trust in God's plan. ❤️",
-      reactions: 12,
-      hasAudio: true,
-    },
+      content: "Thank You, God, for Your endless grace and comfort.",
+      reactions: 10,
+      hasAudio: false
+    }
   ];
 
   return (
     <Layout title="Community">
-      <div className="space-y-6">
+      <div className="space-y-4">
         {posts.map(post => (
           <Card key={post.id} className="border-[#e8e8e0] shadow-sm rounded-xl">
             <CardContent className="p-5">
