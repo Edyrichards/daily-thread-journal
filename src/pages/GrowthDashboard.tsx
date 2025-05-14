@@ -1,6 +1,6 @@
 
 import { useNavigate } from "react-router-dom";
-import Header from "@/components/Header";
+import Layout from "@/components/Layout";
 import StatCards from "@/components/dashboard/StatCards";
 import MoodChart from "@/components/dashboard/MoodChart";
 import PrayerChart from "@/components/dashboard/PrayerChart";
@@ -11,12 +11,9 @@ const GrowthDashboard = () => {
   const { moodData, prayerData, weeklyStats } = useWeeklyData();
 
   return (
-    <div className="container max-w-4xl mx-auto px-4 pt-4 pb-20">
-      <Header />
-      
+    <Layout title="Spiritual Growth">
       <div className="mb-8">
-        <h1 className="text-3xl font-serif text-grace-700 mb-2">Spiritual Growth</h1>
-        <p className="text-grace-600">
+        <p className="text-[#666] italic font-serif">
           "Here's how God has shown up this week"
         </p>
       </div>
@@ -33,7 +30,7 @@ const GrowthDashboard = () => {
       
       {/* Prayer chart */}
       <PrayerChart data={prayerData} />
-    </div>
+    </Layout>
   );
 };
 

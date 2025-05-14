@@ -1,8 +1,8 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import MoodPicker from "@/components/MoodPicker";
+import BottomNav from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
@@ -78,12 +78,10 @@ const NewJournalEntry = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background to-grace-100">
-      <Header title="New Journal Entry" />
-      <main className="flex-1 container max-w-2xl mx-auto px-6 py-12 animate-fade-in">
-        <h2 className="text-2xl font-serif text-grace-700 mb-8">New Journal Entry</h2>
-        
-        <form onSubmit={handleSubmit}>
+    <div className="min-h-screen flex flex-col bg-[#fdf9f4]">
+      <Header title="THREADS of GRACE" />
+      <main className="flex-1 container max-w-md mx-auto px-6 py-6 animate-fade-in">
+        <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <MoodPicker selectedMood={mood} onSelectMood={setMood} />
           
           <div className="mb-8 relative">
@@ -154,6 +152,7 @@ const NewJournalEntry = () => {
           </div>
         </form>
       </main>
+      {/* We're not showing the BottomNav on this page since it has a custom keyboard UI */}
     </div>
   );
 };
