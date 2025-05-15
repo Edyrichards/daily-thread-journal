@@ -17,6 +17,9 @@ import WeeklyDevotionalPage from "./pages/WeeklyDevotionalPage";
 import HabitTrackerPage from "./pages/HabitTrackerPage";
 import GuidedPrayerPage from "./pages/GuidedPrayerPage";
 import ScriptureDiscoveryPage from "./pages/ScriptureDiscoveryPage";
+import VoiceJournalPage from "./pages/VoiceJournalPage";
+import CommunityPage from "./pages/CommunityPage";
+import SettingsPage from "./pages/SettingsPage";
 
 const queryClient = new QueryClient();
 
@@ -38,6 +41,9 @@ const App = () => (
           <Route path="/habits" element={<HabitTrackerPage />} />
           <Route path="/guided-prayer" element={<GuidedPrayerPage />} />
           <Route path="/scripture-discovery" element={<ScriptureDiscoveryPage />} />
+          <Route path="/voice-journal" element={<VoiceJournalPage />} />
+          <Route path="/community" element={<CommunityPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

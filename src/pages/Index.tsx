@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { getJournalEntries, getPrayers } from "@/lib/storage";
-import { ChevronRight, Calendar, Music, BookOpen, Heart } from "lucide-react";
+import { ChevronRight, Calendar, Music, BookOpen, Heart, Settings, Mic, Users } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -49,6 +49,30 @@ const Index = () => {
       color: "bg-[#fef7cd]",
       textColor: "text-[#b0964f]",
       path: "/scripture-discovery"
+    },
+    {
+      title: "Voice Journal",
+      description: "Speak your prayers and reflections",
+      icon: <Mic size={20} />,
+      color: "bg-[#ffdee2]",
+      textColor: "text-[#d16277]",
+      path: "/voice-journal"
+    },
+    {
+      title: "Community",
+      description: "Share and pray together anonymously",
+      icon: <Users size={20} />,
+      color: "bg-[#f2fce2]",
+      textColor: "text-[#608b46]",
+      path: "/community"
+    },
+    {
+      title: "Settings",
+      description: "Personalize your experience",
+      icon: <Settings size={20} />,
+      color: "bg-[#fde1d3]",
+      textColor: "text-[#d78b60]",
+      path: "/settings"
     }
   ];
   
@@ -59,7 +83,25 @@ const Index = () => {
         <BibleVerse />
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {featureCards.map((card) => (
+          {featureCards.slice(0, 3).map((card) => (
+            <Card 
+              key={card.title}
+              className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl cursor-pointer"
+              onClick={() => navigate(card.path)}
+            >
+              <CardContent className="p-6">
+                <div className={`${card.color} ${card.textColor} w-10 h-10 rounded-full flex items-center justify-center mb-4`}>
+                  {card.icon}
+                </div>
+                <h3 className="text-lg font-serif text-[#333] mb-1">{card.title}</h3>
+                <p className="text-sm text-[#666]">{card.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {featureCards.slice(3).map((card) => (
             <Card 
               key={card.title}
               className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl cursor-pointer"
