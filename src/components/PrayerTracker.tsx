@@ -5,30 +5,28 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-
-const MoodItem = ({ label, emoji }: { label: string; emoji?: string }) => (
-  <div className="flex items-center py-3 px-5 bg-[#f8f3eb] rounded-lg mb-3">
-    {emoji && <span className="mr-2 text-xl">{emoji}</span>}
-    <span className="font-medium text-[#333]">{label}</span>
-  </div>
-);
-
-const ScriptureItem = ({ reference, text }: { reference: string, text: string }) => (
-  <div className="bg-[#f4f6f0] p-4 mb-3 rounded-xl">
-    <p className="font-serif text-sm font-medium mb-1">{reference}</p>
-    <p className="text-xs text-[#666]">{text}</p>
-  </div>
-);
+import { BookOpen, Check, Clock, Trash2, Plus } from "lucide-react";
+import { format } from "date-fns";
 
 const PrayerTracker = () => {
   const [prayers, setPrayers] = useState<Prayer[]>([]);
   const [newPrayer, setNewPrayer] = useState("");
   const { toast } = useToast();
   const [answeredCount, setAnsweredCount] = useState(0);
+  const [selectedVerse, setSelectedVerse] = useState({
+    text: "They who wait upon the Lord shall renew their strength.",
+    reference: "Isaiah 40:31"
+  });
 
   useEffect(() => {
     // Load prayers from local storage
     loadPrayers();
+    
+    // Get the current verse
+    const currentVerse = localStorage.getItem("current_verse");
+    if (currentVerse) {
+      setSelectedVerse(JSON.parse(currentVerse));
+    }
   }, []);
 
   const loadPrayers = () => {
@@ -87,73 +85,120 @@ const PrayerTracker = () => {
     });
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'answered':
+        return <Check size={16} className="text-[#a3b198]" />;
+      case 'waiting':
+        return <Clock size={16} className="text-[#e6c27a]" />;
+      default:
+        return <BookOpen size={16} className="text-[#666]" />;
+    }
+  };
+
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-2xl font-serif text-[#333]">Prayer Tracker</h2>
         {answeredCount > 0 && (
           <div className="bg-[#f4f6f0] text-[#333] px-3 py-1 rounded-full text-sm">
-            {answeredCount} answered
+            {answeredCount} answered this week
           </div>
         )}
       </div>
       
-      <form onSubmit={handleAddPrayer} className="mb-8 flex">
-        <Input
-          type="text"
-          value={newPrayer}
-          onChange={(e) => setNewPrayer(e.target.value)}
-          placeholder="Enter your prayer request..."
-          className="mr-2 flex-grow rounded-full border-[#d8d8c8] focus:border-[#a3b198]"
-        />
-        <Button type="submit" className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-5">
-          Add
-        </Button>
-      </form>
+      <Card className="mb-8 border-[#e8e8e0] overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 rounded-xl">
+        <CardContent className="p-6">
+          <div className="bg-[#f4f6f0] p-4 rounded-lg mb-4">
+            <h3 className="font-serif text-lg mb-2 text-[#333]">Scripture Encouragement</h3>
+            <p className="italic text-[#333] mb-1">"{selectedVerse.text}"</p>
+            <p className="text-right text-sm text-[#666]">— {selectedVerse.reference}</p>
+          </div>
+          
+          <form onSubmit={handleAddPrayer} className="flex">
+            <Input
+              type="text"
+              value={newPrayer}
+              onChange={(e) => setNewPrayer(e.target.value)}
+              placeholder="Enter your prayer request..."
+              className="mr-2 flex-grow rounded-full border-[#d8d8c8] focus:border-[#a3b198]"
+            />
+            <Button type="submit" className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-4">
+              <Plus size={18} className="mr-1" /> Add
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
       
-      <div className="grid grid-cols-2 gap-6">
-        <div className="flex flex-col">
-          <Card className="border-none shadow-none bg-transparent mb-6">
-            <CardContent className="p-0">
-              <h3 className="font-serif text-lg mb-4 text-center">My Mood</h3>
-              <div className="space-y-2">
-                <MoodItem label="Hopeful" emoji="😊" />
-                <MoodItem label="Calm" emoji="😌" />
-                <MoodItem label="Thankful" emoji="🙏" />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="flex flex-col">
-          <Card className="border-none shadow-none bg-transparent">
-            <CardContent className="p-0">
-              <h3 className="font-serif text-lg mb-4 text-center">Scripture</h3>
-              <div className="space-y-2">
-                <ScriptureItem 
-                  reference="Isaiah 40:31" 
-                  text="They who wait upon the Lord shall renew their strength."
-                />
-                <ScriptureItem 
-                  reference="Psalm 25:2" 
-                  text="No one who hopes in you will ever be put to shame."
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-      
-      <div className="mt-8">
-        <h3 className="font-serif text-lg mb-4">My Mood</h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <MoodItem label="Hopeful" />
-          <MoodItem label="Calm" />
-          <MoodItem label="Thankful" />
-          <MoodItem label="Peaceful" />
-          <MoodItem label="Joyful" />
-          <MoodItem label="Grateful" />
-        </div>
+      <div className="space-y-3">
+        {prayers.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-[#666] italic">No prayers added yet. Add your first prayer request above.</p>
+          </div>
+        ) : (
+          prayers.sort((a, b) => b.updatedAt - a.updatedAt).map((prayer) => (
+            <Card 
+              key={prayer.id} 
+              className={`border-[#e8e8e0] overflow-hidden shadow-sm rounded-xl ${
+                prayer.status === 'answered' ? 'bg-[#f4f6f0]' : 'bg-white'
+              }`}
+            >
+              <CardContent className="p-4">
+                <div className="flex justify-between items-start">
+                  <div className="flex items-center mb-2">
+                    {getStatusIcon(prayer.status)}
+                    <span className="text-xs text-[#666] ml-2">
+                      {format(new Date(prayer.createdAt), "MMM d")}
+                    </span>
+                  </div>
+                  <div className="flex space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-7 w-7 p-0 rounded-full text-[#666] hover:bg-[#f4f6f0]"
+                      onClick={() => handleDeletePrayer(prayer.id)}
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                </div>
+                <p className="text-[#333] mb-3">{prayer.content}</p>
+                <div className="flex justify-end space-x-2">
+                  {prayer.status !== 'praying' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs bg-transparent border-[#d8d8c8] text-[#666] hover:bg-[#f4f6f0]"
+                      onClick={() => handleUpdateStatus(prayer.id, 'praying')}
+                    >
+                      Praying
+                    </Button>
+                  )}
+                  {prayer.status !== 'waiting' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs bg-transparent border-[#d8d8c8] text-[#666] hover:bg-[#f4f6f0]"
+                      onClick={() => handleUpdateStatus(prayer.id, 'waiting')}
+                    >
+                      Waiting
+                    </Button>
+                  )}
+                  {prayer.status !== 'answered' && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs bg-transparent border-[#d8d8c8] text-[#666] hover:bg-[#a3b198] hover:border-[#a3b198] hover:text-white"
+                      onClick={() => handleUpdateStatus(prayer.id, 'answered')}
+                    >
+                      Answered
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

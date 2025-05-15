@@ -12,6 +12,8 @@ import NewJournalEntry from "./pages/NewJournalEntry";
 import JournalEntryDetail from "./pages/JournalEntryDetail";
 import GrowthDashboard from "./pages/GrowthDashboard";
 import NotFound from "./pages/NotFound";
+import DevotionalPage from "./pages/DevotionalPage";
+import WeeklyDevotionalPage from "./pages/WeeklyDevotionalPage";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,8 @@ const App = () => (
           <Route path="/journal/:id" element={<JournalEntryDetail />} />
           <Route path="/prayer" element={<PrayerPage />} />
           <Route path="/growth" element={<GrowthDashboard />} />
+          <Route path="/devotional" element={<DevotionalPage />} />
+          <Route path="/weekly-devotional" element={<WeeklyDevotionalPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
