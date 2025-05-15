@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { format } from "date-fns";
+import { BookOpen } from "lucide-react";
 
 const Journal = () => {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
@@ -29,22 +30,22 @@ const Journal = () => {
   return (
     <div className="animate-fade-in">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-serif text-grace-700">Your Journal</h2>
+        <h2 className="text-2xl font-serif text-[#333]">Your Journal</h2>
         <Button 
           onClick={handleNewEntry}
-          className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-5"
+          className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-5"
         >
           New Entry
         </Button>
       </div>
 
       {entries.length === 0 ? (
-        <Card className="border-grace-200 shadow-sm bg-white/70 backdrop-blur-sm">
+        <Card className="border-[#e8e8e0] shadow-sm bg-white/70 backdrop-blur-sm">
           <CardContent className="p-8 text-center">
-            <p className="text-grace-500 mb-6 font-serif">Begin your spiritual journey with a journal entry.</p>
+            <p className="text-[#666] mb-6 font-serif">Begin your spiritual journey with a journal entry.</p>
             <Button 
               onClick={handleNewEntry}
-              className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-6 shadow-sm"
+              className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-6 shadow-sm"
             >
               Create Your First Entry
             </Button>
@@ -55,7 +56,7 @@ const Journal = () => {
           {entries.map((entry) => (
             <Card 
               key={entry.id} 
-              className="border-grace-200 hover:border-grace-300 cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
+              className="border-[#e8e8e0] hover:border-[#d8d8d0] cursor-pointer shadow-sm hover:shadow-md transition-all duration-300"
               onClick={() => handleViewEntry(entry.id)}
             >
               <CardHeader className="pb-2 pt-4 px-5 flex flex-row items-center justify-between">
@@ -63,16 +64,19 @@ const Journal = () => {
                   <span className="mr-2 text-xl">{moodEmojis[entry.mood]}</span>
                   <span className="font-serif">{format(new Date(entry.date), "MMMM d, yyyy")}</span>
                 </CardTitle>
-                <span className="text-xs text-grace-500 capitalize bg-grace-100 px-3 py-1 rounded-full">
+                <span className="text-xs text-[#666] capitalize bg-[#f4f6f0] px-3 py-1 rounded-full">
                   {entry.mood}
                 </span>
               </CardHeader>
               <CardContent className="px-5 pb-5">
-                <p className="text-grace-600 line-clamp-2">{entry.content}</p>
+                <p className="text-[#333] line-clamp-2 font-serif">{entry.content}</p>
                 {entry.verse && (
-                  <p className="text-xs text-grace-500 mt-2 italic font-serif">
-                    Verse: {entry.verse.reference}
-                  </p>
+                  <div className="flex items-center mt-2 text-xs text-[#666]">
+                    <BookOpen size={12} className="mr-1" />
+                    <p className="italic">
+                      {entry.verse.reference}
+                    </p>
+                  </div>
                 )}
               </CardContent>
             </Card>

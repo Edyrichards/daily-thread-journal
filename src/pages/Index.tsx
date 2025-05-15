@@ -20,6 +20,9 @@ const Index = () => {
     
     setJournalCount(entries.length);
     setPrayerCount(prayers.length);
+    
+    // Reset journal template if navigating back to home
+    localStorage.removeItem("journal_template");
   }, []);
   
   return (

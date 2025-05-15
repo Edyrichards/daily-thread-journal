@@ -1,23 +1,38 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import MoodPicker from "@/components/MoodPicker";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { JournalEntry, Mood, generateId, saveJournalEntry } from "@/lib/storage";
 import { getRandomVerse } from "@/lib/api";
 
 const NewJournalEntry = () => {
-  const [content, setContent] = useState("God, today I feel grateful for the blessings You've given me. Help me to be a source of Your love in the lives of others.");
-  const [mood, setMood] = useState<Mood | null>("joyful");
+  const [content, setContent] = useState("");
+  const [mood, setMood] = useState<Mood | null>(null);
   const [verse, setVerse] = useState<{ text: string; reference: string } | null>(null);
   const [isLoadingVerse, setIsLoadingVerse] = useState(false);
 
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  useEffect(() => {
+    // Check if mood was selected from home page
+    const currentMood = localStorage.getItem("current_mood") as Mood | null;
+    const journalTemplate = localStorage.getItem("journal_template");
+    
+    if (currentMood) {
+      setMood(currentMood);
+      
+      // Set initial content from template if available
+      if (journalTemplate) {
+        setContent(journalTemplate);
+      }
+    }
+  }, []);
 
   const handleAddVerse = async () => {
     setIsLoadingVerse(true);
@@ -34,6 +49,11 @@ const NewJournalEntry = () => {
     } finally {
       setIsLoadingVerse(false);
     }
+  };
+
+  const handleMoodChange = (newMood: Mood) => {
+    setMood(newMood);
+    localStorage.setItem("current_mood", newMood);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,6 +94,9 @@ const NewJournalEntry = () => {
       description: "Your journal entry has been saved.",
     });
     
+    // Clear the mood selection for today to allow a new entry with potentially different mood
+    localStorage.removeItem("journal_template");
+    
     navigate("/journal");
   };
 
@@ -82,6 +105,11 @@ const NewJournalEntry = () => {
       <Header title="THREADS of GRACE" />
       <main className="flex-1 container max-w-md mx-auto px-6 py-6 animate-fade-in">
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
+          <div className="mb-4">
+            <h2 className="text-xl font-serif text-[#333] mb-3">How are you feeling?</h2>
+            <MoodPicker selectedMood={mood} onMoodSelect={handleMoodChange} />
+          </div>
+          
           <div className="flex-grow mb-4">
             <Textarea
               value={content}
@@ -118,24 +146,9 @@ const NewJournalEntry = () => {
               disabled={isLoadingVerse}
               className="self-end mb-4 text-[#333] border-[#d8d8c8] rounded-full px-4 py-1 text-xs bg-white shadow-sm hover:bg-[#f4f6f0]"
             >
-              + Verse
+              {isLoadingVerse ? "Loading..." : "+ Verse"}
             </Button>
           )}
-          
-          <div className="flex justify-center space-x-4 mb-6">
-            <Button type="button" className="text-2xl bg-transparent hover:bg-[#f4f6f0] text-[#333]">
-              🙂
-            </Button>
-            <Button type="button" className="text-2xl bg-transparent hover:bg-[#f4f6f0] text-[#333]">
-              😊
-            </Button>
-            <Button type="button" className="text-2xl bg-transparent hover:bg-[#f4f6f0] text-[#333]">
-              ❤️
-            </Button>
-            <Button type="button" className="text-2xl bg-transparent hover:bg-[#f4f6f0] text-[#333]">
-              🙏
-            </Button>
-          </div>
           
           <div className="flex justify-between space-x-4 mb-4">
             <Button
@@ -152,32 +165,6 @@ const NewJournalEntry = () => {
             >
               Save Entry
             </Button>
-          </div>
-          
-          <div className="bg-[#e8e8e0] p-4 rounded-t-xl mt-4">
-            <div className="grid grid-cols-10 gap-1 mb-2">
-              {['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map(key => (
-                <div key={key} className="bg-white rounded-lg py-2 shadow-sm flex justify-center">{key}</div>
-              ))}
-            </div>
-            <div className="grid grid-cols-10 gap-1 mb-2">
-              {['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'].map(key => (
-                <div key={key} className="bg-white rounded-lg py-2 shadow-sm flex justify-center">{key}</div>
-              ))}
-              <div className="hidden"></div>
-            </div>
-            <div className="grid grid-cols-10 gap-1 mb-2">
-              <div className="bg-[#d8d8d0] rounded-lg py-2 shadow-sm flex justify-center col-span-1">⇧</div>
-              {['Z', 'X', 'C', 'V', 'B', 'N', 'M'].map(key => (
-                <div key={key} className="bg-white rounded-lg py-2 shadow-sm flex justify-center">{key}</div>
-              ))}
-              <div className="bg-[#d8d8d0] rounded-lg py-2 shadow-sm flex justify-center col-span-2">⌫</div>
-            </div>
-            <div className="grid grid-cols-10 gap-1">
-              <div className="bg-[#d8d8d0] rounded-lg py-2 shadow-sm flex justify-center col-span-2">123</div>
-              <div className="bg-white rounded-lg py-2 shadow-sm flex justify-center col-span-6">space</div>
-              <div className="bg-[#d8d8d0] rounded-lg py-2 shadow-sm flex justify-center col-span-2">return</div>
-            </div>
           </div>
         </form>
       </main>

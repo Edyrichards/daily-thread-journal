@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { getRandomVerse, getVerseByMood } from "../lib/api";
 import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
