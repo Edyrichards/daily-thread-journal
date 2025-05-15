@@ -2,10 +2,23 @@
 import { useState, useEffect } from "react";
 import { Prayer, getPrayers, savePrayer, generateId, updatePrayerStatus, deletePrayer } from "@/lib/storage";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./ui/carousel";
+
+const MoodItem = ({ label, emoji }: { label: string; emoji?: string }) => (
+  <div className="flex items-center py-3 px-5 bg-[#f8f3eb] rounded-lg mb-3">
+    {emoji && <span className="mr-2 text-xl">{emoji}</span>}
+    <span className="font-medium text-[#333]">{label}</span>
+  </div>
+);
+
+const ScriptureItem = ({ reference, text }: { reference: string, text: string }) => (
+  <div className="bg-[#f4f6f0] p-4 mb-3 rounded-xl">
+    <p className="font-serif text-sm font-medium mb-1">{reference}</p>
+    <p className="text-xs text-[#666]">{text}</p>
+  </div>
+);
 
 const PrayerTracker = () => {
   const [prayers, setPrayers] = useState<Prayer[]>([]);
@@ -14,32 +27,30 @@ const PrayerTracker = () => {
   const [answeredCount, setAnsweredCount] = useState(0);
 
   useEffect(() => {
+    // Load prayers from local storage
     loadPrayers();
   }, []);
 
   const loadPrayers = () => {
     const loadedPrayers = getPrayers();
-    // Sort by most recent first
-    loadedPrayers.sort((a, b) => b.createdAt - a.createdAt);
     setPrayers(loadedPrayers);
     
     // Count answered prayers in the last week
     const oneWeekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
-    const answeredThisWeek = loadedPrayers.filter(
-      prayer => prayer.status === "answered" && prayer.updatedAt > oneWeekAgo
+    const answeredInLastWeek = loadedPrayers.filter(
+      p => p.status === 'answered' && p.updatedAt > oneWeekAgo
     ).length;
-    setAnsweredCount(answeredThisWeek);
+    setAnsweredCount(answeredInLastWeek);
   };
 
   const handleAddPrayer = (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!newPrayer.trim()) return;
     
     const prayer: Prayer = {
       id: generateId(),
       content: newPrayer,
-      status: "praying",
+      status: 'praying',
       createdAt: Date.now(),
       updatedAt: Date.now()
     };
@@ -50,7 +61,7 @@ const PrayerTracker = () => {
     
     toast({
       title: "Prayer Added",
-      description: "Your prayer has been added to your prayer list.",
+      description: "Your prayer request has been added.",
     });
   };
 
@@ -59,8 +70,10 @@ const PrayerTracker = () => {
     loadPrayers();
     
     toast({
-      title: "Prayer Updated",
-      description: `Prayer status updated to "${status}".`,
+      title: status === 'answered' ? "Prayer Answered" : "Status Updated",
+      description: status === 'answered' 
+        ? "Praise God for answering this prayer!" 
+        : "Your prayer status has been updated.",
     });
   };
 
@@ -70,43 +83,17 @@ const PrayerTracker = () => {
     
     toast({
       title: "Prayer Removed",
-      description: "The prayer has been removed from your list.",
+      description: "Your prayer request has been removed.",
     });
-  };
-
-  const getStatusBadgeClasses = (status: string) => {
-    switch (status) {
-      case "praying":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      case "answered":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "waiting":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case "praying":
-        return "🙏";
-      case "answered":
-        return "✓";
-      case "waiting":
-        return "⌛";
-      default:
-        return "";
-    }
   };
 
   return (
     <div className="animate-fade-in">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-serif text-grace-700 mb-6">Prayer Tracker</h2>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-2xl font-serif text-[#333]">Prayer Tracker</h2>
         {answeredCount > 0 && (
-          <div className="bg-grace-gold/20 text-grace-700 px-3 py-1 rounded-full text-sm">
-            {answeredCount} answered this week
+          <div className="bg-[#f4f6f0] text-[#333] px-3 py-1 rounded-full text-sm">
+            {answeredCount} answered
           </div>
         )}
       </div>
@@ -117,89 +104,57 @@ const PrayerTracker = () => {
           value={newPrayer}
           onChange={(e) => setNewPrayer(e.target.value)}
           placeholder="Enter your prayer request..."
-          className="mr-2 flex-grow rounded-full border-grace-300 focus:border-grace-400"
+          className="mr-2 flex-grow rounded-full border-[#d8d8c8] focus:border-[#a3b198]"
         />
-        <Button type="submit" className="bg-grace-400 hover:bg-grace-500 text-white rounded-full px-5">
-          Add Prayer
+        <Button type="submit" className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-5">
+          Add
         </Button>
       </form>
       
-      {prayers.length > 0 ? (
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {prayers.map((prayer) => (
-              <CarouselItem key={prayer.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <Card className="border-grace-200 shadow-sm hover:shadow-md transition-all duration-300 h-full">
-                  <CardHeader className="pb-2 pt-4 px-4">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-md font-medium text-grace-700 font-serif">
-                        My Prayer
-                      </CardTitle>
-                      <span 
-                        className={`text-xs px-3 py-1 rounded-full capitalize border flex items-center gap-1 ${getStatusBadgeClasses(prayer.status)}`}
-                      >
-                        <span>{getStatusIcon(prayer.status)}</span>
-                        <span>{prayer.status}</span>
-                      </span>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="px-4 pb-4">
-                    <p className="text-grace-600 mb-5">{prayer.content}</p>
-                    
-                    <div className="flex justify-between items-center">
-                      <div className="flex space-x-1">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleUpdateStatus(prayer.id, "praying")}
-                          className={`text-xs border rounded-full ${prayer.status === "praying" ? "border-blue-500 bg-blue-50" : ""}`}
-                        >
-                          🙏 Praying
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleUpdateStatus(prayer.id, "waiting")}
-                          className={`text-xs border rounded-full ${prayer.status === "waiting" ? "border-yellow-500 bg-yellow-50" : ""}`}
-                        >
-                          ⌛ Waiting
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={() => handleUpdateStatus(prayer.id, "answered")}
-                          className={`text-xs border rounded-full ${prayer.status === "answered" ? "border-green-500 bg-green-50" : ""}`}
-                        >
-                          ✓ Answered
-                        </Button>
-                      </div>
-                      
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => handleDeletePrayer(prayer.id)}
-                        className="text-xs text-red-500 hover:text-red-700"
-                      >
-                        Remove
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <div className="hidden md:flex">
-            <CarouselPrevious className="left-0" />
-            <CarouselNext className="right-0" />
-          </div>
-        </Carousel>
-      ) : (
-        <Card className="border-grace-200 shadow-sm bg-white/70 backdrop-blur-sm">
-          <CardContent className="p-8 text-center">
-            <p className="text-grace-500 font-serif">No prayers added yet. Add your first prayer above.</p>
-          </CardContent>
-        </Card>
-      )}
+      <div className="grid grid-cols-2 gap-6">
+        <div className="flex flex-col">
+          <Card className="border-none shadow-none bg-transparent mb-6">
+            <CardContent className="p-0">
+              <h3 className="font-serif text-lg mb-4 text-center">My Mood</h3>
+              <div className="space-y-2">
+                <MoodItem label="Hopeful" emoji="😊" />
+                <MoodItem label="Calm" emoji="😌" />
+                <MoodItem label="Thankful" emoji="🙏" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <div className="flex flex-col">
+          <Card className="border-none shadow-none bg-transparent">
+            <CardContent className="p-0">
+              <h3 className="font-serif text-lg mb-4 text-center">Scripture</h3>
+              <div className="space-y-2">
+                <ScriptureItem 
+                  reference="Isaiah 40:31" 
+                  text="They who wait upon the Lord shall renew their strength."
+                />
+                <ScriptureItem 
+                  reference="Psalm 25:2" 
+                  text="No one who hopes in you will ever be put to shame."
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+      
+      <div className="mt-8">
+        <h3 className="font-serif text-lg mb-4">My Mood</h3>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <MoodItem label="Hopeful" />
+          <MoodItem label="Calm" />
+          <MoodItem label="Thankful" />
+          <MoodItem label="Peaceful" />
+          <MoodItem label="Joyful" />
+          <MoodItem label="Grateful" />
+        </div>
+      </div>
     </div>
   );
 };

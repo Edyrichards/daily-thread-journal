@@ -78,7 +78,7 @@ const NewJournalEntry = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#fdf9f4]">
+    <div className="min-h-screen flex flex-col bg-[#f8f3eb]">
       <Header title="THREADS of GRACE" />
       <main className="flex-1 container max-w-md mx-auto px-6 py-6 animate-fade-in">
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
