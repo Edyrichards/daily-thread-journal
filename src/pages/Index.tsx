@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { getJournalEntries, getPrayers } from "@/lib/storage";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Calendar, Music, BookOpen, Heart } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -25,11 +25,56 @@ const Index = () => {
     localStorage.removeItem("journal_template");
   }, []);
   
+  const featureCards = [
+    {
+      title: "Grace Habits",
+      description: "Track your daily spiritual practices",
+      icon: <Calendar size={20} />,
+      color: "bg-[#e5deff]",
+      textColor: "text-[#7e69ab]",
+      path: "/habits"
+    },
+    {
+      title: "Guided Prayer",
+      description: "Peaceful moments with scripture & music",
+      icon: <Music size={20} />,
+      color: "bg-[#d3e4fd]",
+      textColor: "text-[#4a7dbd]",
+      path: "/guided-prayer"
+    },
+    {
+      title: "Scripture Discovery",
+      description: "Find verses for your emotional needs",
+      icon: <BookOpen size={20} />,
+      color: "bg-[#fef7cd]",
+      textColor: "text-[#b0964f]",
+      path: "/scripture-discovery"
+    }
+  ];
+  
   return (
     <Layout>
       <div className="space-y-6 pb-16">
         <MoodPrompt />
         <BibleVerse />
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {featureCards.map((card) => (
+            <Card 
+              key={card.title}
+              className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl cursor-pointer"
+              onClick={() => navigate(card.path)}
+            >
+              <CardContent className="p-6">
+                <div className={`${card.color} ${card.textColor} w-10 h-10 rounded-full flex items-center justify-center mb-4`}>
+                  {card.icon}
+                </div>
+                <h3 className="text-lg font-serif text-[#333] mb-1">{card.title}</h3>
+                <p className="text-sm text-[#666]">{card.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
         
         <Card className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl">
           <CardContent className="p-6">

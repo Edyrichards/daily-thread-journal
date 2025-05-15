@@ -1,6 +1,6 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -14,6 +14,9 @@ import GrowthDashboard from "./pages/GrowthDashboard";
 import NotFound from "./pages/NotFound";
 import DevotionalPage from "./pages/DevotionalPage";
 import WeeklyDevotionalPage from "./pages/WeeklyDevotionalPage";
+import HabitTrackerPage from "./pages/HabitTrackerPage";
+import GuidedPrayerPage from "./pages/GuidedPrayerPage";
+import ScriptureDiscoveryPage from "./pages/ScriptureDiscoveryPage";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +35,9 @@ const App = () => (
           <Route path="/growth" element={<GrowthDashboard />} />
           <Route path="/devotional" element={<DevotionalPage />} />
           <Route path="/weekly-devotional" element={<WeeklyDevotionalPage />} />
+          <Route path="/habits" element={<HabitTrackerPage />} />
+          <Route path="/guided-prayer" element={<GuidedPrayerPage />} />
+          <Route path="/scripture-discovery" element={<ScriptureDiscoveryPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
