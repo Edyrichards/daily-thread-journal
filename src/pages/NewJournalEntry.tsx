@@ -107,7 +107,7 @@ const NewJournalEntry = () => {
         <form onSubmit={handleSubmit} className="flex flex-col h-full">
           <div className="mb-4">
             <h2 className="text-xl font-serif text-[#333] mb-3">How are you feeling?</h2>
-            <MoodPicker selectedMood={mood} onMoodSelect={handleMoodChange} />
+            <MoodPicker selectedMood={mood} onSelectMood={handleMoodChange} />
           </div>
           
           <div className="flex-grow mb-4">
