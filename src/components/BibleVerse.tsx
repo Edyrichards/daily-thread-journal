@@ -28,26 +28,13 @@ const BibleVerse = () => {
           verseData = await getRandomVerse();
         }
         
-        if (verseData && verseData.text && verseData.reference) {
-          setVerse(verseData);
-        } else {
-          // Fallback if verse data is incomplete
-          setVerse({
-            text: "For God so loved the world that he gave his one and only Son.",
-            reference: "John 3:16"
-          });
-        }
+        setVerse(verseData);
       } catch (error) {
         console.error("Error fetching Bible verse:", error);
         toast({
           title: "Error loading verse",
           description: "We couldn't load today's verse. Please try again later.",
           variant: "destructive",
-        });
-        // Set fallback verse on error
-        setVerse({
-          text: "For God so loved the world that he gave his one and only Son.",
-          reference: "John 3:16"
         });
       } finally {
         setLoading(false);

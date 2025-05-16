@@ -5,7 +5,6 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
-import WelcomeScreen from "./components/WelcomeScreen";
 import Index from "./pages/Index";
 import JournalPage from "./pages/JournalPage";
 import PrayerPage from "./pages/PrayerPage";
@@ -31,8 +30,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<WelcomeScreen />} />
-          <Route path="/home" element={<Index />} />
+          <Route path="/" element={<Index />} />
           <Route path="/journal" element={<JournalPage />} />
           <Route path="/journal/new" element={<NewJournalEntry />} />
           <Route path="/journal/:id" element={<JournalEntryDetail />} />
