@@ -24,7 +24,7 @@ const Header = ({ title, showMenu, setShowMenu }: HeaderProps) => {
   if (!title) {
     // Home screen format with the feather icon
     return (
-      <header className="bg-[#f8f3eb] pt-8 pb-4 px-6 flex items-center justify-between">
+      <header className="bg-[#f8f3eb] pt-6 pb-4 px-6 flex items-center justify-between">
         <button 
           onClick={handleMenuClick}
           className="text-[#333] p-2 rounded-full hover:bg-[#e8e8e0]"
@@ -34,10 +34,10 @@ const Header = ({ title, showMenu, setShowMenu }: HeaderProps) => {
         </button>
         
         <div className="flex items-center justify-center flex-grow">
-          <h1 className="text-xl uppercase tracking-wider font-serif text-[#333] text-center">
+          <h1 className="text-lg uppercase tracking-wider font-serif text-[#333] text-center">
             Threads of <br /> Grace
           </h1>
-          <div className="ml-3 text-2xl rotate-12 opacity-80">🪶</div>
+          <div className="ml-2 text-xl rotate-12 opacity-80">🪶</div>
         </div>
         
         <div className="w-10"></div> {/* Empty div for spacing */}
@@ -68,16 +68,14 @@ const Header = ({ title, showMenu, setShowMenu }: HeaderProps) => {
       
       <div className="text-center flex-grow">
         {title === "THREADS of GRACE" ? (
-          <div>
+          <div className="flex items-center justify-center">
             <h1 className="text-lg uppercase tracking-wider font-serif text-[#333]">
-              Threads
+              Threads of Grace
             </h1>
-            <h1 className="text-lg uppercase tracking-wider font-serif text-[#333]">
-              of Grace
-            </h1>
+            <div className="ml-2 text-xl rotate-12 opacity-80">🪶</div>
           </div>
         ) : (
-          <h1 className="text-xl font-serif text-[#333]">
+          <h1 className="text-lg font-serif text-[#333]">
             {displayTitle}
           </h1>
         )}

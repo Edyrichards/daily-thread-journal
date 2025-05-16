@@ -2,8 +2,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 import { BookOpen, FileText, CheckCircle, MessageCircle, LayoutGrid, Hand, Book, Settings } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 const WelcomeScreen = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -47,7 +47,7 @@ const WelcomeScreen = () => {
                 onClick={() => handleNavigate(item.path)}
               >
                 <item.icon className="mr-3" size={18} />
-                {item.name}
+                <span>{item.name}</span>
               </Button>
             ))}
           </div>
@@ -62,47 +62,45 @@ const WelcomeScreen = () => {
         />
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center text-center p-6 relative min-h-screen">
+      <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-10 relative min-h-screen">
         <button 
           onClick={() => setShowMenu(true)} 
-          className="absolute top-6 left-6 p-2 rounded-full hover:bg-[#e8e8e0] transition-colors"
+          className="absolute top-8 left-6 p-2 rounded-full hover:bg-[#e8e8e0] transition-colors"
           aria-label="Open menu"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
+          <Menu size={24} />
         </button>
 
-        <h1 className="text-4xl font-serif text-[#333] mb-8 text-center">
-          THREADS OF GRACE
-        </h1>
+        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
+          <h1 className="text-3xl font-serif text-[#333] mb-6 text-center">
+            THREADS OF GRACE
+          </h1>
 
-        <div className="w-40 h-40 mb-6">
-          <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#333" strokeWidth="2">
-            <path d="M70,40 C70,40 70,80 100,100 C130,120 130,160 130,160" />
-            <path d="M60,50 C60,50 60,90 90,110 C120,130 120,170 120,170" />
-            <path d="M80,30 C80,30 80,70 110,90 C140,110 140,150 140,150" />
-            <circle cx="100" cy="100" r="8" fill="#333" />
-          </svg>
+          <div className="w-24 h-24 mb-8">
+            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#333" strokeWidth="2">
+              <path d="M70,40 C70,40 70,80 100,100 C130,120 130,160 130,160" />
+              <path d="M60,50 C60,50 60,90 90,110 C120,130 120,170 120,170" />
+              <path d="M80,30 C80,30 80,70 110,90 C140,110 140,150 140,150" />
+              <circle cx="100" cy="100" r="8" fill="#333" />
+            </svg>
+          </div>
+
+          <div className="max-w-md mb-12">
+            <p className="text-3xl font-serif italic text-[#333] mb-2 text-center">
+              "Be still, and know that I am God."
+            </p>
+            <p className="text-xl text-[#555] text-center mt-4">
+              Psalm 46:10
+            </p>
+          </div>
+
+          <Button 
+            onClick={handleEnter}
+            className="bg-[#a3977e] hover:bg-[#8a7f67] text-white font-medium rounded-full px-12 py-6 text-xl"
+          >
+            Enter
+          </Button>
         </div>
-
-        <div className="max-w-md mb-10">
-          <p className="text-2xl font-serif italic text-[#333] mb-2 text-center">
-            "Be still, and know that I am God."
-          </p>
-          <p className="text-lg text-[#555] text-center">
-            Psalm 46:10
-          </p>
-        </div>
-
-        <Button 
-          onClick={handleEnter}
-          className="bg-[#a3977e] hover:bg-[#8a7f67] text-white font-medium rounded-full px-12 py-6 text-xl"
-        >
-          Enter
-        </Button>
       </div>
     </div>
   );

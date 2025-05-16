@@ -35,9 +35,12 @@ const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
         className={`fixed top-0 left-0 h-full w-64 bg-[#f8f3eb] shadow-lg z-50 transform transition-transform duration-300 ${showMenu ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="p-6">
-          <h1 className="text-3xl font-serif text-[#333] text-center mb-8">
-            THREADS<br/>OF GRACE
-          </h1>
+          <div className="flex items-center justify-center mb-8">
+            <h1 className="text-2xl font-serif text-[#333] text-center">
+              THREADS<br/>OF GRACE
+            </h1>
+            <div className="ml-2 text-xl rotate-12 opacity-80">🪶</div>
+          </div>
           <div className="space-y-4">
             {/* Menu items similar to welcome screen */}
             <div className="space-y-4">
