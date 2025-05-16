@@ -78,7 +78,7 @@ const Index = () => {
   
   return (
     <Layout>
-      <div className="space-y-6 pb-16">
+      <div className="space-y-5 pb-16">
         <MoodPrompt />
         <BibleVerse />
         

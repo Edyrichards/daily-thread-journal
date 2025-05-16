@@ -1,6 +1,6 @@
 
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Feather } from "lucide-react";
 
 interface HeaderProps {
   title?: string;
@@ -16,12 +16,14 @@ const Header = ({ title }: HeaderProps) => {
   if (!title) {
     // Home screen format with the feather icon
     return (
-      <header className="bg-[#f8f3eb] pt-8 pb-4 px-6 text-center">
+      <header className="bg-[#f8f3eb] pt-6 pb-3 px-6 text-center">
         <div className="flex items-center justify-center">
-          <h1 className="text-xl uppercase tracking-wider font-serif text-[#333] text-center">
+          <h1 className="text-lg uppercase tracking-wider font-serif text-[#333] text-center">
             Threads of <br /> Grace
           </h1>
-          <div className="ml-3 text-2xl rotate-12 opacity-80">🪶</div>
+          <div className="ml-2 mt-1">
+            <Feather size={18} className="rotate-12 opacity-80 text-[#d78b60]" />
+          </div>
         </div>
       </header>
     );
@@ -42,13 +44,13 @@ const Header = ({ title }: HeaderProps) => {
       
       <div className="text-center flex-grow">
         {title === "THREADS of GRACE" ? (
-          <div>
-            <h1 className="text-lg uppercase tracking-wider font-serif text-[#333]">
-              Threads
-            </h1>
-            <h1 className="text-lg uppercase tracking-wider font-serif text-[#333]">
-              of Grace
-            </h1>
+          <div className="flex items-center justify-center">
+            <div>
+              <h1 className="text-base uppercase tracking-wider font-serif text-[#333]">
+                Threads of Grace
+              </h1>
+            </div>
+            <Feather size={16} className="ml-1 rotate-12 opacity-80 text-[#d78b60]" />
           </div>
         ) : (
           <h1 className="text-xl font-serif text-[#333]">

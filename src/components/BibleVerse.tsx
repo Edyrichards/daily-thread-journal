@@ -56,26 +56,26 @@ const BibleVerse = () => {
     <Card className="mb-6 bg-[#f4f6f0] border-[#e8e8e0] overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 rounded-xl">
       <CardContent className="p-6 relative">
         {loading ? (
-          <div className="flex flex-col items-center justify-center min-h-[150px] space-y-3">
-            <div className="animate-pulse h-4 w-3/4 bg-[#e8e8e0] rounded"></div>
-            <div className="animate-pulse h-4 w-1/2 bg-[#e8e8e0] rounded"></div>
-            <div className="animate-pulse h-4 w-2/3 bg-[#e8e8e0] rounded"></div>
+          <div className="flex flex-col items-center justify-center min-h-[200px] space-y-3">
+            <div className="animate-pulse h-5 w-3/4 bg-[#e8e8e0] rounded"></div>
+            <div className="animate-pulse h-5 w-1/2 bg-[#e8e8e0] rounded"></div>
+            <div className="animate-pulse h-5 w-2/3 bg-[#e8e8e0] rounded"></div>
           </div>
         ) : (
           <>
             <div className="absolute -right-8 -top-8 text-6xl opacity-5 rotate-12">✝️</div>
-            <h3 className="text-lg font-serif text-[#333] mb-3">Today's Verse</h3>
-            <p className="verse-text mb-4 italic leading-relaxed text-[#333] text-lg">
+            <h3 className="text-lg font-serif text-[#333] mb-4 text-center">Today's Verse</h3>
+            <p className="verse-text mb-5 italic leading-relaxed text-[#333] text-xl text-center font-medium">
               "{verse?.text ? verse.text.trim() : "For God so loved the world that he gave his one and only Son."}"
             </p>
-            <p className="verse-reference text-right font-medium text-[#666] mb-4">
+            <p className="verse-reference text-center font-medium text-[#666] mb-5">
               — {verse?.reference || "John 3:16"}
             </p>
-            <div className="text-right">
+            <div className="text-center">
               <Button 
                 onClick={handleViewDevotion}
-                variant="ghost" 
-                className="text-[#666] hover:text-[#333] hover:bg-[#e8e8e0] font-serif text-sm flex items-center"
+                variant="outline" 
+                className="bg-transparent border-[#c3d1b8] text-[#666] hover:text-[#333] hover:bg-[#e8e8e0] font-serif text-sm flex items-center mx-auto"
               >
                 Read Devotional <ChevronRight size={16} />
               </Button>
