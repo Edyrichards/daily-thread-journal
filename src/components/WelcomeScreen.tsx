@@ -75,11 +75,11 @@ const WelcomeScreen = () => {
           </svg>
         </button>
 
-        <h1 className="text-5xl font-serif text-[#333] mb-6">
-          THREADS OF<br />GRACE
+        <h1 className="text-4xl font-serif text-[#333] mb-8 text-center">
+          THREADS OF GRACE
         </h1>
 
-        <div className="w-40 h-40 mb-10">
+        <div className="w-40 h-40 mb-6">
           <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#333" strokeWidth="2">
             <path d="M70,40 C70,40 70,80 100,100 C130,120 130,160 130,160" />
             <path d="M60,50 C60,50 60,90 90,110 C120,130 120,170 120,170" />
@@ -88,21 +88,21 @@ const WelcomeScreen = () => {
           </svg>
         </div>
 
-        <Button 
-          onClick={handleEnter}
-          className="bg-[#a3977e] hover:bg-[#8a7f67] text-white font-medium rounded-full px-12 py-6 text-xl mb-12"
-        >
-          Enter
-        </Button>
-
-        <div className="max-w-md">
-          <p className="text-2xl font-serif italic text-[#333] mb-2">
+        <div className="max-w-md mb-10">
+          <p className="text-2xl font-serif italic text-[#333] mb-2 text-center">
             "Be still, and know that I am God."
           </p>
-          <p className="text-lg text-[#555]">
+          <p className="text-lg text-[#555] text-center">
             Psalm 46:10
           </p>
         </div>
+
+        <Button 
+          onClick={handleEnter}
+          className="bg-[#a3977e] hover:bg-[#8a7f67] text-white font-medium rounded-full px-12 py-6 text-xl"
+        >
+          Enter
+        </Button>
       </div>
     </div>
   );
