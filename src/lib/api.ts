@@ -93,9 +93,12 @@ export async function getRandomVerse(): Promise<{ text: string; reference: strin
     
     const data = await response.json();
     
+    // Format the reference properly to avoid undefined
+    const reference = data.reference || `${data.book_name} ${data.chapter}:${data.verse || data.verses}`;
+    
     return {
-      text: data.text,
-      reference: `${data.book_name} ${data.chapter}:${data.verse || data.verses}`
+      text: data.text || "For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future.",
+      reference: reference
     };
   } catch (error) {
     console.error("Error fetching Bible verse:", error);
@@ -125,9 +128,10 @@ export async function getVerseByMood(mood: Mood): Promise<{ text: string; refere
     
     const data = await response.json();
     
+    // Make sure we have a properly formatted reference
     return {
-      text: data.text,
-      reference: `${data.book_name} ${data.chapter}:${data.verse || data.verses}`
+      text: data.text || "The LORD is my shepherd, I lack nothing.",
+      reference: randomVerse.reference || `${data.book_name} ${data.chapter}:${data.verse || data.verses}`
     };
   } catch (error) {
     console.error("Error fetching mood-based verse:", error);
@@ -190,7 +194,7 @@ export function getDevotionalContent(reference: string): {
   
   // Get the closest matching devotional or use default
   for (const key in devotionals) {
-    if (reference.includes(key)) {
+    if (reference && reference.includes(key)) {
       return devotionals[key];
     }
   }

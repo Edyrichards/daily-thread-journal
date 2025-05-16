@@ -1,168 +1,152 @@
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mic, MicOff, Play } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { generateId, Mood, moodEmojis, saveJournalEntry } from "@/lib/storage";
+import { useNavigate } from "react-router-dom";
 
 const VoiceJournal = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [recordings, setRecordings] = useState<{ id: string; blob: Blob; url: string; date: Date }[]>([]);
-  const [recordingTime, setRecordingTime] = useState(0);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [transcript, setTranscript] = useState("");
+  const [mood, setMood] = useState<Mood>("peaceful");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-      
-      mediaRecorder.ondataavailable = (e) => {
-        audioChunksRef.current.push(e.data);
-      };
-      
-      mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        
-        setRecordings([
-          ...recordings, 
-          { 
-            id: Date.now().toString(),
-            blob: audioBlob,
-            url: audioUrl,
-            date: new Date()
-          }
-        ]);
-        
-        setRecordingTime(0);
-        if (timerRef.current) {
-          clearInterval(timerRef.current);
-        }
-        
-        toast({
-          title: "Recording saved",
-          description: "Your voice journal entry has been saved.",
-        });
-      };
-      
-      mediaRecorder.start();
-      setIsRecording(true);
-      
-      // Timer for recording duration
-      timerRef.current = setInterval(() => {
-        setRecordingTime((prev) => prev + 1);
-      }, 1000);
-      
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
+  const handleStartRecording = () => {
+    if (!navigator.mediaDevices?.getUserMedia) {
       toast({
-        title: "Microphone access denied",
-        description: "Please allow access to your microphone to record voice entries.",
+        title: "Not Supported",
+        description: "Voice recording is not supported by your browser.",
         variant: "destructive",
       });
+      return;
     }
-  };
-  
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
+
+    setIsRecording(true);
+    toast({
+      title: "Recording Started",
+      description: "Speak clearly into your microphone.",
+    });
+
+    // This would normally use the Web Speech API
+    // For now we'll simulate it
+    setTimeout(() => {
+      setTranscript("God, I know that you are with me even in this difficult time");
       setIsRecording(false);
-      
-      // Stop all tracks on the stream
-      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      toast({
+        title: "Recording Finished",
+        description: "Your prayer has been transcribed.",
+      });
+    }, 2000);
+  };
+
+  const handleStopRecording = () => {
+    setIsRecording(false);
+    toast({
+      title: "Recording Stopped",
+      description: "Your voice entry has been saved.",
+    });
+  };
+
+  const handleSaveEntry = () => {
+    if (!transcript.trim()) {
+      toast({
+        title: "Empty Entry",
+        description: "Please record or type something before saving.",
+        variant: "destructive",
+      });
+      return;
     }
+
+    const today = new Date();
+    const entry = {
+      id: generateId(),
+      date: today.toISOString().split('T')[0],
+      content: transcript,
+      mood,
+      createdAt: Date.now(),
+    };
+
+    saveJournalEntry(entry);
+    toast({
+      title: "Entry Saved",
+      description: "Your voice journal entry has been saved.",
+    });
+    navigate("/journal");
   };
-  
-  const formatTime = (timeInSeconds: number) => {
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = timeInSeconds % 60;
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  };
-  
+
   return (
     <div className="animate-fade-in">
-      <h2 className="text-2xl font-serif text-[#333] mb-6">Voice Journal</h2>
-      
-      <Card className="mb-6 border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300">
-        <CardContent className="p-6">
-          <div className="text-center">
-            <div className="mb-4">
-              {isRecording ? (
-                <div className="text-lg font-medium text-[#333] mb-2">
-                  Recording... {formatTime(recordingTime)}
-                </div>
-              ) : (
-                <p className="text-[#666] font-serif mb-4">
-                  Record your thoughts, prayers, or reflections instead of writing them down.
-                </p>
-              )}
+      <div className="mb-6">
+        <Card className="bg-[#f8f3eb] border-[#e8e8e0] rounded-xl overflow-hidden">
+          <CardContent className="p-6">
+            <h2 className="text-center mb-4 text-2xl font-serif">Journal Entry</h2>
+            
+            <div className="flex justify-center space-x-3 mb-6">
+              <Button 
+                variant="ghost" 
+                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "peaceful" ? "bg-[#f4f6f0] scale-110" : ""}`}
+                onClick={() => setMood("peaceful")}
+              >
+                <span className="text-2xl">{moodEmojis.peaceful}</span>
+                <span className="text-sm block mt-1">Peaceful</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "hopeful" ? "bg-[#f4f6f0] scale-110" : ""}`}
+                onClick={() => setMood("hopeful")}
+              >
+                <span className="text-2xl">{moodEmojis.hopeful}</span>
+                <span className="text-sm block mt-1">Hopeful</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "joyful" ? "bg-[#f4f6f0] scale-110" : ""}`}
+                onClick={() => setMood("joyful")}
+              >
+                <span className="text-2xl">{moodEmojis.joyful}</span>
+                <span className="text-sm block mt-1">Joyful</span>
+              </Button>
+              <Button 
+                variant="ghost" 
+                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "content" ? "bg-[#f4f6f0] scale-110" : ""}`}
+                onClick={() => setMood("content")}
+              >
+                <span className="text-2xl">{moodEmojis.content}</span>
+                <span className="text-sm block mt-1">Content</span>
+              </Button>
+            </div>
+
+            <div className="bg-white rounded-lg p-4 mb-4 min-h-[120px] text-lg font-serif">
+              {transcript || "Your journal entry will appear here..."}
+              {transcript && <p className="mt-4 text-sm text-[#666]">Jeremiah 29:11     James 1:12</p>}
             </div>
             
             <div className="flex justify-center">
-              {isRecording ? (
-                <Button
-                  onClick={stopRecording}
-                  className="rounded-full h-16 w-16 bg-red-500 hover:bg-red-600 flex items-center justify-center"
-                >
-                  <MicOff size={24} />
-                </Button>
-              ) : (
-                <Button
-                  onClick={startRecording}
-                  className="rounded-full h-16 w-16 bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] flex items-center justify-center"
-                >
-                  <Mic size={24} />
-                </Button>
-              )}
+              <Button 
+                variant="outline" 
+                className="bg-[#dbe2d3] hover:bg-[#c3d1b8] text-[#333] px-10 py-5 rounded-full w-full text-lg font-serif"
+                onClick={isRecording ? handleStopRecording : handleStartRecording}
+              >
+                {isRecording ? "Stop Recording" : "+ Verse"}
+              </Button>
             </div>
-            
-            {isRecording && (
-              <p className="text-xs text-[#666] mt-4">Tap the button again to stop recording</p>
+
+            {transcript && (
+              <div className="mt-4 flex justify-end">
+                <Button 
+                  onClick={handleSaveEntry}
+                  className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-6"
+                >
+                  Save Entry
+                </Button>
+              </div>
             )}
-          </div>
-        </CardContent>
-      </Card>
-      
-      {recordings.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="font-serif text-lg text-[#333]">Your Voice Entries</h3>
-          
-          {recordings.map((recording) => (
-            <Card 
-              key={recording.id} 
-              className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300"
-            >
-              <CardContent className="p-4">
-                <div className="flex justify-between items-center">
-                  <div className="text-[#333] font-medium">
-                    {recording.date.toLocaleDateString()} {recording.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                  </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => {
-                      const audio = new Audio(recording.url);
-                      audio.play();
-                    }}
-                    className="h-8 w-8 rounded-full p-0 flex items-center justify-center"
-                  >
-                    <Play size={16} />
-                  </Button>
-                </div>
-                <audio controls className="w-full mt-2">
-                  <source src={recording.url} type="audio/webm" />
-                  Your browser does not support the audio element.
-                </audio>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

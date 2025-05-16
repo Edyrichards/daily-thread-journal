@@ -66,10 +66,10 @@ const BibleVerse = () => {
             <div className="absolute -right-8 -top-8 text-6xl opacity-5 rotate-12">✝️</div>
             <h3 className="text-lg font-serif text-[#333] mb-3">Today's Verse</h3>
             <p className="verse-text mb-4 italic leading-relaxed text-[#333] text-lg">
-              "{verse?.text.trim()}"
+              "{verse?.text ? verse.text.trim() : "For God so loved the world that he gave his one and only Son."}"
             </p>
             <p className="verse-reference text-right font-medium text-[#666] mb-4">
-              — {verse?.reference}
+              — {verse?.reference || "John 3:16"}
             </p>
             <div className="text-right">
               <Button 
