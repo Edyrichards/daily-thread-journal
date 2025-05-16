@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SidebarProvider, Sidebar, SidebarContent, SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
-import { BookOpen, FileText, CheckCircle, MessageCircle, LayoutGrid, Hands, Book, Settings } from 'lucide-react';
+import { BookOpen, FileText, CheckCircle, MessageCircle, LayoutGrid, Hand, Book, Settings } from 'lucide-react';
 
 const WelcomeScreen = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -19,7 +19,7 @@ const WelcomeScreen = () => {
     { name: "Prayer Tracker", icon: CheckCircle, path: "/prayer" },
     { name: "Community", icon: MessageCircle, path: "/community" },
     { name: "Habit Tracker", icon: LayoutGrid, path: "/habits" },
-    { name: "Shared Prayers", icon: Hands, path: "/prayer" },
+    { name: "Shared Prayers", icon: Hand, path: "/prayer" },
     { name: "Scripture Discovery", icon: Book, path: "/scripture-discovery" },
     { name: "Settings", icon: Settings, path: "/settings" }
   ];
