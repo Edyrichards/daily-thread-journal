@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react'; // Added memo
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { JournalEntry, moodEmojis } from '@/lib/storage';
@@ -37,4 +37,4 @@ const RecentEntryCard: React.FC<RecentEntryCardProps> = ({ entry, className }) =
   );
 };
 
-export default RecentEntryCard;
+export default memo(RecentEntryCard); // Wrapped with memo

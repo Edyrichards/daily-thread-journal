@@ -1,152 +1,235 @@
+import React, { useState, useEffect } from 'react'; // Added useEffect
+import Layout from '@/components/Layout';
+import { motion } from 'framer-motion';
+import { useTheme } from "next-themes"; // Added
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { getJournalEntries } from '@/lib/storage';
+import { Switch } from "@/components/ui/switch"; // Added
 
-import React, { useState } from "react";
-import Layout from "@/components/Layout";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-
-const SettingsPage = () => {
-  const [darkMode, setDarkMode] = useState(false);
-  const [notifications, setNotifications] = useState(true);
-  const [reminderFrequency, setReminderFrequency] = useState("daily");
+const SettingsPage: React.FC = () => {
   const { toast } = useToast();
-  
-  const handleExportData = () => {
-    // In a real app, this would export the user's data
-    const journalEntries = localStorage.getItem('journal_entries') || '[]';
-    const prayers = localStorage.getItem('prayers') || '[]';
-    const habitLogs = localStorage.getItem('habit_logs') || '[]';
-    
-    const exportData = {
-      journalEntries: JSON.parse(journalEntries),
-      prayers: JSON.parse(prayers),
-      habitLogs: JSON.parse(habitLogs),
-      exportDate: new Date().toISOString()
-    };
-    
-    // Create a downloadable file
-    const dataStr = JSON.stringify(exportData, null, 2);
-    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-    
-    const exportFileDefaultName = `threads-of-grace-export-${new Date().toISOString().split('T')[0]}.json`;
-    
-    const linkElement = document.createElement('a');
-    linkElement.setAttribute('href', dataUri);
-    linkElement.setAttribute('download', exportFileDefaultName);
-    linkElement.click();
-    
+  const { theme, setTheme, resolvedTheme } = useTheme(); // Added
+  const [isMounted, setIsMounted] = useState(false); // Added
+
+  const [reminderPreference, setReminderPreference] = useState<string>(
+    () => localStorage.getItem('reminderPreference') || 'none'
+  );
+  const [bibleVersion, setBibleVersion] = useState<string>(
+    () => localStorage.getItem('bibleVersionPreference') || 'default'
+  );
+
+  // Effect for theme mounting
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const handleReminderChange = (value: string) => {
+    setReminderPreference(value);
+    localStorage.setItem('reminderPreference', value);
     toast({
-      title: "Data exported",
-      description: "Your data has been exported successfully.",
+      title: "Settings Updated",
+      description: "Reminder preference saved.",
     });
   };
-  
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    // In a real app, this would actually change the theme
+
+  const handleBibleVersionChange = (value: string) => {
+    setBibleVersion(value);
+    localStorage.setItem('bibleVersionPreference', value);
     toast({
-      title: "Theme changed",
-      description: `Changed to ${!darkMode ? "dark" : "light"} mode.`,
+      title: "Settings Updated",
+      description: "Bible version preference saved.",
     });
   };
-  
-  const toggleNotifications = () => {
-    setNotifications(!notifications);
-    toast({
-      title: "Notifications updated",
-      description: `Notifications ${!notifications ? "enabled" : "disabled"}.`,
-    });
+
+  const handleExportData = async () => {
+    const entries = getJournalEntries();
+
+    if (entries.length === 0) {
+      toast({
+        title: "No Data",
+        description: "You don't have any journal entries to export yet.",
+        variant: "default", // Or "info" if you add such a variant
+      });
+      return;
+    }
+
+    try {
+      const jsonString = JSON.stringify(entries, null, 2);
+      const blob = new Blob([jsonString], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `threads_of_grace_journal_${new Date().toISOString().split('T')[0]}.json`;
+      
+      // Append to body, click, and remove for cross-browser compatibility
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      URL.revokeObjectURL(url); // Clean up the object URL
+
+      toast({
+        title: "Export Successful",
+        description: "Your journal entries have been downloaded.",
+      });
+    } catch (error) {
+      console.error("Error exporting data:", error);
+      toast({
+        title: "Export Failed",
+        description: "An error occurred while exporting your data.",
+        variant: "destructive",
+      });
+    }
   };
-  
+
+  const reminderOptions = [
+    { value: "none", label: "None" },
+    { value: "morning", label: "Morning (e.g., 8:00 AM)" },
+    { value: "afternoon", label: "Afternoon (e.g., 1:00 PM)" },
+    { value: "evening", label: "Evening (e.g., 7:00 PM)" },
+  ];
+
+  const bibleVersionOptions = [
+    { value: "default", label: "Default (App Choice)" },
+    { value: "KJV", label: "King James Version (KJV)" },
+    { value: "NIV", label: "New International Version (NIV)" },
+    { value: "ESV", label: "English Standard Version (ESV)" },
+  ];
+
   return (
     <Layout title="Settings">
-      <div className="space-y-6 pb-16 animate-fade-in">
-        <Card className="border-[#e8e8e0] shadow-sm">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-serif text-[#333] mb-4">Appearance</h2>
-            <div className="flex items-center justify-between">
-              <div>
-                <Label htmlFor="dark-mode" className="font-serif">Dark Mode</Label>
-                <p className="text-xs text-[#666]">Use a darker theme for low light environments</p>
-              </div>
-              <Switch 
-                id="dark-mode"
-                checked={darkMode}
-                onCheckedChange={toggleDarkMode}
-              />
+      <motion.div
+        className="p-4 md:p-8 max-w-2xl mx-auto space-y-8"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-serif">Notification Preferences</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="reminderSelect" className="text-foreground">Daily Journaling Reminder</Label>
+              <Select value={reminderPreference} onValueChange={handleReminderChange} >
+                <SelectTrigger id="reminderSelect" className="rounded-xl mt-1">
+                  <SelectValue placeholder="Select reminder time" />
+                </SelectTrigger>
+                <SelectContent>
+                  {reminderOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="border-[#e8e8e0] shadow-sm">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-serif text-[#333] mb-4">Notifications</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <Label htmlFor="notifications" className="font-serif">Enable Notifications</Label>
-                  <p className="text-xs text-[#666]">Receive gentle reminders and encouragements</p>
-                </div>
-                <Switch 
-                  id="notifications"
-                  checked={notifications}
-                  onCheckedChange={toggleNotifications}
-                />
-              </div>
-              
-              {notifications && (
-                <div className="pt-2">
-                  <Label className="font-serif mb-2 block">Reminder Frequency</Label>
-                  <div className="flex space-x-2">
-                    {["daily", "weekly", "monthly"].map((frequency) => (
-                      <Button
-                        key={frequency}
-                        variant={reminderFrequency === frequency ? "default" : "outline"}
-                        onClick={() => setReminderFrequency(frequency)}
-                        className={reminderFrequency === frequency 
-                          ? "bg-[#c3d1b8] text-[#333] hover:bg-[#a3b198]" 
-                          : "border-[#d8d8c8] text-[#666]"}
-                      >
-                        <span className="capitalize">{frequency}</span>
-                      </Button>
-                    ))}
-                  </div>
-                </div>
-              )}
+
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-serif">Bible Preferences</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div>
+              <Label htmlFor="bibleVersionSelect" className="text-foreground">Preferred Bible Version</Label>
+              <Select value={bibleVersion} onValueChange={handleBibleVersionChange}>
+                <SelectTrigger id="bibleVersionSelect" className="rounded-xl mt-1">
+                  <SelectValue placeholder="Select version" />
+                </SelectTrigger>
+                <SelectContent>
+                  {bibleVersionOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="border-[#e8e8e0] shadow-sm">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-serif text-[#333] mb-4">Data Management</h2>
-            <p className="text-[#666] text-sm mb-4">
-              Export all your journal entries, prayers, and habit tracking data as a JSON file.
+
+        {/* Export Data Section */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-serif">Export Your Data</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Download all your journal entries as a JSON file. This is useful for creating your own backups.
             </p>
-            <Button
-              onClick={handleExportData}
-              className="w-full bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333]"
+            <Button 
+              onClick={handleExportData} 
+              className="w-full md:w-auto rounded-xl bg-secondary text-secondary-foreground hover:bg-secondary/80"
             >
-              Export Your Data
+              Download Journal Entries
             </Button>
           </CardContent>
         </Card>
         
-        <Card className="border-[#e8e8e0] shadow-sm bg-[#f4f6f0]">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-lg font-serif text-[#333] mb-2">About Threads of Grace</h2>
-            <p className="text-[#666] text-sm">
-              Version 1.0.0
-            </p>
-            <p className="text-[#666] text-xs mt-4">
-              A soul-centered journaling and prayer app designed to gently guide users 
-              through emotional healing, spiritual growth, and deeper connection with God.
+        {/* Ambiance / Music Toggle Section */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-serif">Ambiance</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between space-x-2 p-1">
+              <Label htmlFor="music-toggle-switch" className="flex flex-col space-y-1">
+                <span>Soft Background Music</span>
+                <span className="font-normal leading-snug text-muted-foreground text-xs">
+                  Enable calming background music during your session.
+                </span>
+              </Label>
+              <Switch
+                id="music-toggle-switch"
+                disabled // Disabled for now
+                // checked={isMusicEnabled} // Future state
+                // onCheckedChange={setIsMusicEnabled} // Future handler
+              />
+            </div>
+            <p className="text-xs text-muted-foreground pt-1">
+              (This feature is coming soon!)
             </p>
           </CardContent>
         </Card>
-      </div>
+
+        {/* Appearance Section */}
+        <Card className="rounded-2xl">
+          <CardHeader>
+            <CardTitle className="font-serif">Appearance</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between space-x-2 p-1">
+              <Label htmlFor="dark-mode-switch" className="flex flex-col space-y-1">
+                <span>Dark Mode</span>
+                <span className="font-normal leading-snug text-muted-foreground text-xs">
+                  Toggle between light and dark themes.
+                </span>
+              </Label>
+              <Switch
+                id="dark-mode-switch"
+                checked={resolvedTheme === 'dark'}
+                onCheckedChange={(isChecked) => setTheme(isChecked ? 'dark' : 'light')}
+                disabled={!isMounted}
+              />
+            </div>
+            {isMounted && resolvedTheme && (
+                <p className="text-xs text-muted-foreground pt-1">
+                    Current active theme: {resolvedTheme} (System default is: {theme === 'system' ? 'Yes' : 'No'})
+                </p>
+            )}
+          </CardContent>
+        </Card>
+
+      </motion.div>
     </Layout>
   );
 };

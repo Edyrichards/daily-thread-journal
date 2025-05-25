@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react'; // Added memo
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PrayerRequest, PrayerComment } from '@/lib/storage'; // PrayerComment might be implicitly available via PrayerRequest, but explicit is fine.
@@ -84,4 +84,4 @@ const PrayerRequestCard: React.FC<PrayerRequestCardProps> = ({
   );
 };
 
-export default PrayerRequestCard;
+export default memo(PrayerRequestCard); // Wrapped with memo
