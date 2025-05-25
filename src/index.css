@@ -36,6 +36,15 @@
     --ring: 110 20% 60%;
 
     --radius: 0.75rem;
+
+    /* New Pastel Palette Additions */
+    --grace-100: 240 67% 97%; /* lightest lavender (from #f1f0fb) */
+    --grace-200: 252 100% 94%; /* light lavender (from #e5deff) */
+    --grace-blue: 216 91% 91%; /* soft blue (from #d3e4fd) */
+    --grace-gold: 40 65% 70%;  /* gold accent (from #e6c27a) */
+    
+    --light-beige: 45 70% 96%; /* Softer beige */
+    --soft-peach: 30 100% 96%; /* Lighter peach */
   }
 }
 
