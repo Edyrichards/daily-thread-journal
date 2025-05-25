@@ -18,9 +18,9 @@ const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
   const shouldHideBottomNav = hideBottomNav || isNewJournalEntry;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f3eb]">
+    <div className="min-h-screen flex flex-col">
       <Header title={title} />
-      <main className="flex-1 container max-w-md mx-auto px-6 py-6 pb-20 animate-fade-in">
+      <main className="flex-1 container mx-auto py-6 pb-20 md:pb-6 animate-fade-in">
         {children}
       </main>
       {!shouldHideBottomNav && <BottomNav />}

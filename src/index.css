@@ -45,7 +45,7 @@
   }
 
   body {
-    @apply bg-[#f8f3eb] text-[#1a1a1a] font-sans;
+    @apply bg-background text-foreground font-sans;
   }
 
   h1, h2, h3, h4, h5, h6 {
