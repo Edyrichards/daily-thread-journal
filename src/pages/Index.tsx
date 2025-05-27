@@ -1,189 +1,169 @@
 
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-import MoodPrompt from "@/components/MoodPrompt";
-import BibleVerse from "@/components/BibleVerse";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { getJournalEntries, getPrayers } from "@/lib/storage";
-import { ChevronRight, Calendar, Music, BookOpen, Heart, Settings, Mic, Users } from "lucide-react";
+import { getRandomVerse } from "@/lib/api";
+import { motion } from "framer-motion";
+import { getJournalEntries, JournalEntry } from "@/lib/storage"; // Added
+import RecentEntryCard from "@/components/RecentEntryCard"; // Added
+
+const moodOptions = [
+  { label: "Happy", emoji: "😊", color: "bg-grace-gold/70", value: "happy" },
+  { label: "Grateful", emoji: "🙏", color: "bg-grace-blue/70", value: "grateful" },
+  { label: "Anxious", emoji: "😟", color: "bg-soft-peach/70", value: "anxious" },
+  { label: "Sad", emoji: "😢", color: "bg-light-beige/70", value: "sad" },
+  { label: "Hopeful", emoji: "✨", color: "bg-grace-200/70", value: "hopeful" }
+];
 
 const Index = () => {
   const navigate = useNavigate();
-  const [journalCount, setJournalCount] = useState(0);
-  const [prayerCount, setPrayerCount] = useState(0);
-  
+  const [dailyVerse, setDailyVerse] = useState<{ text: string; reference: string } | null>(null);
+  const [isLoadingVerse, setIsLoadingVerse] = useState(true);
+  const [recentEntries, setRecentEntries] = useState<JournalEntry[]>([]); // Added
+
   useEffect(() => {
-    const entries = getJournalEntries();
-    const prayers = getPrayers();
-    
-    setJournalCount(entries.length);
-    setPrayerCount(prayers.length);
-    
-    // Reset journal template if navigating back to home
-    localStorage.removeItem("journal_template");
+    const fetchData = async () => { // Renamed for clarity
+      setIsLoadingVerse(true); 
+      try {
+        const verse = await getRandomVerse();
+        setDailyVerse(verse);
+
+        const allEntries = getJournalEntries();
+        const sortedEntries = allEntries.sort((a, b) => {
+          // Ensure createdAt is treated as a number for sorting
+          const dateA = typeof a.createdAt === 'string' ? new Date(a.createdAt).getTime() : (a.createdAt || 0);
+          const dateB = typeof b.createdAt === 'string' ? new Date(b.createdAt).getTime() : (b.createdAt || 0);
+          return dateB - dateA;
+        });
+        setRecentEntries(sortedEntries.slice(0, 3));
+
+      } catch (error) {
+        console.error("Failed to fetch data for homepage:", error); // Updated error message
+        setDailyVerse(null); 
+      } finally {
+        setIsLoadingVerse(false);
+      }
+    };
+
+    fetchData();
+    // Reset journal template if navigating back to home (if this functionality is still needed elsewhere)
+    // localStorage.removeItem("journal_template"); 
   }, []);
-  
-  const featureCards = [
-    {
-      title: "Grace Habits",
-      description: "Track your daily spiritual practices",
-      icon: <Calendar size={20} />,
-      color: "bg-[#e5deff]",
-      textColor: "text-[#7e69ab]",
-      path: "/habits"
-    },
-    {
-      title: "Guided Prayer",
-      description: "Peaceful moments with scripture & music",
-      icon: <Music size={20} />,
-      color: "bg-[#d3e4fd]",
-      textColor: "text-[#4a7dbd]",
-      path: "/guided-prayer"
-    },
-    {
-      title: "Scripture Discovery",
-      description: "Find verses for your emotional needs",
-      icon: <BookOpen size={20} />,
-      color: "bg-[#fef7cd]",
-      textColor: "text-[#b0964f]",
-      path: "/scripture-discovery"
-    },
-    {
-      title: "Voice Journal",
-      description: "Speak your prayers and reflections",
-      icon: <Mic size={20} />,
-      color: "bg-[#ffdee2]",
-      textColor: "text-[#d16277]",
-      path: "/voice-journal"
-    },
-    {
-      title: "Community",
-      description: "Share and pray together anonymously",
-      icon: <Users size={20} />,
-      color: "bg-[#f2fce2]",
-      textColor: "text-[#608b46]",
-      path: "/community"
-    },
-    {
-      title: "Settings",
-      description: "Personalize your experience",
-      icon: <Settings size={20} />,
-      color: "bg-[#fde1d3]",
-      textColor: "text-[#d78b60]",
-      path: "/settings"
-    }
-  ];
-  
+
   return (
     <Layout>
-      <div className="space-y-5 pb-16">
-        <MoodPrompt />
-        <BibleVerse />
+      <motion.div 
+        className="space-y-8 p-4 md:p-6"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -15 }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+      >
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {featureCards.slice(0, 3).map((card) => (
-            <Card 
-              key={card.title}
-              className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl cursor-pointer"
-              onClick={() => navigate(card.path)}
-            >
-              <CardContent className="p-6">
-                <div className={`${card.color} ${card.textColor} w-10 h-10 rounded-full flex items-center justify-center mb-4`}>
-                  {card.icon}
-                </div>
-                <h3 className="text-lg font-serif text-[#333] mb-1">{card.title}</h3>
-                <p className="text-sm text-[#666]">{card.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {featureCards.slice(3).map((card) => (
-            <Card 
-              key={card.title}
-              className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl cursor-pointer"
-              onClick={() => navigate(card.path)}
-            >
-              <CardContent className="p-6">
-                <div className={`${card.color} ${card.textColor} w-10 h-10 rounded-full flex items-center justify-center mb-4`}>
-                  {card.icon}
-                </div>
-                <h3 className="text-lg font-serif text-[#333] mb-1">{card.title}</h3>
-                <p className="text-sm text-[#666]">{card.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-        
-        <Card className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl">
-          <CardContent className="p-6">
-            <h2 className="text-xl font-serif text-[#333] mb-3">My Journey</h2>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center p-3 bg-[#f4f6f0] rounded-lg">
-                <div>
-                  <span className="font-serif text-[#333]">Journal Entries</span>
-                  <p className="text-xs text-[#666]">{journalCount} entries</p>
-                </div>
-                <Button
-                  onClick={() => navigate("/journal")}
-                  variant="ghost"
-                  className="text-[#333] hover:bg-[#e8e8e0] rounded-full"
-                >
-                  View All <ChevronRight size={16} />
-                </Button>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-[#f4f6f0] rounded-lg">
-                <div>
-                  <span className="font-serif text-[#333]">Prayer Requests</span>
-                  <p className="text-xs text-[#666]">{prayerCount} prayers</p>
-                </div>
-                <Button
-                  onClick={() => navigate("/prayer")}
-                  variant="ghost"
-                  className="text-[#333] hover:bg-[#e8e8e0] rounded-full"
-                >
-                  View All <ChevronRight size={16} />
-                </Button>
-              </div>
-              
-              <div className="flex justify-between items-center p-3 bg-[#f4f6f0] rounded-lg">
-                <div>
-                  <span className="font-serif text-[#333]">Growth Insights</span>
-                  <p className="text-xs text-[#666]">Track your spiritual journey</p>
-                </div>
-                <Button
-                  onClick={() => navigate("/growth")}
-                  variant="ghost"
-                  className="text-[#333] hover:bg-[#e8e8e0] rounded-full"
-                >
-                  View <ChevronRight size={16} />
-                </Button>
-              </div>
+        {/* Daily Scripture Section */}
+        <div className="relative p-8 md:p-12 rounded-3xl overflow-hidden text-center">
+          <img
+            src="https://images.pexels.com/photos/1766838/pexels-photo-1766838.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
+            alt="Calming background"
+            className="absolute inset-0 w-full h-full object-cover filter blur-lg brightness-75"
+          />
+          
+          {isLoadingVerse && (
+            <div className="relative z-10 flex items-center justify-center h-40">
+              <p className="text-white text-lg">Loading verse...</p>
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="border-[#e8e8e0] shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden rounded-xl bg-[#f4f6f0]">
-          <CardContent className="p-6 text-center">
-            <h2 className="text-xl font-serif text-[#333] mb-3">Weekly Scripture Focus</h2>
-            <p className="text-[#333] italic font-serif mb-4">
-              "Trust in the Lord with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight."
-            </p>
-            <p className="text-[#666] font-serif mb-4">— Proverbs 3:5-6</p>
-            <Button
-              onClick={() => navigate("/weekly-devotional")}
-              variant="outline"
-              className="bg-transparent border-[#c3d1b8] text-[#333] hover:bg-[#c3d1b8] hover:text-[#333]"
+          )}
+
+          {!isLoadingVerse && dailyVerse && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: "easeOut" }}
+              className="relative z-10"
             >
-              Weekly Devotional
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+              <Card className="bg-white/70 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl max-w-xl mx-auto">
+                <CardContent className="p-6 text-center">
+                  <p className="text-2xl font-serif text-card-foreground mb-2">
+                    "{dailyVerse.text}"
+                  </p>
+                  <p className="text-sm text-muted-foreground font-serif">
+                    — {dailyVerse.reference}
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {!isLoadingVerse && !dailyVerse && (
+            <div className="relative z-10 flex items-center justify-center h-40">
+              <p className="text-white text-lg">Could not load verse.</p>
+            </div>
+          )}
+        </div>
+        
+        {/* Mood Quick-Select Section */}
+        <section className="text-center">
+          <h2 className="text-2xl font-serif text-foreground mb-6">
+            How are you feeling today?
+          </h2>
+          <div className="flex flex-wrap justify-center gap-4 mb-8">
+            {moodOptions.map((mood) => (
+              <button
+                key={mood.value}
+                onClick={() => navigate(`/journal/new-flow?mood=${mood.value}`)}
+                className={`flex flex-col items-center justify-center p-4 rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 min-w-[100px] cursor-pointer ${mood.color}`}
+              >
+                <span className="text-3xl mb-1">{mood.emoji}</span>
+                <span className="text-sm text-foreground">{mood.label}</span> 
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="text-center">
+          <Button
+            onClick={() => navigate("/journal/new-flow")}
+            className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-shadow duration-300"
+          >
+            Start a New Journal Entry
+          </Button>
+        </section>
+
+        {/* Recent Entries Section */}
+        <section className="mt-12">
+          <h2 className="text-2xl font-serif text-foreground mb-6 text-center">
+            My Recent Reflections
+          </h2>
+          {/* We only show recent entries if not loading AND if there are entries. 
+              If no entries, the empty state is shown (also when not loading).
+              The isLoadingVerse check effectively gates this entire section's content.
+          */}
+          {!isLoadingVerse && recentEntries.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentEntries.map((entry) => (
+                <RecentEntryCard entry={entry} key={entry.id} />
+              ))}
+            </div>
+          ) : !isLoadingVerse && recentEntries.length === 0 ? (
+            <div className="text-center p-8 bg-lightBeige/70 rounded-2xl shadow">
+              <p className="text-muted-foreground mb-4">
+                Your recent reflections will appear here.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate("/journal/new-flow")}
+                className="border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-xl"
+              >
+                Write your first reflection
+              </Button>
+            </div>
+          ) : null /* While isLoadingVerse is true, this section won't render content, which is fine */ }
+        </section>
+
+      </motion.div>
     </Layout>
   );
 };

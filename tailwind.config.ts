@@ -64,16 +64,14 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				grace: {
-					100: '#f1f0fb', // lightest lavender
-					200: '#e5deff', // light lavender
-					300: '#cdc0ff', // medium lavender
-					400: '#a48df3', // main lavender
-					500: '#7e69ab', // deep lavender
-					600: '#6e59a5', // dark lavender
-					700: '#483a6b', // darkest lavender
-					gold: '#e6c27a', // gold accent
-					blue: '#d3e4fd', // soft blue
-				}
+					100: 'hsl(var(--grace-100))', // lightest lavender
+					200: 'hsl(var(--grace-200))', // light lavender
+					blue: 'hsl(var(--grace-blue))',  // soft blue
+					gold: 'hsl(var(--grace-gold))'    // gold accent
+					// Darker shades (300-700) removed
+				},
+				lightBeige: 'hsl(var(--light-beige))',
+				softPeach: 'hsl(var(--soft-peach))',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

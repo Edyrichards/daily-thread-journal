@@ -34,6 +34,7 @@ export interface JournalEntry {
     text: string;
     reference: string;
   };
+  reflection?: string; // New field for "What is God saying to you?"
   createdAt: number;
 }
 
@@ -151,4 +152,90 @@ export function deletePrayer(id: string): void {
 // Generate a unique ID
 export function generateId(): string {
   return Date.now().toString(36) + Math.random().toString(36).substr(2, 5);
+}
+
+// --- Prayer Request Wall Feature ---
+
+export interface PrayerComment {
+  id: string;
+  text: string;
+  createdAt: number;
+}
+
+export interface PrayerRequest {
+  id: string;
+  text: string;
+  createdAt: number;
+  isAnonymous: boolean;
+  prayedCount: number;
+  comments: PrayerComment[];
+}
+
+// Get all prayer requests from local storage
+export function getPrayerRequests(): PrayerRequest[] {
+  const requestsJson = localStorage.getItem('prayer_requests');
+  if (!requestsJson) {
+    return [];
+  }
+  try {
+    const requests: PrayerRequest[] = JSON.parse(requestsJson);
+    // Sort by createdAt in descending order (newest first)
+    return requests.sort((a, b) => b.createdAt - a.createdAt);
+  } catch (error) {
+    console.error('Failed to parse prayer requests:', error);
+    return [];
+  }
+}
+
+// Helper function to save the whole array of prayer requests
+function savePrayerRequests(requests: PrayerRequest[]): void {
+  localStorage.setItem('prayer_requests', JSON.stringify(requests));
+}
+
+// Add a new prayer request
+export function addPrayerRequest(requestText: string, anonymous: boolean): PrayerRequest {
+  const newRequest: PrayerRequest = {
+    id: generateId(),
+    text: requestText,
+    createdAt: Date.now(),
+    isAnonymous: anonymous,
+    prayedCount: 0,
+    comments: [],
+  };
+  const requests = getPrayerRequests(); // getPrayerRequests already sorts, but for consistency we add then re-save.
+                                        // Or, we could push and then sort before saving if performance was critical with huge lists.
+                                        // For now, this is simpler: get sorted, add, save. The next get will re-sort.
+  requests.unshift(newRequest); // Add to the beginning for immediate "newest" feel if not re-sorting immediately after
+  savePrayerRequests(requests); // This will save it, next getPrayerRequests will sort it correctly if unshift wasn't perfect.
+  return newRequest;
+}
+
+// Increment prayed count for a prayer request
+export function incrementPrayedCount(requestId: string): PrayerRequest | undefined {
+  const requests = getPrayerRequests();
+  const requestIndex = requests.findIndex(req => req.id === requestId);
+  if (requestIndex !== -1) {
+    requests[requestIndex].prayedCount += 1;
+    savePrayerRequests(requests);
+    return requests[requestIndex];
+  }
+  return undefined;
+}
+
+// Add a comment to a prayer request
+export function addCommentToPrayerRequest(requestId: string, commentText: string): PrayerRequest | undefined {
+  const requests = getPrayerRequests();
+  const requestIndex = requests.findIndex(req => req.id === requestId);
+  if (requestIndex !== -1) {
+    const newComment: PrayerComment = {
+      id: generateId(),
+      text: commentText,
+      createdAt: Date.now(),
+    };
+    requests[requestIndex].comments.push(newComment);
+    // Optional: sort comments by createdAt if desired, e.g., requests[requestIndex].comments.sort((a,b) => a.createdAt - b.createdAt);
+    savePrayerRequests(requests);
+    return requests[requestIndex];
+  }
+  return undefined;
 }
