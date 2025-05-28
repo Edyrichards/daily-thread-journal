@@ -4,6 +4,7 @@
  */
 
 import { Mood } from "./storage";
+import { logger } from "./utils"; // Import the logger
 
 // Categorized verses by emotional needs
 const versesByMood: Record<Mood, Array<{reference: string, apiReference: string}>> = {
@@ -60,9 +61,9 @@ const versesByMood: Record<Mood, Array<{reference: string, apiReference: string}
 };
 
 // Fetch a random Bible verse from the Bible API
-export async function getRandomVerse(): Promise<{ text: string; reference: string }> {
+export async function getRandomVerse(): Promise<{ text: string | null; reference: string | null; error?: string }> {
   const books = [
-    "john", "psalms", "proverbs", "romans", "ephesians", 
+    "john", "psalms", "proverbs", "romans", "ephesians",
     "philippians", "isaiah", "matthew", "james", "1corinthians"
   ];
   
@@ -92,27 +93,26 @@ export async function getRandomVerse(): Promise<{ text: string; reference: strin
     }
     
     const data = await response.json();
-    
+
     // Format the reference properly to avoid undefined
     const reference = data.reference || `${data.book_name} ${data.chapter}:${data.verse || data.verses}`;
-    
+
     return {
       text: data.text || "For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future.",
-      reference: reference
+      reference: reference,
     };
   } catch (error) {
-    console.error("Error fetching Bible verse:", error);
-    
-    // Return a fallback verse if API call fails
+    logger.error("Error fetching random Bible verse", error);
     return {
-      text: "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.",
-      reference: "John 3:16"
+      text: null,
+      reference: null,
+      error: "Failed to fetch random Bible verse. Please try again later.",
     };
   }
 }
 
 // Fetch a verse based on the user's mood
-export async function getVerseByMood(mood: Mood): Promise<{ text: string; reference: string }> {
+export async function getVerseByMood(mood: Mood): Promise<{ text: string | null; reference: string | null; error?: string }> {
   try {
     // Get verses for the specific mood
     const moodVerses = versesByMood[mood];
@@ -131,12 +131,15 @@ export async function getVerseByMood(mood: Mood): Promise<{ text: string; refere
     // Make sure we have a properly formatted reference
     return {
       text: data.text || "The LORD is my shepherd, I lack nothing.",
-      reference: randomVerse.reference || `${data.book_name} ${data.chapter}:${data.verse || data.verses}`
+      reference: randomVerse.reference || `${data.book_name} ${data.chapter}:${data.verse || data.verses}`,
     };
   } catch (error) {
-    console.error("Error fetching mood-based verse:", error);
-    // Fall back to random verse if there's an error
-    return getRandomVerse();
+    logger.error("Error fetching mood-based verse", error, { mood });
+    return {
+      text: null,
+      reference: null,
+      error: "Failed to fetch verse for your mood. Please try again later.",
+    };
   }
 }
 
@@ -198,6 +201,7 @@ export function getDevotionalContent(reference: string): {
       return devotionals[key];
     }
   }
-  
+
+  logger.info(`No specific devotional found for reference: ${reference}. Returning default.`, { reference });
   return devotionals.default;
 }
