@@ -115,7 +115,7 @@ const NewJournalFlowPage: React.FC = () => {
   return (
     <Layout title="New Reflection">
       <motion.div 
-        className="p-4 md:p-8"
+        className="p-4 md:p-8 [will-change:transform,opacity]"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -15 }}
@@ -123,6 +123,7 @@ const NewJournalFlowPage: React.FC = () => {
       >
         {currentStep === 1 && (
           <motion.div
+            className="[will-change:transform,opacity]"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, x: -50 }} // Added exit animation
@@ -154,11 +155,11 @@ const NewJournalFlowPage: React.FC = () => {
 
         {currentStep === 2 && (
           <motion.div
+            className="text-center [will-change:transform,opacity]"
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }}
             transition={{ duration: 0.5 }}
-            className="text-center"
           >
             <h3 className="text-lg text-muted-foreground mb-4">
               Feeling: {currentMoodDetails?.label} {currentMoodDetails?.emoji}
@@ -205,11 +206,11 @@ const NewJournalFlowPage: React.FC = () => {
 
         {currentStep === 3 && (
           <motion.div
+            className="max-w-xl mx-auto [will-change:transform,opacity]" // Centering content
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }} // Added exit animation
             transition={{ duration: 0.5 }}
-            className="max-w-xl mx-auto" // Centering content
           >
             <h2 className="text-xl font-serif text-foreground mb-6 text-center">
               {`Reflecting on ${currentMoodDetails?.label || 'your day'}${currentVerse ? ` after reading ${currentVerse.reference}` : ''}`}
@@ -245,11 +246,11 @@ const NewJournalFlowPage: React.FC = () => {
 
         {currentStep === 4 && (
            <motion.div
+            className="max-w-xl mx-auto [will-change:transform,opacity]" // Centering content
             initial={{ opacity: 0, x: 50 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -50 }} // Added exit animation for consistency
             transition={{ duration: 0.5 }}
-            className="max-w-xl mx-auto" // Centering content
           >
             <h2 className="text-xl font-serif text-foreground mb-4 text-center">
               What is God saying to you in this moment?

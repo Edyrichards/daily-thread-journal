@@ -109,7 +109,7 @@ const SettingsPage: React.FC = () => {
   return (
     <Layout title="Settings">
       <motion.div
-        className="p-4 md:p-8 max-w-2xl mx-auto space-y-8"
+        className="p-4 md:p-8 max-w-2xl mx-auto space-y-8 [will-change:transform,opacity]"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -15 }}

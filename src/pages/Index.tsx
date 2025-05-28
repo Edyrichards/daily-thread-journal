@@ -55,7 +55,7 @@ const Index = () => {
   return (
     <Layout>
       <motion.div 
-        className="space-y-8 p-4 md:p-6"
+        className="space-y-8 p-4 md:p-6 [will-change:transform,opacity]"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -15 }}
@@ -81,7 +81,7 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: "easeOut" }}
-              className="relative z-10"
+              className="relative z-10 [will-change:transform,opacity]"
             >
               <Card className="bg-white/70 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl max-w-xl mx-auto">
                 <CardContent className="p-6 text-center">

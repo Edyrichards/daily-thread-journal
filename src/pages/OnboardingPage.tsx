@@ -43,14 +43,14 @@ const OnboardingPage: React.FC = () => {
   return (
     <Layout title="Welcome to Threads of Grace">
       <motion.div
-        className="p-4 md:p-8 max-w-lg mx-auto text-center flex flex-col items-center"
+        className="p-4 md:p-8 max-w-lg mx-auto text-center flex flex-col items-center [will-change:opacity]"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.5 }}
       >
         <AnimatePresence mode="wait">
           {currentStep === 1 && (
-            <motion.div key="step1" {...stepAnimation} className="w-full flex flex-col items-center">
+            <motion.div key="step1" {...stepAnimation} className="w-full flex flex-col items-center [will-change:transform,opacity]">
               <h2 className="text-3xl font-serif text-primary mb-4">Welcome to Threads of Grace</h2>
               <p className="text-muted-foreground mb-8">
                 A quiet space to reflect, connect with your faith, and find peace in your daily journey.
@@ -62,7 +62,7 @@ const OnboardingPage: React.FC = () => {
           )}
 
           {currentStep === 2 && (
-            <motion.div key="step2" {...stepAnimation} className="w-full flex flex-col items-center">
+            <motion.div key="step2" {...stepAnimation} className="w-full flex flex-col items-center [will-change:transform,opacity]">
               <h3 className="text-xl font-serif text-foreground mb-2">Set a Gentle Reminder?</h3>
               <p className="text-sm text-muted-foreground mb-6">
                 Receive a soft nudge for your daily reflection time. (This is conceptual for now)
@@ -81,7 +81,7 @@ const OnboardingPage: React.FC = () => {
           )}
 
           {currentStep === 3 && (
-            <motion.div key="step3" {...stepAnimation} className="w-full flex flex-col items-center">
+            <motion.div key="step3" {...stepAnimation} className="w-full flex flex-col items-center [will-change:transform,opacity]">
               <h3 className="text-xl font-serif text-foreground mb-2">Preferred Bible Version?</h3>
               <p className="text-sm text-muted-foreground mb-6">
                 Select a version for future scripture displays. (Conceptual for now)
@@ -100,7 +100,7 @@ const OnboardingPage: React.FC = () => {
           )}
 
           {currentStep === 4 && (
-            <motion.div key="step4" {...stepAnimation} className="w-full flex flex-col items-center">
+            <motion.div key="step4" {...stepAnimation} className="w-full flex flex-col items-center [will-change:transform,opacity]">
               <h3 className="text-xl font-serif text-primary mb-4">A Moment of Peace</h3>
               <div className="p-6 bg-grace-100/70 rounded-2xl shadow-inner my-6">
                 <p className="text-lg font-serif text-foreground mb-2">{blessingText}</p>
