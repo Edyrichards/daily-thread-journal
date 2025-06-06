@@ -3,12 +3,12 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
-import { Mood, JournalEntry as JournalEntryType, saveJournalEntry, generateId } from '@/lib/storage'; // Added JournalEntryType, saveJournalEntry, generateId
+import { Mood, JournalEntry as JournalEntryType, saveJournalEntry, generateId } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 import { getVerseByMood } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast'; // Added
+import { useToast } from '@/hooks/use-toast';
 
 // Define Mood options based on the task description
 // Values must be valid Mood types from lib/storage.ts
@@ -278,7 +278,7 @@ const NewJournalFlowPage: React.FC = () => {
             </div>
           </motion.div>
         )}
-      </div>
+      </motion.div>
     </Layout>
   );
 };

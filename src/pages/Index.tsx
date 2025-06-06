@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -10,6 +9,9 @@ import { getJournalEntries, JournalEntry } from "@/lib/storage";
 import RecentEntryCard from "@/components/RecentEntryCard";
 import SearchBar, { SearchFilters } from "@/components/SearchBar";
 import { Skeleton } from "@/components/ui/skeleton";
+import MoodInsights from "@/components/MoodInsights";
+import PersonalizedVerses from "@/components/PersonalizedVerses";
+import PrayerReminders from "@/components/PrayerReminders";
 
 const moodOptions = [
   { label: "Happy", emoji: "😊", color: "bg-grace-gold/70", value: "happy" },
@@ -130,13 +132,36 @@ const Index = () => {
             )}
           </div>
         </section>
-        
-        {/* Mood Quick-Select Section - Enhanced */}
-        <section className="text-center">
+
+        {/* Phase 2: Smart Personalization Features */}
+        <section>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.6 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-serif text-foreground text-center mb-8">
+              Your Spiritual Journey
+            </h2>
+            
+            {/* Mood Insights */}
+            <MoodInsights />
+            
+            {/* Personalized Verses and Prayer Reminders */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <PersonalizedVerses />
+              <PrayerReminders />
+            </div>
+          </motion.div>
+        </section>
+        
+        {/* Mood Quick-Select Section */}
+        <section className="text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
           >
             <h2 className="text-3xl font-serif text-foreground mb-8">
               How are you feeling today?
@@ -161,12 +186,12 @@ const Index = () => {
           </motion.div>
         </section>
 
-        {/* CTA Section - Enhanced */}
+        {/* CTA Section */}
         <section className="text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.6 }}
+            transition={{ delay: 0.6, duration: 0.6 }}
           >
             <Button
               onClick={() => navigate("/journal/new-flow")}
