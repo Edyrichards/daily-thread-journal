@@ -1,4 +1,3 @@
-
 import { JournalEntry, Prayer, generateId } from './storage';
 
 // Enhanced types for better organization
@@ -26,6 +25,17 @@ export interface SpiritualMilestone {
   date: number;
   type: 'baptism' | 'salvation' | 'calling' | 'growth' | 'ministry' | 'other';
   isPrivate: boolean;
+}
+
+export interface EnhancedPrayer {
+  id: string;
+  type: 'adoration' | 'confession' | 'thanksgiving' | 'supplication';
+  content: string;
+  category: 'personal' | 'family' | 'health' | 'ministry' | 'world';
+  status: 'praying' | 'answered' | 'waiting';
+  dateCreated: number;
+  dateAnswered?: number;
+  answerDetails?: string;
 }
 
 // Enhanced journal entry functions
@@ -155,6 +165,52 @@ export function getPrayerAnswers(): PrayerAnswer[] {
 
 export function getPrayerAnswersForPrayer(prayerId: string): PrayerAnswer[] {
   return getPrayerAnswers().filter(answer => answer.prayerId === prayerId);
+}
+
+// Enhanced prayer functions
+export function saveEnhancedPrayer(prayer: EnhancedPrayer): void {
+  const prayers = getEnhancedPrayers();
+  const existingIndex = prayers.findIndex(p => p.id === prayer.id);
+  
+  if (existingIndex >= 0) {
+    prayers[existingIndex] = prayer;
+  } else {
+    prayers.push(prayer);
+  }
+  
+  localStorage.setItem('enhanced_prayers', JSON.stringify(prayers));
+}
+
+export function getEnhancedPrayers(): EnhancedPrayer[] {
+  const prayersJson = localStorage.getItem('enhanced_prayers');
+  if (!prayersJson) return [];
+  
+  try {
+    return JSON.parse(prayersJson);
+  } catch (error) {
+    console.error('Failed to parse enhanced prayers:', error);
+    return [];
+  }
+}
+
+export function updateEnhancedPrayerStatus(id: string, status: EnhancedPrayer['status'], answerDetails?: string): void {
+  const prayers = getEnhancedPrayers();
+  const prayerIndex = prayers.findIndex(p => p.id === id);
+  
+  if (prayerIndex >= 0) {
+    prayers[prayerIndex].status = status;
+    if (status === 'answered') {
+      prayers[prayerIndex].dateAnswered = Date.now();
+      prayers[prayerIndex].answerDetails = answerDetails;
+    }
+    localStorage.setItem('enhanced_prayers', JSON.stringify(prayers));
+  }
+}
+
+export function deleteEnhancedPrayer(id: string): void {
+  const prayers = getEnhancedPrayers();
+  const updatedPrayers = prayers.filter(prayer => prayer.id !== id);
+  localStorage.setItem('enhanced_prayers', JSON.stringify(updatedPrayers));
 }
 
 // Spiritual milestones

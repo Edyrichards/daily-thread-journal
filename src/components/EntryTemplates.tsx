@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Clock, Heart, BookOpen, Hands, Sparkles } from 'lucide-react';
+import { Clock, Heart, BookOpen, Hand, Sparkles } from 'lucide-react';
 
 interface Template {
   id: string;
@@ -99,7 +98,7 @@ const templates: Template[] = [
   {
     id: 'prayer',
     name: 'Prayer Journal',
-    icon: <Hands size={20} />,
+    icon: <Hand size={20} />,
     description: 'Dedicated time for prayer and conversation with God',
     color: 'bg-blue-50 border-blue-200',
     content: `Dear Heavenly Father,
