@@ -1,237 +1,247 @@
 
-import React, { useState, useEffect } from "react";
-import { Calendar } from "@/components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { CheckIcon } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Calendar } from '@/components/ui/calendar';
+import { 
+  BookOpen, 
+  Hand, 
+  Church, 
+  Heart, 
+  Users, 
+  Calendar as CalendarIcon,
+  CheckCircle2,
+  Circle
+} from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
-type Habit = 'prayer' | 'gratitude' | 'bible' | 'worship' | 'encouragement';
-
-interface HabitLog {
-  date: string; // YYYY-MM-DD format
-  habits: Habit[];
+interface Habit {
+  id: string;
+  name: string;
+  icon: React.ReactNode;
+  category: 'spiritual' | 'service' | 'study' | 'community';
+  target: number; // times per week
+  completed: number;
 }
 
-const habitEmojis: Record<Habit, string> = {
-  prayer: '🙏',
-  gratitude: '❤️',
-  bible: '📖',
-  worship: '🎵',
-  encouragement: '💌'
-};
-
-const habitColors: Record<Habit, string> = {
-  prayer: 'bg-[#e5deff] text-[#6e59a5]',
-  gratitude: 'bg-[#ffdee2] text-[#d16277]',
-  bible: 'bg-[#f2fce2] text-[#608b46]',
-  worship: 'bg-[#fef7cd] text-[#b0964f]',
-  encouragement: 'bg-[#d3e4fd] text-[#4a7dbd]'
-};
-
-const encouragementVerses = [
-  { text: "Let us not become weary in doing good, for at the proper time we will reap a harvest if we do not give up.", reference: "Galatians 6:9" },
-  { text: "And let us consider how we may spur one another on toward love and good deeds.", reference: "Hebrews 10:24" },
-  { text: "Therefore encourage one another and build each other up, just as in fact you are doing.", reference: "1 Thessalonians 5:11" },
-  { text: "May the God who gives endurance and encouragement give you the same attitude of mind toward each other that Christ Jesus had.", reference: "Romans 15:5" }
-];
+interface HabitEntry {
+  date: string;
+  habitId: string;
+  completed: boolean;
+}
 
 const HabitTracker = () => {
-  const [date, setDate] = useState<Date>(new Date());
-  const [habitLogs, setHabitLogs] = useState<HabitLog[]>([]);
-  const [streakCount, setStreakCount] = useState(0);
-  const [encouragement, setEncouragement] = useState(encouragementVerses[0]);
-
-  // Load habit logs from local storage
-  useEffect(() => {
-    const savedLogs = localStorage.getItem('habit_logs');
-    if (savedLogs) {
-      setHabitLogs(JSON.parse(savedLogs));
-    }
-    
-    // Randomly select an encouragement verse
-    setEncouragement(encouragementVerses[Math.floor(Math.random() * encouragementVerses.length)]);
-    
-    // Calculate streak
-    calculateStreak();
-  }, []);
-
-  // Calculate current streak
-  const calculateStreak = () => {
-    const logs = habitLogs.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-    
-    let streak = 0;
-    const today = new Date().toISOString().split('T')[0];
-    const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-    
-    // Check if logged today
-    const todayLog = logs.find(log => log.date === today);
-    if (todayLog && todayLog.habits.length > 0) {
-      streak = 1;
-      
-      // Check previous days
-      let currentDate = yesterday;
-      let currentStreak = true;
-      
-      while (currentStreak) {
-        const log = logs.find(log => log.date === currentDate);
-        if (log && log.habits.length > 0) {
-          streak++;
-          // Move to previous day
-          const prevDate = new Date(new Date(currentDate).getTime() - 86400000);
-          currentDate = prevDate.toISOString().split('T')[0];
-        } else {
-          currentStreak = false;
-        }
-      }
-    }
-    
-    setStreakCount(streak);
-  };
-
-  // Format date as YYYY-MM-DD
-  const formatDate = (date: Date): string => {
-    return date.toISOString().split('T')[0];
-  };
-
-  // Get habits for selected date
-  const getHabitsForDate = (date: Date): Habit[] => {
-    const formattedDate = formatDate(date);
-    const log = habitLogs.find(log => log.date === formattedDate);
-    return log ? log.habits : [];
-  };
-
-  // Toggle habit for selected date
-  const toggleHabit = (habit: Habit) => {
-    const formattedDate = formatDate(date);
-    const currentHabits = getHabitsForDate(date);
-    
-    let updatedHabits: Habit[];
-    
-    if (currentHabits.includes(habit)) {
-      updatedHabits = currentHabits.filter(h => h !== habit);
-    } else {
-      updatedHabits = [...currentHabits, habit];
-    }
-    
-    // Update or create log
-    const updatedLogs = [...habitLogs.filter(log => log.date !== formattedDate)];
-    
-    if (updatedHabits.length > 0) {
-      updatedLogs.push({
-        date: formattedDate,
-        habits: updatedHabits
-      });
-    }
-    
-    setHabitLogs(updatedLogs);
-    localStorage.setItem('habit_logs', JSON.stringify(updatedLogs));
-    
-    // Show toast if completing habit
-    if (!currentHabits.includes(habit)) {
-      toast({
-        title: "Habit Tracked",
-        description: `You've completed ${habitEmojis[habit]} ${habit} today!`,
-      });
-    }
-    
-    // Recalculate streak
-    calculateStreak();
-  };
-
-  // Function to add CSS classes to calendar days with habits
-  const modifiersClassNames = {
-    hasHabit: "bg-[#f4f6f0] rounded-md relative",
-  };
-  
-  // Define modifier for days with habits
-  const modifiers = {
-    hasHabit: (day: Date) => {
-      const formattedDate = formatDate(day);
-      return habitLogs.some(log => log.date === formattedDate && log.habits.length > 0);
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [habits] = useState<Habit[]>([
+    {
+      id: 'bible-reading',
+      name: 'Bible Reading',
+      icon: <BookOpen size={16} />,
+      category: 'study',
+      target: 7,
+      completed: 5
     },
+    {
+      id: 'prayer-time',
+      name: 'Prayer Time',
+      icon: <Hand size={16} />,
+      category: 'spiritual',
+      target: 7,
+      completed: 6
+    },
+    {
+      id: 'church-attendance',
+      name: 'Church/Fellowship',
+      icon: <Church size={16} />,
+      category: 'community',
+      target: 2,
+      completed: 1
+    },
+    {
+      id: 'worship-music',
+      name: 'Worship & Praise',
+      icon: <Heart size={16} />,
+      category: 'spiritual',
+      target: 5,
+      completed: 4
+    },
+    {
+      id: 'service',
+      name: 'Acts of Service',
+      icon: <Users size={16} />,
+      category: 'service',
+      target: 3,
+      completed: 2
+    }
+  ]);
+
+  const [habitEntries, setHabitEntries] = useState<HabitEntry[]>([]);
+  const { toast } = useToast();
+
+  const toggleHabit = (habitId: string, date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const existingEntry = habitEntries.find(
+      entry => entry.habitId === habitId && entry.date === dateStr
+    );
+
+    if (existingEntry) {
+      setHabitEntries(entries =>
+        entries.map(entry =>
+          entry.habitId === habitId && entry.date === dateStr
+            ? { ...entry, completed: !entry.completed }
+            : entry
+        )
+      );
+    } else {
+      setHabitEntries(entries => [
+        ...entries,
+        { date: dateStr, habitId, completed: true }
+      ]);
+    }
+
+    const habit = habits.find(h => h.id === habitId);
+    toast({
+      title: "Habit Updated",
+      description: `${habit?.name} marked for ${date.toLocaleDateString()}`,
+    });
   };
 
-  const selectedDateHabits = getHabitsForDate(date);
+  const isHabitCompleted = (habitId: string, date: Date) => {
+    const dateStr = date.toISOString().split('T')[0];
+    const entry = habitEntries.find(
+      entry => entry.habitId === habitId && entry.date === dateStr
+    );
+    return entry?.completed || false;
+  };
+
+  const getCategoryColor = (category: string) => {
+    const colors = {
+      spiritual: 'bg-purple-100 text-purple-800',
+      service: 'bg-green-100 text-green-800',
+      study: 'bg-blue-100 text-blue-800',
+      community: 'bg-orange-100 text-orange-800'
+    };
+    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
+  };
+
+  const getProgress = (habit: Habit) => {
+    return Math.min(100, Math.round((habit.completed / habit.target) * 100));
+  };
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row gap-6">
-        <Card className="border-[#e8e8e0] shadow-sm flex-1">
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Habit List */}
+        <div className="lg:col-span-2 space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Spiritual Disciplines</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {habits.map((habit) => (
+                <div key={habit.id} className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      {habit.icon}
+                      <div>
+                        <h4 className="font-medium">{habit.name}</h4>
+                        <div className="flex items-center space-x-2">
+                          <Badge className={getCategoryColor(habit.category)}>
+                            {habit.category}
+                          </Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {habit.completed}/{habit.target} this week
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-sm font-medium">{getProgress(habit)}%</span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => toggleHabit(habit.id, selectedDate)}
+                      >
+                        {isHabitCompleted(habit.id, selectedDate) ? (
+                          <CheckCircle2 className="w-5 h-5 text-green-500" />
+                        ) : (
+                          <Circle className="w-5 h-5 text-gray-400" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      className="bg-primary h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${getProgress(habit)}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Calendar */}
+        <Card>
           <CardHeader>
-            <CardTitle className="font-serif text-[#333]">Daily Grace</CardTitle>
+            <CardTitle className="flex items-center space-x-2">
+              <CalendarIcon size={20} />
+              <span>Track Progress</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <Calendar
               mode="single"
-              selected={date}
-              onSelect={(newDate) => newDate && setDate(newDate)}
-              modifiers={modifiers}
-              modifiersClassNames={modifiersClassNames}
-              className="rounded-md border border-[#e8e8e0]"
+              selected={selectedDate}
+              onSelect={(date) => date && setSelectedDate(date)}
+              className="rounded-md border"
             />
-            
-            <div className="mt-6 flex flex-wrap gap-2">
-              {Object.entries(habitEmojis).map(([habit, emoji]) => (
-                <Button
-                  key={habit}
-                  variant="outline"
-                  onClick={() => toggleHabit(habit as Habit)}
-                  className={`${
-                    selectedDateHabits.includes(habit as Habit)
-                      ? habitColors[habit as Habit]
-                      : 'bg-white text-[#666]'
-                  } border-[#e8e8e0] rounded-full px-4 py-2 flex items-center gap-2 transition-all hover:scale-105`}
-                >
-                  <span>{emoji}</span>
-                  <span className="capitalize">{habit}</span>
-                  {selectedDateHabits.includes(habit as Habit) && (
-                    <CheckIcon className="h-4 w-4 ml-1" />
-                  )}
-                </Button>
+            <div className="mt-4 space-y-2">
+              <h4 className="font-medium">
+                {selectedDate.toLocaleDateString()}
+              </h4>
+              {habits.map((habit) => (
+                <div key={habit.id} className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={isHabitCompleted(habit.id, selectedDate)}
+                    onCheckedChange={() => toggleHabit(habit.id, selectedDate)}
+                  />
+                  <span className="text-sm">{habit.name}</span>
+                </div>
               ))}
             </div>
           </CardContent>
         </Card>
-        
-        <Card className="border-[#e8e8e0] shadow-sm flex-1">
-          <CardHeader>
-            <CardTitle className="font-serif text-[#333]">Your Journey</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="bg-[#f4f6f0] p-4 rounded-xl text-center">
-              <div className="text-4xl font-bold text-[#6e59a5] mb-2">{streakCount}</div>
-              <div className="text-[#333] font-serif">Day Streak</div>
-              {streakCount > 0 && (
-                <div className="text-xs text-[#666] mt-1">Well done, faithful servant!</div>
-              )}
-            </div>
-            
-            <div className="bg-[#f4f6f0] p-4 rounded-xl">
-              <p className="verse-text italic text-sm mb-2 text-[#333]">"{encouragement.text}"</p>
-              <p className="verse-reference text-right">— {encouragement.reference}</p>
-            </div>
-            
-            <div className="flex flex-wrap gap-2">
-              {Object.entries(habitEmojis).map(([habit, emoji]) => {
-                const count = habitLogs.filter(log => 
-                  log.habits.includes(habit as Habit)
-                ).length;
-                
-                return count > 0 ? (
-                  <Badge 
-                    key={habit}
-                    className={`${habitColors[habit as Habit]} border-0 py-1 px-3 font-normal`}
-                  >
-                    {emoji} {count}
-                  </Badge>
-                ) : null;
-              })}
-            </div>
-          </CardContent>
-        </Card>
       </div>
+
+      {/* Weekly Summary */}
+      <Card>
+        <CardHeader>
+          <CardTitle>This Week's Progress</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {habits.map((habit) => (
+              <div key={habit.id} className="text-center">
+                <div className="mb-2">{habit.icon}</div>
+                <p className="text-sm font-medium">{habit.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {habit.completed}/{habit.target}
+                </p>
+                <div className="mt-1 w-full bg-gray-200 rounded-full h-1">
+                  <div
+                    className="bg-primary h-1 rounded-full"
+                    style={{ width: `${getProgress(habit)}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
