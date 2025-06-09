@@ -1,21 +1,63 @@
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { generateId, Mood, moodEmojis, saveJournalEntry } from "@/lib/storage";
 import { useNavigate } from "react-router-dom";
+import { Mic, MicOff, Play, Pause, Square } from "lucide-react";
 
 const VoiceJournal = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [mood, setMood] = useState<Mood>("peaceful");
+  const [isSupported, setIsSupported] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  
+  const recognitionRef = useRef<any>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const handleStartRecording = () => {
-    if (!navigator.mediaDevices?.getUserMedia) {
+  useEffect(() => {
+    // Check for speech recognition support
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      setIsSupported(true);
+      const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+
+      recognitionRef.current.onresult = (event: any) => {
+        let finalTranscript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            finalTranscript += event.results[i][0].transcript;
+          }
+        }
+        if (finalTranscript) {
+          setTranscript(prev => prev + ' ' + finalTranscript);
+        }
+      };
+
+      recognitionRef.current.onerror = (event: any) => {
+        console.error('Speech recognition error:', event.error);
+        toast({
+          title: "Recording Error",
+          description: "There was an issue with speech recognition. Please try again.",
+          variant: "destructive",
+        });
+        setIsRecording(false);
+      };
+    }
+  }, [toast]);
+
+  const handleStartRecording = async () => {
+    if (!isSupported) {
       toast({
         title: "Not Supported",
         description: "Voice recording is not supported by your browser.",
@@ -24,30 +66,64 @@ const VoiceJournal = () => {
       return;
     }
 
-    setIsRecording(true);
-    toast({
-      title: "Recording Started",
-      description: "Speak clearly into your microphone.",
-    });
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      mediaRecorderRef.current = new MediaRecorder(stream);
+      audioChunksRef.current = [];
 
-    // This would normally use the Web Speech API
-    // For now we'll simulate it
-    setTimeout(() => {
-      setTranscript("God, I know that you are with me even in this difficult time");
-      setIsRecording(false);
+      mediaRecorderRef.current.ondataavailable = (event) => {
+        audioChunksRef.current.push(event.data);
+      };
+
+      mediaRecorderRef.current.onstop = () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        const audioUrl = URL.createObjectURL(audioBlob);
+        audioRef.current = new Audio(audioUrl);
+      };
+
+      mediaRecorderRef.current.start();
+      recognitionRef.current?.start();
+      setIsRecording(true);
+
       toast({
-        title: "Recording Finished",
-        description: "Your prayer has been transcribed.",
+        title: "Recording Started",
+        description: "Speak clearly into your microphone.",
       });
-    }, 2000);
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      toast({
+        title: "Permission Denied",
+        description: "Please allow microphone access to use voice recording.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleStopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+    }
+    recognitionRef.current?.stop();
     setIsRecording(false);
+    
     toast({
       title: "Recording Stopped",
-      description: "Your voice entry has been saved.",
+      description: "Your voice entry has been transcribed.",
     });
+  };
+
+  const handlePlayback = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        audioRef.current.play();
+        setIsPlaying(true);
+        audioRef.current.onended = () => setIsPlaying(false);
+      }
+    }
   };
 
   const handleSaveEntry = () => {
@@ -82,60 +158,81 @@ const VoiceJournal = () => {
       <div className="mb-6">
         <Card className="bg-[#f8f3eb] border-[#e8e8e0] rounded-xl overflow-hidden">
           <CardContent className="p-6">
-            <h2 className="text-center mb-4 text-2xl font-serif">Journal Entry</h2>
+            <h2 className="text-center mb-4 text-2xl font-serif">Voice Journal Entry</h2>
             
             <div className="flex justify-center space-x-3 mb-6">
-              <Button 
-                variant="ghost" 
-                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "peaceful" ? "bg-[#f4f6f0] scale-110" : ""}`}
-                onClick={() => setMood("peaceful")}
-              >
-                <span className="text-2xl">{moodEmojis.peaceful}</span>
-                <span className="text-sm block mt-1">Peaceful</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "hopeful" ? "bg-[#f4f6f0] scale-110" : ""}`}
-                onClick={() => setMood("hopeful")}
-              >
-                <span className="text-2xl">{moodEmojis.hopeful}</span>
-                <span className="text-sm block mt-1">Hopeful</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "joyful" ? "bg-[#f4f6f0] scale-110" : ""}`}
-                onClick={() => setMood("joyful")}
-              >
-                <span className="text-2xl">{moodEmojis.joyful}</span>
-                <span className="text-sm block mt-1">Joyful</span>
-              </Button>
-              <Button 
-                variant="ghost" 
-                className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === "content" ? "bg-[#f4f6f0] scale-110" : ""}`}
-                onClick={() => setMood("content")}
-              >
-                <span className="text-2xl">{moodEmojis.content}</span>
-                <span className="text-sm block mt-1">Content</span>
-              </Button>
+              {(['peaceful', 'hopeful', 'joyful', 'content'] as Mood[]).map((moodOption) => (
+                <Button 
+                  key={moodOption}
+                  variant="ghost" 
+                  className={`p-2 rounded-full text-2xl hover:bg-[#f4f6f0] transition-all ${mood === moodOption ? "bg-[#f4f6f0] scale-110" : ""}`}
+                  onClick={() => setMood(moodOption)}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="text-2xl">{moodEmojis[moodOption]}</span>
+                    <span className="text-sm block mt-1 capitalize">{moodOption}</span>
+                  </div>
+                </Button>
+              ))}
             </div>
 
-            <div className="bg-white rounded-lg p-4 mb-4 min-h-[120px] text-lg font-serif">
-              {transcript || "Your journal entry will appear here..."}
-              {transcript && <p className="mt-4 text-sm text-[#666]">Jeremiah 29:11     James 1:12</p>}
-            </div>
+            <Textarea
+              value={transcript}
+              onChange={(e) => setTranscript(e.target.value)}
+              placeholder="Your journal entry will appear here as you speak, or you can type directly..."
+              className="min-h-[120px] text-lg font-serif bg-white rounded-lg mb-4"
+              rows={6}
+            />
             
-            <div className="flex justify-center">
+            <div className="flex justify-center space-x-4 mb-4">
               <Button 
                 variant="outline" 
-                className="bg-[#dbe2d3] hover:bg-[#c3d1b8] text-[#333] px-10 py-5 rounded-full w-full text-lg font-serif"
+                className={`px-8 py-4 rounded-full text-lg font-serif ${isRecording ? 'bg-red-100 hover:bg-red-200 text-red-700' : 'bg-[#dbe2d3] hover:bg-[#c3d1b8] text-[#333]'}`}
                 onClick={isRecording ? handleStopRecording : handleStartRecording}
+                disabled={!isSupported}
               >
-                {isRecording ? "Stop Recording" : "+ Verse"}
+                {isRecording ? (
+                  <>
+                    <Square size={20} className="mr-2" />
+                    Stop Recording
+                  </>
+                ) : (
+                  <>
+                    <Mic size={20} className="mr-2" />
+                    Start Recording
+                  </>
+                )}
               </Button>
+
+              {audioRef.current && (
+                <Button 
+                  variant="outline" 
+                  className="px-6 py-4 rounded-full text-lg font-serif bg-[#dbe2d3] hover:bg-[#c3d1b8] text-[#333]"
+                  onClick={handlePlayback}
+                >
+                  {isPlaying ? (
+                    <>
+                      <Pause size={20} className="mr-2" />
+                      Pause
+                    </>
+                  ) : (
+                    <>
+                      <Play size={20} className="mr-2" />
+                      Play
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
 
+            {!isSupported && (
+              <p className="text-center text-sm text-muted-foreground mb-4">
+                Voice recording not supported. You can still type your entry above.
+              </p>
+            )}
+
             {transcript && (
-              <div className="mt-4 flex justify-end">
+              <div className="flex justify-end">
                 <Button 
                   onClick={handleSaveEntry}
                   className="bg-[#c3d1b8] hover:bg-[#a3b198] text-[#333] rounded-full px-6"

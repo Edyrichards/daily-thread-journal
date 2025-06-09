@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import PrayerRequestCard from '@/components/PrayerRequestCard';
@@ -5,10 +6,11 @@ import {
   PrayerRequest as PrayerRequestType, 
   getPrayerRequests, 
   incrementPrayedCount,
-  addPrayerRequest // Added
+  addPrayerRequest,
+  PrayerComment
 } from '@/lib/storage';
-import { Button } from '@/components/ui/button'; // Added
-import { PlusCircle } from 'lucide-react'; // Added
+import { Button } from '@/components/ui/button';
+import { PlusCircle } from 'lucide-react';
 import { 
   Dialog, 
   DialogContent, 
@@ -17,18 +19,18 @@ import {
   DialogTrigger, 
   DialogFooter, 
   DialogClose 
-} from '@/components/ui/dialog'; // Added
-import { Label } from '@/components/ui/label'; // Added
-import { Textarea } from '@/components/ui/textarea'; // Added
-import { Checkbox } from '@/components/ui/checkbox'; // Added
-import { useToast } from '@/hooks/use-toast'; // Added
+} from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useToast } from '@/hooks/use-toast';
 
 const PrayerWallPage: React.FC = () => {
   const [prayerRequests, setPrayerRequests] = useState<PrayerRequestType[]>([]);
-  const [newRequestText, setNewRequestText] = useState(""); // Added
-  const [isAnonymousPost, setIsAnonymousPost] = useState(true); // Added
-  const [isFormModalOpen, setIsFormModalOpen] = useState(false); // Added
-  const { toast } = useToast(); // Added
+  const [newRequestText, setNewRequestText] = useState("");
+  const [isAnonymousPost, setIsAnonymousPost] = useState(true);
+  const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const requests = getPrayerRequests();
@@ -41,12 +43,22 @@ const PrayerWallPage: React.FC = () => {
       setPrayerRequests(prevRequests =>
         prevRequests.map(r => (r.id === requestId ? updatedRequest : r))
       );
+      
+      toast({
+        title: "Prayer Counted",
+        description: "Thank you for joining in prayer! 🙏",
+      });
     }
   };
 
-  const handleViewCommentsClicked = (requestId: string) => {
-    // Placeholder for future implementation
-    console.log("View comments for request ID:", requestId);
+  const handleCommentAdded = (requestId: string, comment: PrayerComment) => {
+    setPrayerRequests(prev => 
+      prev.map(req => 
+        req.id === requestId 
+          ? { ...req, comments: [...req.comments, comment] }
+          : req
+      )
+    );
   };
 
   const handleSubmitPrayerRequest = () => {
@@ -60,7 +72,7 @@ const PrayerWallPage: React.FC = () => {
     }
 
     const newPrayer = addPrayerRequest(newRequestText, isAnonymousPost);
-    setPrayerRequests(prev => [newPrayer, ...prev]); // Optimistic update
+    setPrayerRequests(prev => [newPrayer, ...prev]);
 
     toast({
       title: "Prayer Shared",
@@ -74,7 +86,7 @@ const PrayerWallPage: React.FC = () => {
 
   return (
     <Layout title="Prayer Wall">
-      <div className="p-4 md:p-8">
+      <div className="p-4 md:p-8 pb-16">
         <h2 className="text-3xl font-serif text-foreground mb-8 text-center">
           Community Prayer Wall
         </h2>
@@ -134,7 +146,7 @@ const PrayerWallPage: React.FC = () => {
                 key={request.id}
                 request={request}
                 onPrayClicked={handlePrayClicked}
-                onViewCommentsClicked={handleViewCommentsClicked} 
+                onCommentAdded={handleCommentAdded}
               />
             ))
           ) : (
