@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Search, Bookmark, Plus } from 'lucide-react';
+import { BookOpen, Search, Bookmark, Plus, Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ScriptureLookupProps {
@@ -25,6 +25,72 @@ const translations = [
   { value: 'KJV', label: 'KJV' }
 ];
 
+// Sample verses database - in real app this would come from Bible API
+const verseDatabase: Record<string, Verse[]> = {
+  'john 3:16': [
+    {
+      text: "For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+      reference: "John 3:16",
+      translation: "NIV"
+    },
+    {
+      text: "For God so loved the world, that he gave his only Son, that whoever believes in him should not perish but have eternal life.",
+      reference: "John 3:16",
+      translation: "ESV"
+    }
+  ],
+  'jeremiah 29:11': [
+    {
+      text: "For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future.",
+      reference: "Jeremiah 29:11",
+      translation: "NIV"
+    }
+  ],
+  'proverbs 3:5-6': [
+    {
+      text: "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
+      reference: "Proverbs 3:5-6",
+      translation: "NIV"
+    }
+  ],
+  'love': [
+    {
+      text: "Above all else, guard your heart, for everything you do flows from it.",
+      reference: "Proverbs 4:23",
+      translation: "NIV"
+    },
+    {
+      text: "Love is patient, love is kind. It does not envy, it does not boast, it is not proud.",
+      reference: "1 Corinthians 13:4",
+      translation: "NIV"
+    }
+  ],
+  'hope': [
+    {
+      text: "But those who hope in the LORD will renew their strength. They will soar on wings like eagles; they will run and not grow weary, they will walk and not be faint.",
+      reference: "Isaiah 40:31",
+      translation: "NIV"
+    },
+    {
+      text: "May the God of hope fill you with all joy and peace as you trust in him, so that you may overflow with hope by the power of the Holy Spirit.",
+      reference: "Romans 15:13",
+      translation: "NIV"
+    }
+  ],
+  'peace': [
+    {
+      text: "Peace I leave with you; my peace I give you. I do not give to you as the world gives. Do not let your hearts be troubled and do not be afraid.",
+      reference: "John 14:27",
+      translation: "NIV"
+    },
+    {
+      text: "And the peace of God, which transcends all understanding, will guard your hearts and your minds in Christ Jesus.",
+      reference: "Philippians 4:7",
+      translation: "NIV"
+    }
+  ]
+};
+
 const ScriptureLookup: React.FC<ScriptureLookupProps> = ({ onAddToEntry }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTranslation, setSelectedTranslation] = useState('NIV');
@@ -37,31 +103,33 @@ const ScriptureLookup: React.FC<ScriptureLookupProps> = ({ onAddToEntry }) => {
     if (!searchQuery.trim()) return;
     
     setIsSearching(true);
-    try {
-      // Simulate API call - in real implementation, this would call Bible API
-      const mockResults: Verse[] = [
-        {
-          text: "For I know the plans I have for you, declares the LORD, plans to prosper you and not to harm you, plans to give you hope and a future.",
-          reference: "Jeremiah 29:11",
-          translation: selectedTranslation
-        },
-        {
-          text: "Trust in the LORD with all your heart and lean not on your own understanding; in all your ways submit to him, and he will make your paths straight.",
-          reference: "Proverbs 3:5-6",
-          translation: selectedTranslation
-        }
-      ];
+    
+    // Simulate API delay
+    setTimeout(() => {
+      const query = searchQuery.toLowerCase();
+      let results: Verse[] = [];
       
-      setSearchResults(mockResults);
-    } catch (error) {
-      toast({
-        title: "Search Error",
-        description: "Failed to search verses. Please try again.",
-        variant: "destructive",
+      // Search in verse database
+      Object.entries(verseDatabase).forEach(([key, verses]) => {
+        if (key.includes(query) || verses.some(v => v.text.toLowerCase().includes(query))) {
+          results.push(...verses.filter(v => v.translation === selectedTranslation));
+        }
       });
-    } finally {
+      
+      // If no results, provide some default encouraging verses
+      if (results.length === 0) {
+        results = [
+          {
+            text: "And we know that in all things God works for the good of those who love him, who have been called according to his purpose.",
+            reference: "Romans 8:28",
+            translation: selectedTranslation
+          }
+        ];
+      }
+      
+      setSearchResults(results);
       setIsSearching(false);
-    }
+    }, 500);
   };
 
   const bookmarkVerse = (verse: Verse) => {
@@ -131,6 +199,23 @@ const ScriptureLookup: React.FC<ScriptureLookupProps> = ({ onAddToEntry }) => {
             </Button>
           </div>
 
+          {/* Quick Search Buttons */}
+          <div className="flex flex-wrap gap-2">
+            {['love', 'hope', 'peace', 'john 3:16', 'jeremiah 29:11'].map((term) => (
+              <Button
+                key={term}
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery(term);
+                  setTimeout(handleSearch, 100);
+                }}
+              >
+                {term}
+              </Button>
+            ))}
+          </div>
+
           {searchResults.length > 0 && (
             <div className="space-y-3">
               <h3 className="font-medium">Search Results</h3>
@@ -154,7 +239,10 @@ const ScriptureLookup: React.FC<ScriptureLookupProps> = ({ onAddToEntry }) => {
                             size="sm"
                             onClick={() => bookmarkVerse(verse)}
                           >
-                            <Bookmark size={14} />
+                            <Bookmark 
+                              size={14} 
+                              className={bookmarkedVerses.some(v => v.reference === verse.reference) ? 'fill-current' : ''} 
+                            />
                           </Button>
                           {onAddToEntry && (
                             <Button
@@ -176,7 +264,10 @@ const ScriptureLookup: React.FC<ScriptureLookupProps> = ({ onAddToEntry }) => {
 
           {bookmarkedVerses.length > 0 && (
             <div className="space-y-3">
-              <h3 className="font-medium">Bookmarked Verses</h3>
+              <h3 className="font-medium flex items-center space-x-2">
+                <Heart size={16} />
+                <span>Bookmarked Verses</span>
+              </h3>
               <div className="space-y-2 max-h-40 overflow-y-auto">
                 {bookmarkedVerses.map((verse, index) => (
                   <div key={index} className="flex items-center justify-between p-2 bg-muted/20 rounded">

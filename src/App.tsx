@@ -26,6 +26,9 @@ import NewJournalFlowPage from "./pages/NewJournalFlowPage";
 import MoodTrackerPage from "./pages/MoodTrackerPage";
 import PrayerWallPage from "./pages/PrayerWallPage";
 import OnboardingPage from "./pages/OnboardingPage"; // Added
+import SpiritualGrowthPage from "./pages/SpiritualGrowthPage"; // Added
+import EnhancedPrayerPage from "./pages/EnhancedPrayerPage"; // Added
+import ScripturePage from "./pages/ScripturePage"; // Added
 
 const queryClient = new QueryClient();
 
@@ -52,6 +55,9 @@ const AppContent = () => {
         <Route path="/journal/new-flow" element={<NewJournalFlowPage />} />
         <Route path="/journal/:id" element={<JournalEntryDetail />} />
         <Route path="/prayer" element={<PrayerPage />} />
+        <Route path="/enhanced-prayer" element={<EnhancedPrayerPage />} />
+        <Route path="/scripture" element={<ScripturePage />} />
+        <Route path="/spiritual-growth" element={<SpiritualGrowthPage />} />
         <Route path="/growth" element={<GrowthDashboard />} />
         <Route path="/devotional" element={<DevotionalPage />} />
         <Route path="/weekly-devotional" element={<WeeklyDevotionalPage />} />

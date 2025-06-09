@@ -1,34 +1,28 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Hand, Heart, Check, Clock, Users } from 'lucide-react';
+import { Hand, Heart, Check, Clock, Users, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-interface PrayerRequest {
-  id: string;
-  type: 'adoration' | 'confession' | 'thanksgiving' | 'supplication';
-  content: string;
-  category: 'personal' | 'family' | 'health' | 'ministry' | 'world';
-  status: 'praying' | 'answered' | 'waiting';
-  dateCreated: number;
-  dateAnswered?: number;
-  answerDetails?: string;
-}
+import { saveEnhancedPrayer, getEnhancedPrayers, updateEnhancedPrayerStatus, deleteEnhancedPrayer, type EnhancedPrayer } from '@/lib/enhancedStorage';
 
 const EnhancedPrayerTracker = () => {
-  const [prayers, setPrayers] = useState<PrayerRequest[]>([]);
+  const [prayers, setPrayers] = useState<EnhancedPrayer[]>([]);
   const [activeTab, setActiveTab] = useState('adoration');
   const [newPrayer, setNewPrayer] = useState({
-    type: 'adoration' as PrayerRequest['type'],
+    type: 'adoration' as EnhancedPrayer['type'],
     content: '',
-    category: 'personal' as PrayerRequest['category']
+    category: 'personal' as EnhancedPrayer['category']
   });
   const { toast } = useToast();
+
+  useEffect(() => {
+    setPrayers(getEnhancedPrayers());
+  }, []);
 
   const actsCategories = {
     adoration: {
@@ -83,7 +77,7 @@ const EnhancedPrayerTracker = () => {
       return;
     }
 
-    const prayer: PrayerRequest = {
+    const prayer: EnhancedPrayer = {
       id: Date.now().toString(),
       type: newPrayer.type,
       content: newPrayer.content,
@@ -92,7 +86,8 @@ const EnhancedPrayerTracker = () => {
       dateCreated: Date.now()
     };
 
-    setPrayers([prayer, ...prayers]);
+    saveEnhancedPrayer(prayer);
+    setPrayers(getEnhancedPrayers());
     setNewPrayer({ ...newPrayer, content: '' });
     
     toast({
@@ -101,17 +96,9 @@ const EnhancedPrayerTracker = () => {
     });
   };
 
-  const updatePrayerStatus = (id: string, status: PrayerRequest['status'], answerDetails?: string) => {
-    setPrayers(prayers.map(prayer => 
-      prayer.id === id 
-        ? { 
-            ...prayer, 
-            status, 
-            dateAnswered: status === 'answered' ? Date.now() : undefined,
-            answerDetails: answerDetails || undefined
-          }
-        : prayer
-    ));
+  const updatePrayerStatusHandler = (id: string, status: EnhancedPrayer['status'], answerDetails?: string) => {
+    updateEnhancedPrayerStatus(id, status, answerDetails);
+    setPrayers(getEnhancedPrayers());
 
     if (status === 'answered') {
       toast({
@@ -121,11 +108,11 @@ const EnhancedPrayerTracker = () => {
     }
   };
 
-  const getPrayersByType = (type: PrayerRequest['type']) => {
+  const getPrayersByType = (type: EnhancedPrayer['type']) => {
     return prayers.filter(prayer => prayer.type === type);
   };
 
-  const getCategoryColor = (category: PrayerRequest['category']) => {
+  const getCategoryColor = (category: EnhancedPrayer['category']) => {
     const colors = {
       personal: 'bg-blue-100 text-blue-800',
       family: 'bg-green-100 text-green-800',
@@ -136,7 +123,7 @@ const EnhancedPrayerTracker = () => {
     return colors[category];
   };
 
-  const getStatusColor = (status: PrayerRequest['status']) => {
+  const getStatusColor = (status: EnhancedPrayer['status']) => {
     const colors = {
       praying: 'bg-orange-100 text-orange-800',
       answered: 'bg-green-100 text-green-800',
@@ -199,17 +186,13 @@ const EnhancedPrayerTracker = () => {
                         <SelectItem value="world">World</SelectItem>
                       </SelectContent>
                     </Select>
-                    <Button 
-                      onClick={() => setNewPrayer({...newPrayer, type: key as PrayerRequest['type']})}
-                      className="hidden"
-                    />
                   </div>
 
                   <Textarea
                     placeholder={`Write your ${category.title.toLowerCase()} prayer here...`}
                     value={newPrayer.type === key ? newPrayer.content : ''}
                     onChange={(e) => setNewPrayer({
-                      type: key as PrayerRequest['type'],
+                      type: key as EnhancedPrayer['type'],
                       content: e.target.value,
                       category: newPrayer.category
                     })}
@@ -217,12 +200,13 @@ const EnhancedPrayerTracker = () => {
                   />
 
                   <Button onClick={addPrayer} className="w-full">
+                    <Plus size={16} className="mr-2" />
                     Add Prayer
                   </Button>
                 </div>
 
                 <div className="space-y-3">
-                  {getPrayersByType(key as PrayerRequest['type']).map((prayer) => (
+                  {getPrayersByType(key as EnhancedPrayer['type']).map((prayer) => (
                     <Card key={prayer.id} className="bg-muted/20">
                       <CardContent className="p-4">
                         <div className="space-y-3">
@@ -242,7 +226,7 @@ const EnhancedPrayerTracker = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => updatePrayerStatus(prayer.id, 'answered')}
+                                onClick={() => updatePrayerStatusHandler(prayer.id, 'answered')}
                                 disabled={prayer.status === 'answered'}
                               >
                                 <Check size={14} />
@@ -250,7 +234,7 @@ const EnhancedPrayerTracker = () => {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => updatePrayerStatus(prayer.id, 'waiting')}
+                                onClick={() => updatePrayerStatusHandler(prayer.id, 'waiting')}
                               >
                                 <Clock size={14} />
                               </Button>

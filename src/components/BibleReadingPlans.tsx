@@ -1,156 +1,144 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, Calendar, Check, Clock } from 'lucide-react';
+import { CheckCircle2, Circle, Calendar, BookOpen, Target } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ReadingPlan {
   id: string;
-  title: string;
+  name: string;
   description: string;
   duration: number; // days
-  type: 'chronological' | 'topical' | 'book-study' | 'devotional';
-  dailyReadings: DailyReading[];
+  readings: DailyReading[];
+  category: 'beginner' | 'intermediate' | 'advanced';
 }
 
 interface DailyReading {
   day: number;
   passages: string[];
+  theme?: string;
   completed: boolean;
-  completedDate?: number;
 }
 
-interface UserProgress {
+interface ReadingProgress {
   planId: string;
   currentDay: number;
-  startDate: number;
   completedDays: number[];
+  startDate: string;
 }
 
-const readingPlans: ReadingPlan[] = [
-  {
-    id: 'bible-year',
-    title: 'Bible in a Year',
-    description: 'Read through the entire Bible in 365 days with a chronological approach',
-    duration: 365,
-    type: 'chronological',
-    dailyReadings: [
-      { day: 1, passages: ['Genesis 1-3'], completed: false },
-      { day: 2, passages: ['Genesis 4-7'], completed: false },
-      { day: 3, passages: ['Genesis 8-11'], completed: false },
-      // ... more readings would be here
-    ]
-  },
-  {
-    id: 'gospels-30',
-    title: '30 Days in the Gospels',
-    description: 'Focus on the life and teachings of Jesus through all four Gospels',
-    duration: 30,
-    type: 'topical',
-    dailyReadings: [
-      { day: 1, passages: ['Matthew 1-2'], completed: false },
-      { day: 2, passages: ['Luke 1-2'], completed: false },
-      { day: 3, passages: ['Matthew 3-4', 'Mark 1'], completed: false },
-      // ... more readings would be here
-    ]
-  },
-  {
-    id: 'psalms-proverbs',
-    title: 'Psalms & Proverbs',
-    description: 'Read through wisdom literature in 60 days',
-    duration: 60,
-    type: 'book-study',
-    dailyReadings: [
-      { day: 1, passages: ['Psalm 1-2', 'Proverbs 1'], completed: false },
-      { day: 2, passages: ['Psalm 3-4', 'Proverbs 2'], completed: false },
-      // ... more readings would be here
-    ]
-  }
-];
-
 const BibleReadingPlans = () => {
-  const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [selectedPlan, setSelectedPlan] = useState<ReadingPlan | null>(null);
+  const [progress, setProgress] = useState<ReadingProgress | null>(null);
   const { toast } = useToast();
 
-  const startPlan = (plan: ReadingPlan) => {
-    const existingProgress = userProgress.find(p => p.planId === plan.id);
-    
-    if (existingProgress) {
-      setSelectedPlan(plan);
-      return;
+  const readingPlans: ReadingPlan[] = [
+    {
+      id: 'new-testament-30',
+      name: 'New Testament in 30 Days',
+      description: 'Read through the entire New Testament in one month',
+      duration: 30,
+      category: 'intermediate',
+      readings: Array.from({ length: 30 }, (_, i) => ({
+        day: i + 1,
+        passages: [`Day ${i + 1} Reading`],
+        theme: i === 0 ? 'The Gospels Begin' : i < 10 ? 'Life of Jesus' : i < 20 ? 'Early Church' : 'Letters to Churches',
+        completed: false
+      }))
+    },
+    {
+      id: 'psalms-wisdom',
+      name: 'Psalms & Wisdom',
+      description: 'Journey through Psalms, Proverbs, and Ecclesiastes',
+      duration: 60,
+      category: 'beginner',
+      readings: Array.from({ length: 60 }, (_, i) => ({
+        day: i + 1,
+        passages: [`Psalm ${i + 1}`, `Proverbs ${Math.ceil((i + 1) / 2)}`],
+        theme: i < 20 ? 'Praise & Worship' : i < 40 ? 'Trust & Faith' : 'Wisdom & Understanding',
+        completed: false
+      }))
+    },
+    {
+      id: 'whole-bible-year',
+      name: 'Through the Bible in a Year',
+      description: 'Systematic reading through the entire Bible',
+      duration: 365,
+      category: 'advanced',
+      readings: Array.from({ length: 365 }, (_, i) => ({
+        day: i + 1,
+        passages: [`Genesis ${Math.ceil((i + 1) / 10)}`, `Matthew ${Math.ceil((i + 1) / 15)}`],
+        theme: i < 90 ? 'Old Testament Foundations' : i < 180 ? 'History & Prophecy' : i < 270 ? 'Wisdom Literature' : 'New Testament',
+        completed: false
+      }))
     }
+  ];
 
-    const newProgress: UserProgress = {
+  useEffect(() => {
+    const savedProgress = localStorage.getItem('bible_reading_progress');
+    if (savedProgress) {
+      try {
+        setProgress(JSON.parse(savedProgress));
+      } catch (error) {
+        console.error('Failed to parse reading progress:', error);
+      }
+    }
+  }, []);
+
+  const startPlan = (plan: ReadingPlan) => {
+    const newProgress: ReadingProgress = {
       planId: plan.id,
       currentDay: 1,
-      startDate: Date.now(),
-      completedDays: []
+      completedDays: [],
+      startDate: new Date().toISOString()
     };
-
-    setUserProgress([...userProgress, newProgress]);
+    
+    setProgress(newProgress);
     setSelectedPlan(plan);
+    localStorage.setItem('bible_reading_progress', JSON.stringify(newProgress));
     
     toast({
-      title: "Reading Plan Started",
-      description: `You've started "${plan.title}". Happy reading!`,
+      title: "Reading Plan Started!",
+      description: `You've started "${plan.name}". Happy reading!`,
     });
   };
 
-  const markDayComplete = (planId: string, day: number) => {
-    setUserProgress(userProgress.map(progress => 
-      progress.planId === planId
-        ? {
-            ...progress,
-            completedDays: [...progress.completedDays, day],
-            currentDay: Math.min(progress.currentDay + 1, selectedPlan?.duration || 365)
-          }
-        : progress
-    ));
-
+  const markDayComplete = (day: number) => {
+    if (!progress || !selectedPlan) return;
+    
+    const updatedProgress = {
+      ...progress,
+      completedDays: [...progress.completedDays, day].sort((a, b) => a - b),
+      currentDay: Math.max(progress.currentDay, day + 1)
+    };
+    
+    setProgress(updatedProgress);
+    localStorage.setItem('bible_reading_progress', JSON.stringify(updatedProgress));
+    
     toast({
       title: "Day Completed!",
-      description: `Great job completing day ${day} of your reading plan.`,
+      description: `Great job finishing day ${day}!`,
     });
   };
 
-  const getPlanProgress = (planId: string) => {
-    const progress = userProgress.find(p => p.planId === planId);
-    if (!progress) return { percentage: 0, completedDays: 0, totalDays: 0 };
-    
-    const plan = readingPlans.find(p => p.id === planId);
-    const totalDays = plan?.duration || 0;
-    const completedDays = progress.completedDays.length;
-    const percentage = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
-    
-    return { percentage, completedDays, totalDays };
+  const getProgressPercentage = () => {
+    if (!progress || !selectedPlan) return 0;
+    return Math.round((progress.completedDays.length / selectedPlan.duration) * 100);
   };
 
-  const getTodaysReading = (plan: ReadingPlan) => {
-    const progress = userProgress.find(p => p.planId === plan.id);
-    if (!progress) return null;
-    
-    return plan.dailyReadings.find(reading => reading.day === progress.currentDay);
-  };
-
-  const getTypeColor = (type: ReadingPlan['type']) => {
+  const getCategoryColor = (category: string) => {
     const colors = {
-      chronological: 'bg-blue-100 text-blue-800',
-      topical: 'bg-green-100 text-green-800',
-      'book-study': 'bg-purple-100 text-purple-800',
-      devotional: 'bg-orange-100 text-orange-800'
+      beginner: 'bg-green-100 text-green-800',
+      intermediate: 'bg-blue-100 text-blue-800',
+      advanced: 'bg-purple-100 text-purple-800'
     };
-    return colors[type];
+    return colors[category as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
-  if (selectedPlan) {
-    const progress = getPlanProgress(selectedPlan.id);
-    const todaysReading = getTodaysReading(selectedPlan);
-    const userPlanProgress = userProgress.find(p => p.planId === selectedPlan.id);
-
+  if (selectedPlan && progress) {
     return (
       <div className="space-y-6">
         <Card>
@@ -159,7 +147,7 @@ const BibleReadingPlans = () => {
               <div>
                 <CardTitle className="flex items-center space-x-2">
                   <BookOpen size={20} />
-                  <span>{selectedPlan.title}</span>
+                  <span>{selectedPlan.name}</span>
                 </CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
                   {selectedPlan.description}
@@ -172,53 +160,56 @@ const BibleReadingPlans = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex justify-between text-sm">
                 <span>Progress</span>
-                <span>{progress.completedDays} of {progress.totalDays} days</span>
+                <span>{progress.completedDays.length}/{selectedPlan.duration} days</span>
               </div>
-              <Progress value={progress.percentage} className="h-2" />
-              <p className="text-xs text-muted-foreground">
-                {Math.round(progress.percentage)}% complete
+              <Progress value={getProgressPercentage()} className="h-2" />
+              <p className="text-sm text-muted-foreground">
+                {getProgressPercentage()}% complete
               </p>
             </div>
-
-            {todaysReading && (
-              <Card className="bg-muted/30">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-medium">Day {todaysReading.day}</h3>
-                    <Badge className={getTypeColor(selectedPlan.type)}>
-                      {selectedPlan.type.replace('-', ' ')}
-                    </Badge>
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium">Today's Reading:</p>
-                    <ul className="space-y-1">
-                      {todaysReading.passages.map((passage, index) => (
-                        <li key={index} className="text-sm text-muted-foreground">
-                          • {passage}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  {userPlanProgress && !userPlanProgress.completedDays.includes(todaysReading.day) && (
-                    <Button 
-                      className="w-full mt-3" 
-                      onClick={() => markDayComplete(selectedPlan.id, todaysReading.day)}
-                    >
-                      <Check size={16} className="mr-2" />
-                      Mark as Complete
-                    </Button>
-                  )}
-                  {userPlanProgress?.completedDays.includes(todaysReading.day) && (
-                    <div className="flex items-center justify-center mt-3 text-green-600">
-                      <Check size={16} className="mr-2" />
-                      <span className="text-sm">Completed!</span>
+            
+            <div className="grid gap-2 max-h-96 overflow-y-auto">
+              {selectedPlan.readings.slice(0, 14).map((reading) => (
+                <div
+                  key={reading.day}
+                  className={`p-3 rounded-lg border ${
+                    progress.completedDays.includes(reading.day)
+                      ? 'bg-green-50 border-green-200'
+                      : 'bg-muted/30'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2">
+                        <span className="font-medium">Day {reading.day}</span>
+                        {reading.theme && (
+                          <Badge variant="outline" className="text-xs">
+                            {reading.theme}
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {reading.passages.join(', ')}
+                      </p>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            )}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => markDayComplete(reading.day)}
+                      disabled={progress.completedDays.includes(reading.day)}
+                    >
+                      {progress.completedDays.includes(reading.day) ? (
+                        <CheckCircle2 className="w-5 h-5 text-green-500" />
+                      ) : (
+                        <Circle className="w-5 h-5 text-gray-400" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -230,62 +221,43 @@ const BibleReadingPlans = () => {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
-            <BookOpen size={20} />
+            <Calendar size={20} />
             <span>Bible Reading Plans</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {readingPlans.map((plan) => {
-              const progress = getPlanProgress(plan.id);
-              const isStarted = userProgress.some(p => p.planId === plan.id);
-              
-              return (
-                <Card key={plan.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="space-y-3">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-1 flex-1">
-                          <h3 className="font-medium">{plan.title}</h3>
-                          <p className="text-sm text-muted-foreground">{plan.description}</p>
-                        </div>
-                        <Badge className={getTypeColor(plan.type)}>
-                          {plan.type.replace('-', ' ')}
-                        </Badge>
-                      </div>
-                      
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <div className="flex items-center space-x-1">
-                          <Calendar size={14} />
-                          <span>{plan.duration} days</span>
-                        </div>
-                        <div className="flex items-center space-x-1">
-                          <Clock size={14} />
-                          <span>~{Math.round(plan.duration / 7)} weeks</span>
-                        </div>
-                      </div>
-
-                      {isStarted && (
-                        <div className="space-y-2">
-                          <Progress value={progress.percentage} className="h-1.5" />
-                          <p className="text-xs text-muted-foreground">
-                            {progress.completedDays} of {progress.totalDays} days complete
-                          </p>
-                        </div>
-                      )}
-
-                      <Button 
-                        onClick={() => startPlan(plan)}
-                        variant={isStarted ? "outline" : "default"}
-                        className="w-full"
-                      >
-                        {isStarted ? "Continue Reading" : "Start Plan"}
-                      </Button>
+          <p className="text-muted-foreground mb-6">
+            Choose a structured approach to reading God's Word consistently.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {readingPlans.map((plan) => (
+              <Card key={plan.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <Badge className={getCategoryColor(plan.category)}>
+                      {plan.category}
+                    </Badge>
+                    <div className="flex items-center space-x-1 text-sm text-muted-foreground">
+                      <Target size={14} />
+                      <span>{plan.duration} days</span>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  </div>
+                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    {plan.description}
+                  </p>
+                  <Button 
+                    className="w-full"
+                    onClick={() => startPlan(plan)}
+                  >
+                    Start Plan
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </CardContent>
       </Card>

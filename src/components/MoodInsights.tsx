@@ -18,9 +18,13 @@ const MoodInsights: React.FC = () => {
   }, {} as Record<string, number>);
 
   const totalEntries = recentEntries.length;
-  const dominantMood = Object.entries(moodCounts).reduce((a, b) => 
-    moodCounts[a[0]] > moodCounts[b[0]] ? a : b
-  )?.[0];
+  
+  // Fix the reduce error by checking if there are entries first
+  const dominantMood = totalEntries > 0 
+    ? Object.entries(moodCounts).reduce((a, b) => 
+        moodCounts[a[0]] > moodCounts[b[0]] ? a : b
+      )?.[0] || 'neutral'
+    : 'neutral';
 
   // Calculate streak
   const sortedEntries = entries
