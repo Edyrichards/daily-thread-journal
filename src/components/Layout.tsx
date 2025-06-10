@@ -1,9 +1,9 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "./Header";
-import BottomNav from "./BottomNav";
 import Sidebar from "./Sidebar";
-import FloatingActionButton from "./FloatingActionButton";
+import BottomNav from "./BottomNav";
+import PWAInstallPrompt from "./PWAInstallPrompt";
+import { usePWA } from "@/hooks/usePWA";
 import { useLocation } from "react-router-dom";
 
 interface LayoutProps {
@@ -15,7 +15,25 @@ interface LayoutProps {
 const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
+  const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const { isInstallable } = usePWA();
+
+  useEffect(() => {
+    // Show install prompt after 30 seconds if app is installable
+    const timer = setTimeout(() => {
+      if (isInstallable && !localStorage.getItem('pwa-install-dismissed')) {
+        setShowInstallPrompt(true);
+      }
+    }, 30000);
+
+    return () => clearTimeout(timer);
+  }, [isInstallable]);
+
+  const handleInstallDismiss = () => {
+    setShowInstallPrompt(false);
+    localStorage.setItem('pwa-install-dismissed', 'true');
+  };
+
   const isNewJournalEntry = location.pathname === "/journal/new";
   const shouldHideBottomNav = hideBottomNav || isNewJournalEntry;
 
@@ -28,14 +46,14 @@ const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <Header title={title} onMenuClick={handleMenuClick} />
-      <Sidebar isOpen={isSidebarOpen} onClose={handleSidebarClose} />
-      <main className="flex-1 container mx-auto py-6 pb-20 md:pb-6 animate-fade-in">
+    <div className="min-h-screen bg-background">
+      <Header onMenuClick={() => setIsSidebarOpen(true)} title={title} />
+      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+      <main className="pt-16 pb-20 md:pb-4">
         {children}
       </main>
       {!shouldHideBottomNav && <BottomNav />}
-      <FloatingActionButton />
+      {showInstallPrompt && <PWAInstallPrompt onDismiss={handleInstallDismiss} />}
     </div>
   );
 };

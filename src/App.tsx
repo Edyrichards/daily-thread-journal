@@ -1,12 +1,13 @@
+
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './pages/HomePage';
+import Index from './pages/Index';
 import JournalPage from './pages/JournalPage';
-import NewJournalEntryPage from './pages/NewJournalEntryPage';
-import EditJournalEntryPage from './pages/EditJournalEntryPage';
+import NewJournalEntry from './pages/NewJournalEntry';
+import JournalEntryDetail from './pages/JournalEntryDetail';
 import PrayerPage from './pages/PrayerPage';
 import SettingsPage from './pages/SettingsPage';
-import CommunityFeedPage from './pages/CommunityFeedPage';
+import CommunityPage from './pages/CommunityPage';
 import PrayerWallPage from './pages/PrayerWallPage';
 import { Toaster } from '@/components/ui/toaster';
 import DataManagementPage from './pages/DataManagementPage';
@@ -17,13 +18,13 @@ function App() {
       <div className="App">
         <Toaster />
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<Index />} />
           <Route path="/journal" element={<JournalPage />} />
-          <Route path="/journal/new" element={<NewJournalEntryPage />} />
-          <Route path="/journal/edit/:id" element={<EditJournalEntryPage />} />
+          <Route path="/journal/new" element={<NewJournalEntry />} />
+          <Route path="/journal/:id" element={<JournalEntryDetail />} />
           <Route path="/prayer" element={<PrayerPage />} />
           <Route path="/settings" element={<SettingsPage />} />
-          <Route path="/community" element={<CommunityFeedPage />} />
+          <Route path="/community" element={<CommunityPage />} />
           <Route path="/prayer-wall" element={<PrayerWallPage />} />
           <Route path="/data-management" element={<DataManagementPage />} />
         </Routes>

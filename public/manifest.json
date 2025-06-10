@@ -1,0 +1,33 @@
+
+{
+  "name": "Threads of Grace",
+  "short_name": "ToG",
+  "description": "Your spiritual journey companion for daily journaling, prayer tracking, and faith growth",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#8b5cf6",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/placeholder.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/placeholder.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["lifestyle", "productivity", "health"],
+  "screenshots": [
+    {
+      "src": "/placeholder.svg",
+      "sizes": "540x720",
+      "type": "image/svg+xml"
+    }
+  ]
+}
