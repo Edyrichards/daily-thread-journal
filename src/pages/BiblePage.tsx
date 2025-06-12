@@ -5,7 +5,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BibleDequeue from '@/components/BibleDequeue';
 import ScriptureLookup from '@/components/ScriptureLookup';
 import BibleReadingPlans from '@/components/BibleReadingPlans';
-import { BookOpen, Search, Calendar, Heart } from 'lucide-react';
+import VerseCommunity from '@/components/Community/VerseCommunity';
+import ScriptureDevotional from '@/components/Devotional/ScriptureDevotional';
+import { BookOpen, Search, Calendar, Heart, Users, Compass } from 'lucide-react';
 
 const BiblePage = () => {
   return (
@@ -16,27 +18,35 @@ const BiblePage = () => {
             Bible Study & Reading
           </h1>
           <p className="text-muted-foreground">
-            Dive deep into God's Word with verse-by-verse study, explanations, and reading plans
+            Dive deep into God's Word with verse-by-verse study, explanations, and community sharing
           </p>
         </div>
 
         <Tabs defaultValue="dequeue" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="dequeue" className="flex items-center space-x-2">
               <Heart size={16} />
-              <span>Bible Dequeue</span>
+              <span className="hidden sm:inline">Dequeue</span>
             </TabsTrigger>
             <TabsTrigger value="lookup" className="flex items-center space-x-2">
               <Search size={16} />
-              <span>Scripture Lookup</span>
+              <span className="hidden sm:inline">Lookup</span>
             </TabsTrigger>
             <TabsTrigger value="plans" className="flex items-center space-x-2">
               <Calendar size={16} />
-              <span>Reading Plans</span>
+              <span className="hidden sm:inline">Plans</span>
+            </TabsTrigger>
+            <TabsTrigger value="devotional" className="flex items-center space-x-2">
+              <Compass size={16} />
+              <span className="hidden sm:inline">Devotional</span>
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex items-center space-x-2">
+              <Users size={16} />
+              <span className="hidden sm:inline">Community</span>
             </TabsTrigger>
             <TabsTrigger value="study" className="flex items-center space-x-2">
               <BookOpen size={16} />
-              <span>Study Tools</span>
+              <span className="hidden sm:inline">Study</span>
             </TabsTrigger>
           </TabsList>
 
@@ -50,6 +60,14 @@ const BiblePage = () => {
 
           <TabsContent value="plans">
             <BibleReadingPlans />
+          </TabsContent>
+
+          <TabsContent value="devotional">
+            <ScriptureDevotional />
+          </TabsContent>
+
+          <TabsContent value="community">
+            <VerseCommunity />
           </TabsContent>
 
           <TabsContent value="study">
