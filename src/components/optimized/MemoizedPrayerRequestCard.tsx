@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PrayerRequestCard } from '@/components/PrayerRequestCard';
+import PrayerRequestCard from '@/components/PrayerRequestCard';
 import type { PrayerRequest, PrayerComment } from '@/lib/storage';
 
 interface MemoizedPrayerRequestCardProps {

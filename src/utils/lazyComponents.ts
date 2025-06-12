@@ -7,11 +7,14 @@ export const LazyDataManagementPage = lazy(() => import('@/pages/DataManagementP
 export const LazyPrayerWallPage = lazy(() => import('@/pages/PrayerWallPage'));
 export const LazyScripturePage = lazy(() => import('@/pages/ScripturePage'));
 export const LazySpiritualGrowthPage = lazy(() => import('@/pages/SpiritualGrowthPage'));
+export const LazyBiblePage = lazy(() => import('@/pages/BiblePage'));
 
 // Preload critical components
 export const preloadCriticalComponents = () => {
   // Preload components that are likely to be used soon
   import('@/pages/JournalPage');
   import('@/pages/NewJournalEntry');
+  import('@/pages/BiblePage');
   import('@/components/Journal');
+  import('@/components/BibleDequeue');
 };

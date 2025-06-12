@@ -1,87 +1,68 @@
 
-import { useEffect, useCallback } from 'react';
+import React, { useEffect, useRef } from 'react';
 
-export const usePerformance = () => {
-  // Lazy loading hook for images and components
-  const useLazyLoading = (threshold = 0.1) => {
-    const observerRef = useCallback((node: HTMLElement | null) => {
-      if (!node) return;
+interface PerformanceMetrics {
+  renderTime: number;
+  componentMounts: number;
+  memoryUsage?: number;
+}
 
-      const observer = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              const img = entry.target as HTMLImageElement;
-              if (img.dataset.src) {
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-              }
-              observer.unobserve(entry.target);
-            }
-          });
-        },
-        { threshold }
-      );
+interface UsePerformanceOptions {
+  trackRenders?: boolean;
+  trackMemory?: boolean;
+  logToConsole?: boolean;
+}
 
-      observer.observe(node);
+export const usePerformance = (
+  componentName: string, 
+  options: UsePerformanceOptions = {}
+) => {
+  const {
+    trackRenders = true,
+    trackMemory = false,
+    logToConsole = false
+  } = options;
 
-      return () => observer.unobserve(node);
-    }, [threshold]);
-
-    return observerRef;
-  };
-
-  // Debounce hook for search and input optimization
-  const useDebounce = <T>(value: T, delay: number): T => {
-    const [debouncedValue, setDebouncedValue] = React.useState<T>(value);
-
-    React.useEffect(() => {
-      const handler = setTimeout(() => {
-        setDebouncedValue(value);
-      }, delay);
-
-      return () => {
-        clearTimeout(handler);
-      };
-    }, [value, delay]);
-
-    return debouncedValue;
-  };
-
-  // Performance monitoring
-  const measurePerformance = useCallback((name: string, fn: () => void) => {
-    if ('performance' in window) {
-      performance.mark(`${name}-start`);
-      fn();
-      performance.mark(`${name}-end`);
-      performance.measure(name, `${name}-start`, `${name}-end`);
-    } else {
-      fn();
-    }
-  }, []);
-
-  // Report Web Vitals if available
-  const reportWebVitals = useCallback(() => {
-    if ('performance' in window && 'PerformanceObserver' in window) {
-      // Log performance metrics
-      const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          console.log(`Performance: ${entry.name}`, entry);
-        });
-      });
-      
-      observer.observe({ entryTypes: ['measure', 'navigation'] });
-    }
-  }, []);
+  const renderCount = useRef(0);
+  const startTime = useRef(performance.now());
+  const metrics = useRef<PerformanceMetrics>({
+    renderTime: 0,
+    componentMounts: 0,
+    memoryUsage: 0
+  });
 
   useEffect(() => {
-    reportWebVitals();
-  }, [reportWebVitals]);
+    if (trackRenders) {
+      renderCount.current += 1;
+      metrics.current.componentMounts = renderCount.current;
+      
+      const renderTime = performance.now() - startTime.current;
+      metrics.current.renderTime = renderTime;
+
+      if (trackMemory && (performance as any).memory) {
+        metrics.current.memoryUsage = (performance as any).memory.usedJSHeapSize;
+      }
+
+      if (logToConsole) {
+        console.log(`[Performance] ${componentName}:`, {
+          renders: renderCount.current,
+          renderTime: `${renderTime.toFixed(2)}ms`,
+          memory: trackMemory ? `${(metrics.current.memoryUsage! / 1024 / 1024).toFixed(2)}MB` : 'N/A'
+        });
+      }
+    }
+
+    return () => {
+      startTime.current = performance.now();
+    };
+  });
+
+  const logMetrics = () => {
+    console.log(`[Performance Metrics] ${componentName}:`, metrics.current);
+  };
 
   return {
-    useLazyLoading,
-    useDebounce,
-    measurePerformance,
-    reportWebVitals
+    metrics: metrics.current,
+    logMetrics
   };
 };

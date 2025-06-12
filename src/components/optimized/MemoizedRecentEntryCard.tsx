@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { RecentEntryCard } from '@/components/RecentEntryCard';
+import RecentEntryCard from '@/components/RecentEntryCard';
 import type { JournalEntry } from '@/lib/storage';
 
 interface MemoizedRecentEntryCardProps {
