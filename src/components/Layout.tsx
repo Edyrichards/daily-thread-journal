@@ -16,7 +16,6 @@ interface LayoutProps {
 
 const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const { isInstallable } = usePWA();
 
@@ -56,20 +55,24 @@ const Layout = ({ children, title, hideBottomNav = false }: LayoutProps) => {
   const shouldHideBottomNav = hideBottomNav || isNewJournalEntry;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex w-full">
       <SkipLink />
-      <Header onMenuClick={() => setIsSidebarOpen(true)} title={title} />
-      <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-      <main 
-        id="main-content"
-        className="pt-16 pb-20 md:pb-4 focus:outline-none"
-        tabIndex={-1}
-        role="main"
-        aria-label={title ? `${title} page content` : 'Main content'}
-      >
-        {children}
-      </main>
-      {!shouldHideBottomNav && <BottomNav />}
+      <div className="hidden md:block">
+        <Sidebar />
+      </div>
+      <div className="flex-1 flex flex-col">
+        <Header title={title} />
+        <main 
+          id="main-content"
+          className="flex-1 pt-16 pb-20 md:pb-4 focus:outline-none"
+          tabIndex={-1}
+          role="main"
+          aria-label={title ? `${title} page content` : 'Main content'}
+        >
+          {children}
+        </main>
+        {!shouldHideBottomNav && <BottomNav />}
+      </div>
       {showInstallPrompt && <PWAInstallPrompt onDismiss={handleInstallDismiss} />}
     </div>
   );

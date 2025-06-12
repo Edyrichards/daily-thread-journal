@@ -17,4 +17,6 @@ export const preloadCriticalComponents = () => {
   import('@/pages/BiblePage');
   import('@/components/Journal');
   import('@/components/BibleDequeue');
+  import('@/components/BibleReadingPlans');
+  import('@/components/ScriptureLookup');
 };
