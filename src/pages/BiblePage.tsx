@@ -7,6 +7,7 @@ import ScriptureLookup from '@/components/ScriptureLookup';
 import BibleReadingPlans from '@/components/BibleReadingPlans';
 import VerseCommunity from '@/components/Community/VerseCommunity';
 import ScriptureDevotional from '@/components/Devotional/ScriptureDevotional';
+import BibleStudyTools from '@/components/Bible/StudyTools';
 import { BookOpen, Search, Calendar, Heart, Users, Compass } from 'lucide-react';
 
 const BiblePage = () => {
@@ -71,13 +72,7 @@ const BiblePage = () => {
           </TabsContent>
 
           <TabsContent value="study">
-            <div className="text-center p-8 bg-muted/30 rounded-xl">
-              <BookOpen size={48} className="mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-serif mb-2">Advanced Study Tools</h3>
-              <p className="text-muted-foreground">
-                Coming soon: Word studies, commentaries, and cross-reference tools
-              </p>
-            </div>
+            <BibleStudyTools />
           </TabsContent>
         </Tabs>
       </div>
