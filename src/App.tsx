@@ -1,8 +1,9 @@
-
 import { Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ErrorBoundary from "./components/ErrorBoundary";
+import OfflineIndicator from "./components/OfflineIndicator";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import JournalPage from "./pages/JournalPage";
@@ -41,8 +42,16 @@ import {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 1,
+      retry: (failureCount, error) => {
+        // Don't retry on 4xx errors, but retry on network errors
+        if (error && 'status' in error && typeof error.status === 'number') {
+          return error.status >= 500 && failureCount < 2;
+        }
+        return failureCount < 2;
+      },
       refetchOnWindowFocus: false,
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      gcTime: 10 * 60 * 1000, // 10 minutes
     },
   },
 });
@@ -60,55 +69,144 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-background text-foreground">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/journal" element={<JournalPage />} />
-            <Route path="/journal/new" element={<NewJournalEntry />} />
-            <Route path="/journal/new-flow" element={<NewJournalFlowPage />} />
-            <Route path="/journal/:id" element={<JournalEntryDetail />} />
-            <Route path="/prayer" element={<PrayerPage />} />
-            <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
-            <Route path="/prayer/guided" element={<GuidedPrayerPage />} />
-            <Route path="/devotional" element={<DevotionalPage />} />
-            <Route path="/devotional/weekly" element={<WeeklyDevotionalPage />} />
-            <Route path="/scripture-discovery" element={<ScriptureDiscoveryPage />} />
-            <Route path="/bible" element={<BiblePage />} />
-            <Route path="/scripture" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <LazyScripturePage />
-              </Suspense>
-            } />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/onboarding" element={<OnboardingPage />} />
-            <Route path="/voice-journal" element={<VoiceJournalPage />} />
-            <Route path="/habits" element={<HabitTrackerPage />} />
-            <Route path="/growth" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <LazySpiritualGrowthPage />
-              </Suspense>
-            } />
-            <Route path="/growth/dashboard" element={<GrowthDashboard />} />
-            <Route path="/mood" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <LazyMoodTrackerPage />
-              </Suspense>
-            } />
-            <Route path="/community" element={<CommunityPage />} />
-            <Route path="/prayer-wall" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <LazyPrayerWallPage />
-              </Suspense>
-            } />
-            <Route path="/data" element={
-              <Suspense fallback={<LoadingFallback />}>
-                <LazyDataManagementPage />
-              </Suspense>
-            } />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </div>
-        <Toaster />
+        <ErrorBoundary>
+          <div className="min-h-screen bg-background text-foreground">
+            <OfflineIndicator />
+            <Routes>
+              <Route path="/" element={
+                <ErrorBoundary>
+                  <Index />
+                </ErrorBoundary>
+              } />
+              <Route path="/journal" element={
+                <ErrorBoundary>
+                  <JournalPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/journal/new" element={
+                <ErrorBoundary>
+                  <NewJournalEntry />
+                </ErrorBoundary>
+              } />
+              <Route path="/journal/new-flow" element={
+                <ErrorBoundary>
+                  <NewJournalFlowPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/journal/:id" element={
+                <ErrorBoundary>
+                  <JournalEntryDetail />
+                </ErrorBoundary>
+              } />
+              <Route path="/prayer" element={
+                <ErrorBoundary>
+                  <PrayerPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/prayer/enhanced" element={
+                <ErrorBoundary>
+                  <EnhancedPrayerPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/prayer/guided" element={
+                <ErrorBoundary>
+                  <GuidedPrayerPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/devotional" element={
+                <ErrorBoundary>
+                  <DevotionalPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/devotional/weekly" element={
+                <ErrorBoundary>
+                  <WeeklyDevotionalPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/scripture-discovery" element={
+                <ErrorBoundary>
+                  <ScriptureDiscoveryPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/bible" element={
+                <ErrorBoundary>
+                  <BiblePage />
+                </ErrorBoundary>
+              } />
+              <Route path="/scripture" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LazyScripturePage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              <Route path="/settings" element={
+                <ErrorBoundary>
+                  <SettingsPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/onboarding" element={
+                <ErrorBoundary>
+                  <OnboardingPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/voice-journal" element={
+                <ErrorBoundary>
+                  <VoiceJournalPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/habits" element={
+                <ErrorBoundary>
+                  <HabitTrackerPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/growth" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LazySpiritualGrowthPage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              <Route path="/growth/dashboard" element={
+                <ErrorBoundary>
+                  <GrowthDashboard />
+                </ErrorBoundary>
+              } />
+              <Route path="/mood" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LazyMoodTrackerPage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              <Route path="/community" element={
+                <ErrorBoundary>
+                  <CommunityPage />
+                </ErrorBoundary>
+              } />
+              <Route path="/prayer-wall" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LazyPrayerWallPage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              <Route path="/data" element={
+                <ErrorBoundary>
+                  <Suspense fallback={<LoadingFallback />}>
+                    <LazyDataManagementPage />
+                  </Suspense>
+                </ErrorBoundary>
+              } />
+              <Route path="*" element={
+                <ErrorBoundary>
+                  <NotFound />
+                </ErrorBoundary>
+              } />
+            </Routes>
+          </div>
+          <Toaster />
+        </ErrorBoundary>
       </Router>
     </QueryClientProvider>
   );
