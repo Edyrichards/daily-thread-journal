@@ -31,6 +31,11 @@ import EnhancedPrayerPage from '@/pages/EnhancedPrayerPage';
 import GuidedPrayerPage from '@/pages/GuidedPrayerPage';
 import NotFound from '@/pages/NotFound';
 
+// New Phase 2 pages
+import EnhancedJournalPage from '@/pages/EnhancedJournalPage';
+import PrayerInsightsPage from '@/pages/PrayerInsightsPage';
+import AnalyticsPage from '@/pages/AnalyticsPage';
+
 // Enhanced components
 import ErrorBoundary from '@/components/ErrorBoundary';
 import OfflineIndicator from '@/components/OfflineIndicator';
@@ -66,12 +71,14 @@ function App() {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/journal" element={<JournalPage />} />
+                <Route path="/journal/enhanced" element={<EnhancedJournalPage />} />
                 <Route path="/journal/new" element={<NewJournalEntry />} />
                 <Route path="/journal/new-flow" element={<NewJournalFlowPage />} />
                 <Route path="/journal/:id" element={<JournalEntryDetail />} />
                 <Route path="/prayer" element={<PrayerPage />} />
                 <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
                 <Route path="/prayer/guided" element={<GuidedPrayerPage />} />
+                <Route path="/prayer/insights" element={<PrayerInsightsPage />} />
                 <Route path="/bible" element={<BiblePage />} />
                 <Route path="/scripture" element={<ScripturePage />} />
                 <Route path="/scripture/discovery" element={<ScriptureDiscoveryPage />} />
@@ -81,6 +88,7 @@ function App() {
                 <Route path="/habits" element={<HabitTrackerPage />} />
                 <Route path="/growth" element={<GrowthDashboard />} />
                 <Route path="/spiritual-growth" element={<SpiritualGrowthPage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/community" element={<CommunityPage />} />
                 <Route path="/prayer-wall" element={<PrayerWallPage />} />
                 <Route path="/settings" element={<SettingsPage />} />

@@ -12,6 +12,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import MoodInsights from "@/components/MoodInsights";
 import PersonalizedVerses from "@/components/PersonalizedVerses";
 import PrayerReminders from "@/components/PrayerReminders";
+import { Badge } from "@/components/ui/badge";
+import { BarChart3, BookOpen, Heart, TrendingUp } from "lucide-react";
 
 const moodOptions = [
   { label: "Happy", emoji: "😊", color: "bg-grace-gold/70", value: "happy" },
@@ -133,6 +135,78 @@ const Index = () => {
           </div>
         </section>
 
+        {/* Phase 2: Enhanced Features Showcase */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.6 }}
+            className="space-y-6"
+          >
+            <h2 className="text-2xl font-serif text-foreground text-center mb-8">
+              Enhanced Spiritual Tools
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => navigate('/journal/enhanced')}
+              >
+                <CardContent className="p-6 text-center">
+                  <BookOpen className="h-8 w-8 mx-auto mb-3 text-primary" />
+                  <h3 className="font-semibold mb-2">Enhanced Journal</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Advanced search, tags, and insights
+                  </p>
+                  <Badge variant="secondary" className="mt-2">New</Badge>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => navigate('/prayer/insights')}
+              >
+                <CardContent className="p-6 text-center">
+                  <Heart className="h-8 w-8 mx-auto mb-3 text-red-500" />
+                  <h3 className="font-semibold mb-2">Prayer Insights</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Track answered prayers and patterns
+                  </p>
+                  <Badge variant="secondary" className="mt-2">New</Badge>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => navigate('/analytics')}
+              >
+                <CardContent className="p-6 text-center">
+                  <BarChart3 className="h-8 w-8 mx-auto mb-3 text-green-500" />
+                  <h3 className="font-semibold mb-2">Growth Analytics</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Visualize your spiritual journey
+                  </p>
+                  <Badge variant="secondary" className="mt-2">New</Badge>
+                </CardContent>
+              </Card>
+
+              <Card 
+                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
+                onClick={() => navigate('/bible')}
+              >
+                <CardContent className="p-6 text-center">
+                  <TrendingUp className="h-8 w-8 mx-auto mb-3 text-blue-500" />
+                  <h3 className="font-semibold mb-2">Bible Study Tools</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Advanced study with insights
+                  </p>
+                  <Badge variant="outline" className="mt-2">Enhanced</Badge>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        </section>
+        
         {/* Phase 2: Smart Personalization Features */}
         <section>
           <motion.div
