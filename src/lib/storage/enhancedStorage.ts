@@ -1,4 +1,3 @@
-
 import { indexedDBStorage } from './indexedDB';
 import { 
   JournalEntry, 
@@ -7,6 +6,7 @@ import {
   getJournalEntries as getLocalJournalEntries,
   saveJournalEntry as saveLocalJournalEntry
 } from '../storage';
+import { EnhancedJournalEntry } from '../enhancedStorage';
 
 // Enhanced storage manager that uses IndexedDB with localStorage fallback
 class EnhancedStorageManager {
@@ -34,7 +34,9 @@ class EnhancedStorageManager {
       // Migrate journal entries
       const journalEntries = getLocalJournalEntries();
       if (journalEntries.length > 0) {
-        await indexedDBStorage.setItem('journal_entries', journalEntries);
+        // Convert to enhanced entries
+        const enhancedEntries: EnhancedJournalEntry[] = journalEntries.map(entry => this.convertToEnhancedEntry(entry));
+        await indexedDBStorage.setItem('enhanced_journal_entries', enhancedEntries);
       }
 
       // Migrate other data types
@@ -58,39 +60,93 @@ class EnhancedStorageManager {
     }
   }
 
+  private convertToEnhancedEntry(entry: JournalEntry): EnhancedJournalEntry {
+    const wordCount = entry.content.split(/\s+/).length;
+    return {
+      ...entry,
+      tags: [],
+      category: 'general' as const,
+      wordCount,
+      readingTime: Math.max(1, Math.ceil(wordCount / 200)),
+      lastModified: entry.createdAt || Date.now()
+    };
+  }
+
   async waitForInitialization(): Promise<void> {
     await this.initPromise;
   }
 
-  async saveJournalEntry(entry: JournalEntry): Promise<boolean> {
+  async saveJournalEntry(entry: JournalEntry | EnhancedJournalEntry): Promise<boolean> {
     await this.waitForInitialization();
     
+    // Convert to enhanced entry if needed
+    const enhancedEntry = 'tags' in entry ? entry : this.convertToEnhancedEntry(entry);
+    
     if (this.isIndexedDBAvailable) {
-      const success = await indexedDBStorage.setItem('journal_entries', entry);
+      // Get existing entries and update/add the entry
+      const entries = await this.getJournalEntries();
+      const existingIndex = entries.findIndex(e => e.id === enhancedEntry.id);
+      
+      if (existingIndex >= 0) {
+        entries[existingIndex] = enhancedEntry;
+      } else {
+        entries.push(enhancedEntry);
+      }
+      
+      const success = await indexedDBStorage.setItem('enhanced_journal_entries', entries);
       if (!success) {
         // Fallback to localStorage
-        saveLocalJournalEntry(entry);
+        this.saveToLocalStorage(enhancedEntry);
         return true;
       }
       return success;
     } else {
-      saveLocalJournalEntry(entry);
+      this.saveToLocalStorage(enhancedEntry);
       return true;
     }
   }
 
-  async getJournalEntries(): Promise<JournalEntry[]> {
+  private saveToLocalStorage(entry: EnhancedJournalEntry): void {
+    const entries = this.getFromLocalStorage();
+    const existingIndex = entries.findIndex(e => e.id === entry.id);
+    
+    if (existingIndex >= 0) {
+      entries[existingIndex] = entry;
+    } else {
+      entries.push(entry);
+    }
+    
+    localStorage.setItem('enhanced_journal_entries', JSON.stringify(entries));
+  }
+
+  private getFromLocalStorage(): EnhancedJournalEntry[] {
+    const entriesJson = localStorage.getItem('enhanced_journal_entries');
+    if (!entriesJson) {
+      // Try to get from old journal entries and convert
+      const oldEntries = getLocalJournalEntries();
+      return oldEntries.map(entry => this.convertToEnhancedEntry(entry));
+    }
+    
+    try {
+      return JSON.parse(entriesJson);
+    } catch (error) {
+      console.error('Failed to parse enhanced journal entries:', error);
+      return [];
+    }
+  }
+
+  async getJournalEntries(): Promise<EnhancedJournalEntry[]> {
     await this.waitForInitialization();
     
     if (this.isIndexedDBAvailable) {
-      const entries = await indexedDBStorage.getItem('journal_entries');
+      const entries = await indexedDBStorage.getItem('enhanced_journal_entries');
       if (entries && Array.isArray(entries)) {
-        return entries.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+        return entries.sort((a, b) => (b.lastModified || b.createdAt || 0) - (a.lastModified || a.createdAt || 0));
       }
       // Fallback to localStorage
-      return getLocalJournalEntries();
+      return this.getFromLocalStorage();
     } else {
-      return getLocalJournalEntries();
+      return this.getFromLocalStorage().sort((a, b) => (b.lastModified || b.createdAt || 0) - (a.lastModified || a.createdAt || 0));
     }
   }
 
@@ -98,12 +154,14 @@ class EnhancedStorageManager {
     await this.waitForInitialization();
     
     if (this.isIndexedDBAvailable) {
-      return await indexedDBStorage.removeItem('journal_entries', id);
+      const entries = await this.getJournalEntries();
+      const updatedEntries = entries.filter(entry => entry.id !== id);
+      return await indexedDBStorage.setItem('enhanced_journal_entries', updatedEntries);
     } else {
       // Handle localStorage deletion
-      const entries = getLocalJournalEntries();
+      const entries = this.getFromLocalStorage();
       const updatedEntries = entries.filter(entry => entry.id !== id);
-      localStorage.setItem('journal_entries', JSON.stringify(updatedEntries));
+      localStorage.setItem('enhanced_journal_entries', JSON.stringify(updatedEntries));
       return true;
     }
   }
@@ -117,7 +175,7 @@ class EnhancedStorageManager {
       backupData = await indexedDBStorage.exportData();
     } else {
       // Backup from localStorage
-      const keys = ['journal_entries', 'prayers', 'prayer_requests', 'spiritual_milestones'];
+      const keys = ['enhanced_journal_entries', 'prayers', 'prayer_requests', 'spiritual_milestones'];
       keys.forEach(key => {
         const data = localStorage.getItem(key);
         if (data) {
