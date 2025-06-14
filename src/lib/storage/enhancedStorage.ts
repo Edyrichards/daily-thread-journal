@@ -36,7 +36,8 @@ class EnhancedStorageManager {
       if (journalEntries.length > 0) {
         // Convert to enhanced entries
         const enhancedEntries: EnhancedJournalEntry[] = journalEntries.map(entry => this.convertToEnhancedEntry(entry));
-        await indexedDBStorage.setItem('enhanced_journal_entries', enhancedEntries);
+        // FIX: Use correct key as per DBSchema!
+        await indexedDBStorage.setItem('journal_entries', enhancedEntries);
       }
 
       // Migrate other data types
@@ -93,7 +94,8 @@ class EnhancedStorageManager {
         entries.push(enhancedEntry);
       }
       
-      const success = await indexedDBStorage.setItem('enhanced_journal_entries', entries);
+      // FIX: Use 'journal_entries' as key
+      const success = await indexedDBStorage.setItem('journal_entries', entries);
       if (!success) {
         // Fallback to localStorage
         this.saveToLocalStorage(enhancedEntry);
@@ -139,9 +141,11 @@ class EnhancedStorageManager {
     await this.waitForInitialization();
     
     if (this.isIndexedDBAvailable) {
-      const entries = await indexedDBStorage.getItem('enhanced_journal_entries');
+      // FIX: Use 'journal_entries' as key
+      const entries = await indexedDBStorage.getItem('journal_entries');
       if (entries && Array.isArray(entries)) {
-        return entries.sort((a, b) => (b.lastModified || b.createdAt || 0) - (a.lastModified || a.createdAt || 0));
+        // In case the entries read from indexedDB aren't enhanced, convert them
+        return entries.map((entry: any) => this.convertToEnhancedEntry(entry)).sort((a, b) => (b.lastModified || b.createdAt || 0) - (a.lastModified || a.createdAt || 0));
       }
       // Fallback to localStorage
       return this.getFromLocalStorage();
@@ -156,7 +160,8 @@ class EnhancedStorageManager {
     if (this.isIndexedDBAvailable) {
       const entries = await this.getJournalEntries();
       const updatedEntries = entries.filter(entry => entry.id !== id);
-      return await indexedDBStorage.setItem('enhanced_journal_entries', updatedEntries);
+      // FIX: Use correct key
+      return await indexedDBStorage.setItem('journal_entries', updatedEntries);
     } else {
       // Handle localStorage deletion
       const entries = this.getFromLocalStorage();
