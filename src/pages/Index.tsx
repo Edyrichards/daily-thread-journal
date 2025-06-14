@@ -80,131 +80,93 @@ const Index = () => {
 
   return (
     <Layout>
-      <motion.div 
-        className="space-y-10 p-4 md:p-6"
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -15 }}
-        transition={{ duration: 0.25, ease: "easeInOut" }}
-      >
-        
-        {/* Daily Scripture Section - Enhanced */}
+      <div className="space-y-10 p-4 md:p-6">
+        {/* --- UI: Frosted/Blurred Banner --- */}
         <section className="relative">
-          <div className="relative p-12 md:p-16 rounded-3xl overflow-hidden text-center">
+          <div className="relative flex items-center justify-center p-3 md:p-5 rounded-3xl overflow-hidden">
             <img
               src="https://images.pexels.com/photos/1766838/pexels-photo-1766838.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
               alt="Calming background"
-              className="absolute inset-0 w-full h-full object-cover filter blur-lg brightness-50"
+              className="absolute inset-0 w-full h-full object-cover filter blur-lg brightness-55 scale-105"
             />
-            
-            {isLoadingVerse && (
-              <div className="relative z-10 space-y-4">
-                <Skeleton className="h-8 w-3/4 mx-auto bg-white/20" />
-                <Skeleton className="h-6 w-1/2 mx-auto bg-white/20" />
-              </div>
-            )}
-
-            {!isLoadingVerse && dailyVerse && (
-              <motion.div
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative z-10"
+            <div className="relative z-10 w-full flex items-center justify-center">
+              <div className="w-full max-w-[840px] mx-auto px-4 py-12 md:py-16
+                rounded-3xl shadow-2xl bg-white/75 backdrop-blur-xl border border-white/30"
+                style={{ boxShadow: "0 8px 40px 8px rgba(0,0,0,0.12)" }}
               >
-                <div className="bg-white/90 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl max-w-4xl mx-auto p-8 md:p-12">
-                  <blockquote className="text-2xl md:text-4xl font-serif text-card-foreground mb-6 leading-relaxed italic">
-                    "{dailyVerse.text}"
-                  </blockquote>
-                  <cite className="text-lg md:text-xl text-muted-foreground font-serif not-italic">
-                    — {dailyVerse.reference}
-                  </cite>
-                  <div className="mt-8">
-                    <div className="w-12 h-0.5 bg-primary mx-auto opacity-60"></div>
-                  </div>
+                <blockquote className="text-2xl md:text-4xl font-serif text-card-foreground mb-6 leading-relaxed italic text-center">
+                  " But seek first God’s Kingdom, and his righteousness; and all these things will be given to you as well. "
+                </blockquote>
+                <cite className="text-lg md:text-xl text-muted-foreground font-serif not-italic block text-center">
+                  — Matthew 6:33
+                </cite>
+                <div className="mt-8">
+                  <div className="w-12 h-0.5 bg-primary/60 mx-auto opacity-60"></div>
                 </div>
-              </motion.div>
-            )}
-
-            {!isLoadingVerse && !dailyVerse && (
-              <div className="relative z-10 bg-white/90 backdrop-blur-md rounded-3xl p-8 max-w-2xl mx-auto">
-                <p className="text-lg text-muted-foreground">
-                  "Be still, and know that I am God." — Psalm 46:10
-                </p>
               </div>
-            )}
+            </div>
           </div>
         </section>
 
-        {/* Phase 2: Enhanced Features Showcase */}
+        {/* --- Enhanced Spiritual Tools Section --- */}
         <section>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.6 }}
-            className="space-y-6"
-          >
-            <h2 className="text-2xl font-serif text-foreground text-center mb-8">
-              Enhanced Spiritual Tools
-            </h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/journal/enhanced')}
-              >
-                <CardContent className="p-6 text-center">
-                  <BookOpen className="h-8 w-8 mx-auto mb-3 text-primary" />
-                  <h3 className="font-semibold mb-2">Enhanced Journal</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Advanced search, tags, and insights
-                  </p>
-                  <Badge variant="secondary" className="mt-2">New</Badge>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/prayer/insights')}
-              >
-                <CardContent className="p-6 text-center">
-                  <Heart className="h-8 w-8 mx-auto mb-3 text-red-500" />
-                  <h3 className="font-semibold mb-2">Prayer Insights</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Track answered prayers and patterns
-                  </p>
-                  <Badge variant="secondary" className="mt-2">New</Badge>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/analytics')}
-              >
-                <CardContent className="p-6 text-center">
-                  <BarChart3 className="h-8 w-8 mx-auto mb-3 text-green-500" />
-                  <h3 className="font-semibold mb-2">Growth Analytics</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Visualize your spiritual journey
-                  </p>
-                  <Badge variant="secondary" className="mt-2">New</Badge>
-                </CardContent>
-              </Card>
-
-              <Card 
-                className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105"
-                onClick={() => navigate('/bible')}
-              >
-                <CardContent className="p-6 text-center">
-                  <TrendingUp className="h-8 w-8 mx-auto mb-3 text-blue-500" />
-                  <h3 className="font-semibold mb-2">Bible Study Tools</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Advanced study with insights
-                  </p>
-                  <Badge variant="outline" className="mt-2">Enhanced</Badge>
-                </CardContent>
-              </Card>
+          <h2 className="text-2xl font-serif text-foreground text-center mb-8">
+            Enhanced Spiritual Tools
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div 
+              className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 border border-gray-200 rounded-2xl"
+              onClick={() => navigate('/journal/enhanced')}
+            >
+              <div className="p-6 text-center">
+                <BookOpen className="h-8 w-8 mx-auto mb-3 text-primary" />
+                <h3 className="font-semibold mb-2">Enhanced Journal</h3>
+                <p className="text-sm text-muted-foreground">
+                  Advanced search, tags, and insights
+                </p>
+                <span className="inline-block rounded bg-muted px-2 py-0.5 text-xs font-medium mt-2">New</span>
+              </div>
             </div>
-          </motion.div>
+            <div 
+              className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 border border-gray-200 rounded-2xl"
+              onClick={() => navigate('/prayer/insights')}
+            >
+              <div className="p-6 text-center">
+                <Heart className="h-8 w-8 mx-auto mb-3 text-red-500" />
+                <h3 className="font-semibold mb-2">Prayer Insights</h3>
+                <p className="text-sm text-muted-foreground">
+                  Track answered prayers and patterns
+                </p>
+                <span className="inline-block rounded bg-muted px-2 py-0.5 text-xs font-medium mt-2">New</span>
+              </div>
+            </div>
+            <div 
+              className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 border border-gray-200 rounded-2xl"
+              onClick={() => navigate('/analytics')}
+            >
+              <div className="p-6 text-center">
+                <BarChart3 className="h-8 w-8 mx-auto mb-3 text-green-500" />
+                <h3 className="font-semibold mb-2">Growth Analytics</h3>
+                <p className="text-sm text-muted-foreground">
+                  Visualize your spiritual journey
+                </p>
+                <span className="inline-block rounded bg-muted px-2 py-0.5 text-xs font-medium mt-2">New</span>
+              </div>
+            </div>
+            <div 
+              className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 border border-gray-200 rounded-2xl"
+              onClick={() => navigate('/bible')}
+            >
+              <div className="p-6 text-center">
+                <BarChart3 className="h-8 w-8 mx-auto mb-3 text-blue-500" />
+                <h3 className="font-semibold mb-2">Bible Study Tools</h3>
+                <p className="text-sm text-muted-foreground">
+                  Advanced study with insights
+                </p>
+                <span className="inline-block rounded border border-primary px-2 py-0.5 text-xs font-medium mt-2 text-primary">Enhanced</span>
+              </div>
+            </div>
+          </div>
         </section>
         
         {/* Phase 2: Smart Personalization Features */}
@@ -348,7 +310,7 @@ const Index = () => {
           ) : null}
         </section>
 
-      </motion.div>
+      </div>
     </Layout>
   );
 };

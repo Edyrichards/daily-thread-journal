@@ -1,4 +1,3 @@
-
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ArrowLeft, Feather, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,29 +13,16 @@ const Header = ({ title, onMenuClick }: HeaderProps) => {
   const showBackButton = location.pathname !== "/";
   
   if (!title) {
-    // Home screen format with the feather icon
+    // Home screen format with the feather icon, centered
     return (
       <header className="pt-6 pb-3 px-6 text-center">
-        <div className="flex items-center justify-between">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onMenuClick}
-            className="text-foreground"
-          >
-            <Menu size={20} />
-          </Button>
-          
-          <div className="flex items-center justify-center flex-1">
-            <h1 className="text-lg uppercase tracking-wider font-serif text-foreground text-center">
-              Threads of <br /> Grace
-            </h1>
-            <div className="ml-2 mt-1">
-              <Feather size={18} className="rotate-12 opacity-80 text-grace-gold" />
-            </div>
+        <div className="flex items-center justify-center">
+          <h1 className="text-xl uppercase tracking-wider font-serif text-foreground text-center font-medium">
+            THREADS OF GRACE
+          </h1>
+          <div className="ml-2 mt-1">
+            <Feather size={18} className="rotate-12 opacity-80 text-grace-gold" />
           </div>
-          
-          <div className="w-10"></div> {/* Spacer */}
         </div>
       </header>
     );
