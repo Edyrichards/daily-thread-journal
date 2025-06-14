@@ -42,20 +42,23 @@ const AppSidebar = () => {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map(item => (
-                <SidebarMenuItem key={item.title} active={location.pathname === item.url || (item.url !== '/' && location.pathname.startsWith(item.url))}>
-                  <SidebarMenuButton asChild>
-                    <button
-                      className="flex items-center w-full gap-3 px-3 py-2 rounded-lg group transition-all"
-                      onClick={() => navigate(item.url)}
-                      aria-current={location.pathname === item.url ? "page" : undefined}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span className="font-medium">{item.title}</span>
-                    </button>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map(item => {
+                const isActive = location.pathname === item.url || (item.url !== '/' && location.pathname.startsWith(item.url));
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild isActive={isActive}>
+                      <button
+                        className="flex items-center w-full gap-3 px-3 py-2 rounded-lg group transition-all"
+                        onClick={() => navigate(item.url)}
+                        aria-current={isActive ? "page" : undefined}
+                      >
+                        <item.icon className="w-5 h-5" />
+                        <span className="font-medium">{item.title}</span>
+                      </button>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -65,3 +68,4 @@ const AppSidebar = () => {
 };
 
 export default AppSidebar;
+
