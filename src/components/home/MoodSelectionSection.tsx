@@ -21,10 +21,10 @@ const MoodSelectionSection: React.FC = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.6 }}
       >
-        <h2 className="text-3xl font-serif text-foreground mb-8">
+        <h2 className="text-2xl md:text-3xl font-serif text-foreground mb-6 md:mb-8">
           How are you feeling today?
         </h2>
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 md:gap-4 mb-8 md:mb-10">
           {moodOptions.map((mood, index) => (
             <motion.button
               key={mood.value}
@@ -34,10 +34,11 @@ const MoodSelectionSection: React.FC = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate(`/journal/new-flow?mood=${mood.value}`)}
-              className={`flex flex-col items-center justify-center p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${mood.color} border border-white/20`}
+              className={`flex flex-col items-center justify-center p-4 md:p-6 rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer ${mood.color} border border-white/20 focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none min-h-[100px] md:min-h-[120px]`}
+              aria-label={`Select ${mood.label} mood`}
             >
-              <span className="text-4xl mb-2">{mood.emoji}</span>
-              <span className="text-sm font-medium text-foreground">{mood.label}</span>
+              <span className="text-3xl md:text-4xl mb-2">{mood.emoji}</span>
+              <span className="text-xs md:text-sm font-medium text-foreground">{mood.label}</span>
             </motion.button>
           ))}
         </div>

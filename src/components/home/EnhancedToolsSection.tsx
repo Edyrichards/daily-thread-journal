@@ -2,6 +2,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { BookOpen, Heart, BarChart3 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 const EnhancedToolsSection: React.FC = () => {
   const navigate = useNavigate();
@@ -44,29 +45,32 @@ const EnhancedToolsSection: React.FC = () => {
 
   return (
     <section>
-      <h2 className="text-2xl font-serif text-foreground text-center mb-8">
+      <h2 className="text-2xl font-serif text-foreground text-center mb-6 md:mb-8">
         Enhanced Spiritual Tools
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {tools.map((tool) => (
           <div 
             key={tool.title}
-            className="cursor-pointer hover:shadow-lg transition-all duration-300 hover:scale-105 bg-white/90 border border-gray-200 rounded-2xl"
+            className="group cursor-pointer hover:shadow-xl transition-all duration-300 hover:scale-[1.02] bg-white/90 border border-gray-200 rounded-2xl focus-visible:ring-2 focus-visible:ring-primary focus-visible:outline-none"
             onClick={() => navigate(tool.route)}
+            onKeyDown={(e) => e.key === 'Enter' && navigate(tool.route)}
+            tabIndex={0}
+            role="button"
+            aria-label={`Open ${tool.title}`}
           >
-            <div className="p-6 text-center">
-              <tool.icon className={`h-8 w-8 mx-auto mb-3 ${tool.color}`} />
-              <h3 className="font-semibold mb-2">{tool.title}</h3>
-              <p className="text-sm text-muted-foreground">
+            <div className="p-4 md:p-6 text-center">
+              <tool.icon className={`h-8 w-8 mx-auto mb-3 ${tool.color} group-hover:scale-110 transition-transform duration-200`} />
+              <h3 className="font-semibold mb-2 text-sm md:text-base">{tool.title}</h3>
+              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed mb-3">
                 {tool.description}
               </p>
-              <span className={`inline-block rounded ${
-                tool.badgeVariant === 'outline' 
-                  ? 'border border-primary text-primary' 
-                  : 'bg-muted'
-              } px-2 py-0.5 text-xs font-medium mt-2`}>
+              <Badge 
+                variant={tool.badgeVariant === 'outline' ? 'outline' : 'default'}
+                className="text-xs"
+              >
                 {tool.badge}
-              </span>
+              </Badge>
             </div>
           </div>
         ))}
