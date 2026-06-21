@@ -27,6 +27,7 @@ import SettingsPage from '@/pages/SettingsPage';
 import DataManagementPage from '@/pages/DataManagementPage';
 import VoiceJournalPage from '@/pages/VoiceJournalPage';
 import NewJournalFlowPage from '@/pages/NewJournalFlowPage';
+import SelahNewEntryPage from '@/pages/SelahNewEntryPage';
 import OnboardingPage from '@/pages/OnboardingPage';
 import EnhancedPrayerPage from '@/pages/EnhancedPrayerPage';
 import GuidedPrayerPage from '@/pages/GuidedPrayerPage';
@@ -75,7 +76,8 @@ function App() {
                 <Route path="/journal" element={<JournalPage />} />
                 <Route path="/journal/enhanced" element={<EnhancedJournalPage />} />
                 <Route path="/journal/new" element={<NewJournalEntry />} />
-                <Route path="/journal/new-flow" element={<NewJournalFlowPage />} />
+                <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
+                <Route path="/journal/new-flow-legacy" element={<NewJournalFlowPage />} />
                 <Route path="/journal/:id" element={<JournalEntryDetail />} />
                 <Route path="/prayer" element={<PrayerPage />} />
                 <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
