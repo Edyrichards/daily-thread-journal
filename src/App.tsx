@@ -7,6 +7,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 
 // Import all pages
 import Index from '@/pages/Index';
+import TodayPage from '@/pages/TodayPage';
 import JournalPage from '@/pages/JournalPage';
 import NewJournalEntry from '@/pages/NewJournalEntry';
 import JournalEntryDetail from '@/pages/JournalEntryDetail';
@@ -69,7 +70,8 @@ function App() {
             <div className="min-h-screen bg-background">
               <OfflineIndicator />
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<TodayPage />} />
+                <Route path="/home-legacy" element={<Index />} />
                 <Route path="/journal" element={<JournalPage />} />
                 <Route path="/journal/enhanced" element={<EnhancedJournalPage />} />
                 <Route path="/journal/new" element={<NewJournalEntry />} />

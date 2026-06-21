@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
 @import "./styles/accessibility.css";
 @tailwind base;
 @tailwind components;
@@ -7,60 +7,94 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 27%;
-    --card: 210 20% 99%;
-    --card-foreground: 215 25% 27%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 224 71.4% 4.1%;
-    --primary: 262 52% 47%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 220 14.3% 95.9%;
-    --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
-    --muted-foreground: 220 8.9% 46.1%;
-    --accent: 220 14.3% 95.9%;
-    --accent-foreground: 220.9 39.3% 11%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 262 52% 47%;
-    --radius: 0.75rem;
-    --grace-100: 270 50% 95%;
-    --grace-200: 270 30% 85%;
-    --grace-blue: 220 60% 70%;
-    --grace-gold: 45 80% 60%;
-    --light-beige: 30 20% 92%;
-    --soft-peach: 15 40% 88%;
+    /* ---- Selah · "Dawn" (light) ---- */
+    --background: 39 47% 94%;        /* warm ivory paper */
+    --foreground: 27 14% 15%;        /* warm ink */
+    --card: 45 60% 99%;
+    --card-foreground: 27 14% 15%;
+    --popover: 45 60% 99%;
+    --popover-foreground: 27 14% 15%;
+    --primary: 16 49% 53%;           /* clay / terracotta CTA */
+    --primary-foreground: 45 60% 99%;
+    --secondary: 38 38% 92%;         /* sand */
+    --secondary-foreground: 30 13% 32%;
+    --muted: 38 38% 92%;
+    --muted-foreground: 33 11% 48%;
+    --accent: 108 24% 91%;           /* sage soft */
+    --accent-foreground: 124 16% 28%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 45 60% 99%;
+    --border: 38 38% 88%;
+    --input: 38 38% 88%;
+    --ring: 16 49% 53%;
+    --radius: 1.25rem;
+
+    /* Selah brand tokens */
+    --paper: 39 47% 94%;
+    --sand: 38 38% 92%;
+    --line: 38 38% 88%;
+    --ink: 27 14% 15%;
+    --ink-soft: 30 13% 32%;
+    --sage: 124 13% 49%;
+    --sage-soft: 108 24% 91%;
+    --clay: 16 49% 53%;
+    --clay-soft: 20 60% 89%;
+    --gold: 40 65% 54%;
+    --gold-soft: 43 67% 88%;
+    --plum: 279 11% 47%;
+    --sky: 205 32% 64%;
+
+    /* legacy (kept so un-migrated pages don't break) */
+    --grace-100: 108 24% 91%;
+    --grace-200: 38 38% 85%;
+    --grace-blue: 205 32% 64%;
+    --grace-gold: 40 65% 54%;
+    --light-beige: 38 38% 92%;
+    --soft-peach: 20 60% 89%;
   }
 
   .dark {
-    --background: 224 71.4% 4.1%;
-    --foreground: 210 20% 98%;
-    --card: 224 71.4% 4.1%;
-    --card-foreground: 210 20% 98%;
-    --popover: 224 71.4% 4.1%;
-    --popover-foreground: 210 20% 98%;
-    --primary: 263 70% 50.4%;
-    --primary-foreground: 210 20% 98%;
-    --secondary: 215 27.9% 16.9%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 215 27.9% 16.9%;
-    --muted-foreground: 217.9 10.6% 64.9%;
-    --accent: 215 27.9% 16.9%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 215 27.9% 16.9%;
-    --input: 215 27.9% 16.9%;
-    --ring: 263 70% 50.4%;
-    --grace-100: 270 50% 20%;
-    --grace-200: 270 30% 30%;
-    --grace-blue: 220 60% 40%;
-    --grace-gold: 45 80% 40%;
-    --light-beige: 30 20% 15%;
-    --soft-peach: 15 40% 20%;
+    /* ---- Selah · "Vespers" (dark) ---- */
+    --background: 270 15% 13%;
+    --foreground: 38 43% 91%;
+    --card: 270 14% 18%;
+    --card-foreground: 38 43% 91%;
+    --popover: 270 14% 18%;
+    --popover-foreground: 38 43% 91%;
+    --primary: 18 55% 60%;
+    --primary-foreground: 270 15% 13%;
+    --secondary: 268 12% 22%;
+    --secondary-foreground: 38 43% 91%;
+    --muted: 268 12% 22%;
+    --muted-foreground: 270 8% 65%;
+    --accent: 130 12% 24%;
+    --accent-foreground: 108 24% 85%;
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 38 43% 91%;
+    --border: 264 13% 24%;
+    --input: 264 13% 24%;
+    --ring: 18 55% 60%;
+
+    --paper: 270 15% 13%;
+    --sand: 268 12% 22%;
+    --line: 264 13% 24%;
+    --ink: 38 43% 91%;
+    --ink-soft: 270 8% 78%;
+    --sage: 124 16% 62%;
+    --sage-soft: 130 12% 24%;
+    --clay: 18 55% 62%;
+    --clay-soft: 16 30% 26%;
+    --gold: 40 60% 60%;
+    --gold-soft: 38 28% 24%;
+    --plum: 279 18% 66%;
+    --sky: 205 30% 66%;
+
+    --grace-100: 130 12% 24%;
+    --grace-200: 268 12% 30%;
+    --grace-blue: 205 30% 50%;
+    --grace-gold: 40 60% 45%;
+    --light-beige: 268 12% 18%;
+    --soft-peach: 16 30% 24%;
   }
 }
 
@@ -70,16 +104,21 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-serif {
+    font-feature-settings: "liga" 1, "dlig" 1;
   }
 }
 
-/* Additional accessibility improvements */
 @layer utilities {
   .focus-ring {
     @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
-  
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
+  /* hairline that respects the warm line token */
+  .border-hair { border-color: hsl(var(--line)); }
 }

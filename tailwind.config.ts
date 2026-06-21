@@ -64,14 +64,44 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				grace: {
-					100: 'hsl(var(--grace-100))', // lightest lavender
-					200: 'hsl(var(--grace-200))', // light lavender
-					blue: 'hsl(var(--grace-blue))',  // soft blue
-					gold: 'hsl(var(--grace-gold))'    // gold accent
-					// Darker shades (300-700) removed
+					100: 'hsl(var(--grace-100))',
+					200: 'hsl(var(--grace-200))',
+					blue: 'hsl(var(--grace-blue))',
+					gold: 'hsl(var(--grace-gold))'
 				},
 				lightBeige: 'hsl(var(--light-beige))',
 				softPeach: 'hsl(var(--soft-peach))',
+				/* ---- Selah brand palette ---- */
+				paper: 'hsl(var(--paper))',
+				sand: 'hsl(var(--sand))',
+				line: 'hsl(var(--line))',
+				ink: {
+					DEFAULT: 'hsl(var(--ink))',
+					soft: 'hsl(var(--ink-soft))'
+				},
+				sage: {
+					DEFAULT: 'hsl(var(--sage))',
+					soft: 'hsl(var(--sage-soft))'
+				},
+				clay: {
+					DEFAULT: 'hsl(var(--clay))',
+					soft: 'hsl(var(--clay-soft))'
+				},
+				gold: {
+					DEFAULT: 'hsl(var(--gold))',
+					soft: 'hsl(var(--gold-soft))'
+				},
+				plum: 'hsl(var(--plum))',
+				sky: 'hsl(var(--sky))',
+			},
+			backgroundImage: {
+				'dawn': 'linear-gradient(150deg,#E9B98A 0%,#C26B4A 45%,#7A6A86 100%)',
+				'sage-grad': 'linear-gradient(150deg,#8FB089 0%,#6E8E70 100%)',
+				'vesper': 'radial-gradient(120% 90% at 50% 18%,#3a2f49 0%,#241d2d 55%,#171320 100%)',
+			},
+			boxShadow: {
+				'soft': '0 10px 30px -12px rgba(60,45,30,0.18)',
+				'glow-clay': '0 12px 28px -8px rgba(194,107,74,0.45)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -123,8 +153,8 @@ export default {
 				'fade-out': 'fade-out 0.3s ease-out'
 			},
 			fontFamily: {
-				'serif': ['Playfair Display', 'serif'],
-				'sans': ['Inter', 'sans-serif']
+				'serif': ['Fraunces', 'Georgia', 'serif'],
+				'sans': ['Inter', 'system-ui', 'sans-serif']
 			}
 		}
 	},
