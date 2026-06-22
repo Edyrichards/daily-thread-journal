@@ -8,6 +8,7 @@ import {
   Mood, JournalEntry, saveJournalEntry, generateId,
 } from '@/lib/storage';
 import { getVerseByMood } from '@/lib/api';
+import { startVoice, voiceAvailable, VoiceHandle } from '@/lib/voice';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -44,7 +45,8 @@ const SelahNewEntryPage = () => {
   const [text, setText] = useState('');
   const [reflection, setReflection] = useState('');
   const [listening, setListening] = useState(false);
-  const recRef = useRef<any>(null);
+  const recRef = useRef<VoiceHandle | null>(null);
+  const baseRef = useRef('');
 
   /* hydrate from ?mood= or saved draft */
   useEffect(() => {
@@ -93,32 +95,19 @@ const SelahNewEntryPage = () => {
     setStep(2);
   };
 
-  const toggleVoice = () => {
-    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SR) {
-      toast({ title: 'Voice unavailable', description: 'This browser doesn’t support voice journaling.' });
+  const toggleVoice = async () => {
+    if (listening) { recRef.current?.stop(); return; }
+    if (!(await voiceAvailable())) {
+      toast({ title: 'Voice unavailable', description: 'Speech-to-text isn’t supported on this device.' });
       return;
     }
-    if (listening) {
-      recRef.current?.stop();
-      return;
-    }
-    const rec = new SR();
-    rec.lang = 'en-US';
-    rec.continuous = true;
-    rec.interimResults = false;
-    rec.onresult = (e: any) => {
-      let t = '';
-      for (let i = e.resultIndex; i < e.results.length; i++) {
-        if (e.results[i].isFinal) t += e.results[i][0].transcript;
-      }
-      if (t) setText((p) => (p ? p.replace(/\s*$/, ' ') : '') + t.trim());
-    };
-    rec.onend = () => setListening(false);
-    rec.onerror = () => setListening(false);
-    recRef.current = rec;
-    rec.start();
-    setListening(true);
+    baseRef.current = text;
+    const handle = await startVoice({
+      onText: (session) => setText((baseRef.current ? baseRef.current.replace(/\s*$/, ' ') : '') + session),
+      onEnd: () => { setListening(false); recRef.current = null; },
+      onError: (m) => { setListening(false); if (m !== 'no-speech') toast({ title: 'Voice stopped', description: m }); },
+    });
+    if (handle) { recRef.current = handle; setListening(true); }
   };
 
   const save = () => {

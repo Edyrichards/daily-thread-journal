@@ -7,8 +7,18 @@ import {
 } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { SprigDivider, LeafSprig } from '@/components/threads/Botanical';
+import { getReminderTime, setDailyReminder, cancelDailyReminder } from '@/lib/reminders';
+import { saveJson } from '@/lib/exporter';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+
+const to12h = (hhmm: string) => {
+  if (!hhmm) return 'Off';
+  const [h, m] = hhmm.split(':').map(Number);
+  const ap = h < 12 ? 'AM' : 'PM';
+  const h12 = h % 12 || 12;
+  return `${h12}:${String(m).padStart(2, '0')} ${ap}`;
+};
 
 const BACKUP_KEYS = ['journal_entries', 'prayers', 'prayer_requests', 'prayer_days', 'userName'];
 const sizes = ['Small', 'Medium', 'Large'];
@@ -43,27 +53,28 @@ const SelahSettingsPage = () => {
   const [mounted, setMounted] = useState(false);
   const [size, setSize] = useState(() => Number(localStorage.getItem('fontScale') ?? 1));
   const [version, setVersion] = useState(() => ((localStorage.getItem('bibleVersionPreference') || 'WEB').toUpperCase() === 'KJV' ? 'KJV' : 'WEB'));
+  const [reminder, setReminder] = useState(() => getReminderTime());
   const fileRef = useRef<HTMLInputElement>(null);
+  const timeRef = useRef<HTMLInputElement>(null);
   const userName = localStorage.getItem('userName') || 'Your Name';
 
   useEffect(() => setMounted(true), []);
   const isDark = mounted && resolvedTheme === 'dark';
 
-  const download = (name: string, payload: string) => {
-    const blob = new Blob([payload], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = name; a.click();
-    URL.revokeObjectURL(url);
+  const exportEntries = async () => {
+    await saveJson('threads-of-grace-journal.json', localStorage.getItem('journal_entries') || '[]', 'Export journal');
+    toast({ title: 'Exported', description: 'Your journal is ready to save or share.' });
   };
-  const exportEntries = () => {
-    download('threads-of-grace-journal.json', localStorage.getItem('journal_entries') || '[]');
-    toast({ title: 'Exported', description: 'Your journal was downloaded.' });
-  };
-  const backup = () => {
+  const backup = async () => {
     const data = Object.fromEntries(BACKUP_KEYS.map((k) => [k, localStorage.getItem(k)]));
-    download('threads-of-grace-backup.json', JSON.stringify(data, null, 2));
-    toast({ title: 'Backup ready', description: 'A full backup was downloaded.' });
+    await saveJson('threads-of-grace-backup.json', JSON.stringify(data, null, 2), 'Backup');
+    toast({ title: 'Backup ready', description: 'A full backup is ready to save or share.' });
+  };
+  const pickReminder = async (value: string) => {
+    if (!value) { await cancelDailyReminder(); setReminder(''); toast({ title: 'Reminder off' }); return; }
+    const scheduled = await setDailyReminder(value);
+    setReminder(value);
+    toast({ title: `Reminder set for ${to12h(value)}`, description: scheduled ? 'We’ll nudge you each day.' : 'Saved — active in the installed app.' });
   };
   const restore = (file: File) => {
     const reader = new FileReader();
@@ -87,6 +98,7 @@ const SelahSettingsPage = () => {
   return (
     <SelahShell title="Settings">
       <input ref={fileRef} type="file" accept="application/json" hidden onChange={(e) => e.target.files?.[0] && restore(e.target.files[0])} />
+      <input ref={timeRef} type="time" value={reminder || '08:00'} onChange={(e) => pickReminder(e.target.value)} className="sr-only" aria-hidden />
 
       <h1 className="mt-1 text-center font-display text-[36px] font-semibold tracking-tight text-forest">Settings</h1>
       <SprigDivider className="mb-5 mt-1" />
@@ -104,7 +116,10 @@ const SelahSettingsPage = () => {
       </button>
 
       <Section title="Preferences">
-        <Row icon={Bell} label="Daily Reminder" value="8:00 AM" onClick={() => toast({ title: 'Reminder', description: 'Reminder time picker coming soon.' })} />
+        <Row icon={Bell} label="Daily Reminder" value={to12h(reminder)} onClick={() => {
+          const el = timeRef.current as any;
+          if (el?.showPicker) el.showPicker(); else el?.click();
+        }} />
         <Row icon={BookOpen} label="Bible Version" value={version} last onClick={() => {
           const next = version === 'WEB' ? 'KJV' : 'WEB';
           setVersion(next); localStorage.setItem('bibleVersionPreference', next);
