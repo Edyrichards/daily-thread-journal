@@ -96,30 +96,39 @@ export const parseReference = (ref: string): { book: string; chapter: number } |
 export interface Verse { verse: number; text: string; }
 export interface Passage { reference: string; translation: string; verses: Verse[]; }
 
-const transFor = (): string => {
-  const pref = (localStorage.getItem('bibleVersionPreference') || '').toUpperCase();
-  return pref === 'KJV' ? 'kjv' : 'web'; // bible-api free translations; NIV/ESV/NLT not licensed
+export type Translation = 'web' | 'kjv';
+export const TRANSLATIONS: { id: Translation; label: string; short: string }[] = [
+  { id: 'web', label: 'World English Bible', short: 'WEB' },
+  { id: 'kjv', label: 'King James Version', short: 'KJV' },
+];
+export const translationPref = (): Translation => {
+  const p = (localStorage.getItem('bibleVersionPreference') || '').toLowerCase();
+  return p === 'kjv' ? 'kjv' : 'web';
 };
+export const translationLabel = (t: Translation = translationPref()) =>
+  TRANSLATIONS.find((x) => x.id === t)?.label || 'World English Bible';
 
+const slug = (book: string) => book.toLowerCase().replace(/\s+/g, '');
+const cache = new Map<string, Record<string, Record<string, string>>>();
+
+async function loadBook(book: string, trans: Translation) {
+  const key = `${trans}:${slug(book)}`;
+  if (cache.has(key)) return cache.get(key)!;
+  const res = await fetch(`/bible/${trans}/${slug(book)}.json`);
+  if (!res.ok) throw new Error('Book not found');
+  const data = await res.json();
+  cache.set(key, data);
+  return data;
+}
+
+/** Load a chapter from the bundled, offline public-domain translations. */
 export async function fetchPassage(book: string, chapter: number): Promise<Passage> {
-  const translation = transFor();
-  const key = `${book} ${chapter}`;
-  try {
-    const url = `https://bible-api.com/${encodeURIComponent(key)}?translation=${translation}`;
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const res = await fetch(url, { signal: ctrl.signal }).finally(() => clearTimeout(t));
-    if (!res.ok) throw new Error('bad status');
-    const data = await res.json();
-    const verses = (data.verses || []).map((v: any) => ({ verse: v.verse, text: String(v.text).trim() }));
-    if (!verses.length) throw new Error('empty');
-    return { reference: data.reference || key, translation: data.translation_name || translation.toUpperCase(), verses };
-  } catch (err) {
-    // Network blocked or offline — fall back to a bundled public-domain passage if we have it.
-    const { OFFLINE } = await import('./bibleOffline');
-    if (OFFLINE[key]) return { reference: key, translation: 'World English Bible (offline)', verses: OFFLINE[key] };
-    throw err;
-  }
+  const trans = translationPref();
+  const data = await loadBook(book, trans);
+  const ch = data[String(chapter)];
+  if (!ch) throw new Error('Chapter not found');
+  const verses = Object.keys(ch).map(Number).sort((a, b) => a - b).map((v) => ({ verse: v, text: ch[String(v)] }));
+  return { reference: `${book} ${chapter}`, translation: translationLabel(trans), verses };
 }
 
 /* ----------------------------- bookmarks ----------------------------- */

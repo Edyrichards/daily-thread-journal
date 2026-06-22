@@ -10,7 +10,10 @@ const reminders: { v: string; label: string; icon: LucideIcon }[] = [
   { v: 'evening', label: 'Evening', icon: Moon },
   { v: 'none', label: 'No reminder', icon: BellOff },
 ];
-const versions = ['KJV', 'NIV', 'ESV', 'NLT'];
+const versions = [
+  { v: 'WEB', name: 'World English Bible' },
+  { v: 'KJV', name: 'King James Version' },
+];
 const stepAnim = { initial: { opacity: 0, x: 28 }, animate: { opacity: 1, x: 0 }, exit: { opacity: 0, x: -28 }, transition: { duration: 0.35 } };
 
 const OptionCard = ({ active, onClick, children }: { active?: boolean; onClick: () => void; children: React.ReactNode }) => (
@@ -54,7 +57,7 @@ const SelahOnboardingPage = () => {
             ))}
           </div>
           {step > 1 && step < 4 ? (
-            <button onClick={() => (step === 2 ? pickReminder('none') : pickVersion('NIV'))} className="text-[13px] font-medium text-muted-foreground">Skip</button>
+            <button onClick={() => (step === 2 ? pickReminder('none') : pickVersion('WEB'))} className="text-[13px] font-medium text-muted-foreground">Skip</button>
           ) : <span className="w-9" />}
         </div>
 
@@ -105,14 +108,15 @@ const SelahOnboardingPage = () => {
             {step === 3 && (
               <motion.div key="s3" {...stepAnim} className="flex flex-1 flex-col justify-center">
                 <h2 className="font-display text-[30px] font-semibold leading-tight text-foreground">Your Bible translation</h2>
-                <p className="mt-2 text-[15px] text-muted-foreground">We’ll show scripture in the version you love.</p>
+                <p className="mt-2 text-[15px] text-muted-foreground">Two free, public-domain translations, available fully offline.</p>
                 <div className="mt-7 grid grid-cols-2 gap-3">
-                  {versions.map((v) => (
+                  {versions.map((o) => (
                     <button
-                      key={v} onClick={() => pickVersion(v)}
-                      className={`rounded-2xl border py-6 text-center transition-colors ${version === v ? 'border-forest bg-forest-soft' : 'border-border bg-card'}`}
+                      key={o.v} onClick={() => pickVersion(o.v)}
+                      className={`rounded-2xl border py-6 text-center transition-colors ${version === o.v ? 'border-forest bg-forest-soft' : 'border-border bg-card'}`}
                     >
-                      <span className="font-display text-[26px] font-semibold text-forest">{v}</span>
+                      <span className="block font-display text-[26px] font-semibold text-forest">{o.v}</span>
+                      <span className="mt-1 block px-2 text-[11px] font-medium text-muted-foreground">{o.name}</span>
                     </button>
                   ))}
                 </div>

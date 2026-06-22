@@ -42,6 +42,7 @@ const SelahSettingsPage = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [size, setSize] = useState(() => Number(localStorage.getItem('fontScale') ?? 1));
+  const [version, setVersion] = useState(() => ((localStorage.getItem('bibleVersionPreference') || 'WEB').toUpperCase() === 'KJV' ? 'KJV' : 'WEB'));
   const fileRef = useRef<HTMLInputElement>(null);
   const userName = localStorage.getItem('userName') || 'Your Name';
 
@@ -104,7 +105,11 @@ const SelahSettingsPage = () => {
 
       <Section title="Preferences">
         <Row icon={Bell} label="Daily Reminder" value="8:00 AM" onClick={() => toast({ title: 'Reminder', description: 'Reminder time picker coming soon.' })} />
-        <Row icon={BookOpen} label="Bible Version" value="NIV" last onClick={() => toast({ title: 'Translation', description: 'Choose your preferred translation.' })} />
+        <Row icon={BookOpen} label="Bible Version" value={version} last onClick={() => {
+          const next = version === 'WEB' ? 'KJV' : 'WEB';
+          setVersion(next); localStorage.setItem('bibleVersionPreference', next);
+          toast({ title: `${next === 'WEB' ? 'World English Bible' : 'King James Version'}`, description: 'Reader translation updated.' });
+        }} />
       </Section>
 
       <Section title="Appearance">
