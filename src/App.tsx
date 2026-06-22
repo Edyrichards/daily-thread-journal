@@ -17,6 +17,8 @@ import PrayerPage from '@/pages/PrayerPage';
 import SelahPrayerPage from '@/pages/SelahPrayerPage';
 import BiblePage from '@/pages/BiblePage';
 import SelahBiblePage from '@/pages/SelahBiblePage';
+import SelahReaderPage from '@/pages/SelahReaderPage';
+import SelahPlanPage from '@/pages/SelahPlanPage';
 import ScripturePage from '@/pages/ScripturePage';
 import ScriptureDiscoveryPage from '@/pages/ScriptureDiscoveryPage';
 import DevotionalPage from '@/pages/DevotionalPage';
@@ -96,6 +98,8 @@ function App() {
                 <Route path="/prayer/guided" element={<SelahGuidedPrayerPage />} />
                 <Route path="/prayer/guided-legacy" element={<GuidedPrayerPage />} />
                 <Route path="/prayer/insights" element={<PrayerInsightsPage />} />
+                <Route path="/bible/read" element={<SelahReaderPage />} />
+                <Route path="/bible/plan/:id" element={<SelahPlanPage />} />
                 <Route path="/bible" element={<SelahBiblePage />} />
                 <Route path="/bible-legacy" element={<BiblePage />} />
                 <Route path="/scripture" element={<ScripturePage />} />
