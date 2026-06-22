@@ -9,6 +9,7 @@ import { Toaster as Sonner } from '@/components/ui/sonner';
 import Index from '@/pages/Index';
 import TodayPage from '@/pages/TodayPage';
 import JournalPage from '@/pages/JournalPage';
+import SelahJournalPage from '@/pages/SelahJournalPage';
 import NewJournalEntry from '@/pages/NewJournalEntry';
 import JournalEntryDetail from '@/pages/JournalEntryDetail';
 import PrayerPage from '@/pages/PrayerPage';
@@ -73,7 +74,8 @@ function App() {
               <Routes>
                 <Route path="/" element={<TodayPage />} />
                 <Route path="/home-legacy" element={<Index />} />
-                <Route path="/journal" element={<JournalPage />} />
+                <Route path="/journal" element={<SelahJournalPage />} />
+                <Route path="/journal-legacy" element={<JournalPage />} />
                 <Route path="/journal/enhanced" element={<EnhancedJournalPage />} />
                 <Route path="/journal/new" element={<NewJournalEntry />} />
                 <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
