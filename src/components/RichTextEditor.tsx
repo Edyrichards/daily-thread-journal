@@ -21,7 +21,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   autoSave = true,
   className = ""
 }) => {
-  const autoSaveTimerRef = useRef<NodeJS.Timeout>();
+  const autoSaveTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   useEffect(() => {
     if (autoSave && value) {
