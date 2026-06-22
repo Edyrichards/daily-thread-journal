@@ -12,6 +12,7 @@ import JournalPage from '@/pages/JournalPage';
 import SelahJournalPage from '@/pages/SelahJournalPage';
 import NewJournalEntry from '@/pages/NewJournalEntry';
 import JournalEntryDetail from '@/pages/JournalEntryDetail';
+import SelahEntryDetailPage from '@/pages/SelahEntryDetailPage';
 import PrayerPage from '@/pages/PrayerPage';
 import SelahPrayerPage from '@/pages/SelahPrayerPage';
 import BiblePage from '@/pages/BiblePage';
@@ -28,6 +29,7 @@ import CommunityPage from '@/pages/CommunityPage';
 import SelahCommunityPage from '@/pages/SelahCommunityPage';
 import PrayerWallPage from '@/pages/PrayerWallPage';
 import SettingsPage from '@/pages/SettingsPage';
+import SelahSettingsPage from '@/pages/SelahSettingsPage';
 import DataManagementPage from '@/pages/DataManagementPage';
 import VoiceJournalPage from '@/pages/VoiceJournalPage';
 import NewJournalFlowPage from '@/pages/NewJournalFlowPage';
@@ -35,6 +37,7 @@ import SelahNewEntryPage from '@/pages/SelahNewEntryPage';
 import OnboardingPage from '@/pages/OnboardingPage';
 import EnhancedPrayerPage from '@/pages/EnhancedPrayerPage';
 import GuidedPrayerPage from '@/pages/GuidedPrayerPage';
+import SelahGuidedPrayerPage from '@/pages/SelahGuidedPrayerPage';
 import NotFound from '@/pages/NotFound';
 
 // New Phase 2 pages
@@ -84,11 +87,13 @@ function App() {
                 <Route path="/journal/new" element={<NewJournalEntry />} />
                 <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
                 <Route path="/journal/new-flow-legacy" element={<NewJournalFlowPage />} />
-                <Route path="/journal/:id" element={<JournalEntryDetail />} />
+                <Route path="/journal/:id" element={<SelahEntryDetailPage />} />
+                <Route path="/journal-legacy/:id" element={<JournalEntryDetail />} />
                 <Route path="/prayer" element={<SelahPrayerPage />} />
                 <Route path="/prayer-legacy" element={<PrayerPage />} />
                 <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
-                <Route path="/prayer/guided" element={<GuidedPrayerPage />} />
+                <Route path="/prayer/guided" element={<SelahGuidedPrayerPage />} />
+                <Route path="/prayer/guided-legacy" element={<GuidedPrayerPage />} />
                 <Route path="/prayer/insights" element={<PrayerInsightsPage />} />
                 <Route path="/bible" element={<SelahBiblePage />} />
                 <Route path="/bible-legacy" element={<BiblePage />} />
@@ -105,7 +110,8 @@ function App() {
                 <Route path="/community" element={<SelahCommunityPage />} />
                 <Route path="/community-legacy" element={<CommunityPage />} />
                 <Route path="/prayer-wall" element={<PrayerWallPage />} />
-                <Route path="/settings" element={<SettingsPage />} />
+                <Route path="/settings" element={<SelahSettingsPage />} />
+                <Route path="/settings-legacy" element={<SettingsPage />} />
                 <Route path="/data" element={<DataManagementPage />} />
                 <Route path="/voice" element={<VoiceJournalPage />} />
                 <Route path="/onboarding" element={<OnboardingPage />} />

@@ -183,6 +183,11 @@ function recordPrayerDay(): void {
   }
 }
 
+// Publicly mark that the user prayed today (e.g. after a guided session)
+export function markPrayerDay(): void {
+  recordPrayerDay();
+}
+
 // Record that the user prayed for a request today
 export function logPrayer(id: string): void {
   const prayers = getPrayers();
