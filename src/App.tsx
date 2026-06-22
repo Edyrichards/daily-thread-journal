@@ -13,6 +13,7 @@ import SelahJournalPage from '@/pages/SelahJournalPage';
 import NewJournalEntry from '@/pages/NewJournalEntry';
 import JournalEntryDetail from '@/pages/JournalEntryDetail';
 import PrayerPage from '@/pages/PrayerPage';
+import SelahPrayerPage from '@/pages/SelahPrayerPage';
 import BiblePage from '@/pages/BiblePage';
 import ScripturePage from '@/pages/ScripturePage';
 import ScriptureDiscoveryPage from '@/pages/ScriptureDiscoveryPage';
@@ -81,7 +82,8 @@ function App() {
                 <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
                 <Route path="/journal/new-flow-legacy" element={<NewJournalFlowPage />} />
                 <Route path="/journal/:id" element={<JournalEntryDetail />} />
-                <Route path="/prayer" element={<PrayerPage />} />
+                <Route path="/prayer" element={<SelahPrayerPage />} />
+                <Route path="/prayer-legacy" element={<PrayerPage />} />
                 <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
                 <Route path="/prayer/guided" element={<GuidedPrayerPage />} />
                 <Route path="/prayer/insights" element={<PrayerInsightsPage />} />

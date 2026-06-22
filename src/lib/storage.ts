@@ -44,6 +44,11 @@ export interface Prayer {
   status: PrayerStatus;
   createdAt: number;
   updatedAt: number;
+  title?: string;
+  prayedCount?: number;
+  lastPrayedAt?: number;
+  answeredAt?: number;
+  answerNote?: string;
 }
 
 // Save a journal entry to local storage
@@ -147,6 +152,46 @@ export function deletePrayer(id: string): void {
   const prayers = getPrayers();
   const updatedPrayers = prayers.filter(prayer => prayer.id !== id);
   localStorage.setItem('prayers', JSON.stringify(updatedPrayers));
+}
+
+// Create a new prayer request
+export function addPrayer(content: string, title?: string): Prayer {
+  const prayer: Prayer = {
+    id: generateId(),
+    content: content.trim(),
+    title: title?.trim() || undefined,
+    status: 'praying',
+    prayedCount: 0,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+  savePrayer(prayer);
+  return prayer;
+}
+
+// Record that the user prayed for a request today
+export function logPrayer(id: string): void {
+  const prayers = getPrayers();
+  const i = prayers.findIndex(p => p.id === id);
+  if (i >= 0) {
+    prayers[i].prayedCount = (prayers[i].prayedCount || 0) + 1;
+    prayers[i].lastPrayedAt = Date.now();
+    prayers[i].updatedAt = Date.now();
+    localStorage.setItem('prayers', JSON.stringify(prayers));
+  }
+}
+
+// Mark a prayer as answered, with an optional note of thanks
+export function answerPrayer(id: string, note?: string): void {
+  const prayers = getPrayers();
+  const i = prayers.findIndex(p => p.id === id);
+  if (i >= 0) {
+    prayers[i].status = 'answered';
+    prayers[i].answeredAt = Date.now();
+    prayers[i].answerNote = note?.trim() || undefined;
+    prayers[i].updatedAt = Date.now();
+    localStorage.setItem('prayers', JSON.stringify(prayers));
+  }
 }
 
 // Generate a unique ID

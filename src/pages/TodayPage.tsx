@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { getRandomVerse } from '@/lib/api';
-import { getJournalEntries, JournalEntry, Mood } from '@/lib/storage';
+import { getJournalEntries, getPrayers, JournalEntry, Mood } from '@/lib/storage';
 import { cn } from '@/lib/utils';
 
 /* ----------------------------- helpers ----------------------------- */
@@ -56,6 +56,7 @@ const TodayPage = () => {
   const [verse, setVerse] = useState<{ text: string; reference: string } | null>(null);
   const [loadingVerse, setLoadingVerse] = useState(true);
   const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [prayedToday, setPrayedToday] = useState(false);
   const [saved, setSaved] = useState(false);
 
   useEffect(() => {
@@ -64,6 +65,9 @@ const TodayPage = () => {
       .then((v) => active && setVerse({ ...v, text: v.text.trim() }))
       .finally(() => active && setLoadingVerse(false));
     setEntries(getJournalEntries());
+    setPrayedToday(
+      getPrayers().some((p) => p.lastPrayedAt && isSameDay(new Date(p.lastPrayedAt), new Date())),
+    );
     return () => {
       active = false;
     };
@@ -79,7 +83,7 @@ const TodayPage = () => {
 
   const rhythm = [
     { icon: BookOpen, label: 'Read the Word', sub: 'A few verses to dwell on', href: '/bible', done: false },
-    { icon: Heart, label: 'Pray', sub: 'Bring your requests to God', href: '/prayer', done: false },
+    { icon: Heart, label: 'Pray', sub: 'Bring your requests to God', href: '/prayer', done: prayedToday },
     {
       icon: Feather, label: 'Journal your reflection', sub: 'What is God saying to you?',
       href: '/journal/new-flow', done: journaledToday,
