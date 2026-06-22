@@ -1,194 +1,160 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Plus, BookOpen, Feather, X } from 'lucide-react';
+import { Search, Plus, X, Sparkles, BookOpen, HandHeart, Leaf, MoreHorizontal, LucideIcon } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
+import { SprigDivider, LeafSprig } from '@/components/threads/Botanical';
 import { getJournalEntries, JournalEntry, Mood, moodEmojis } from '@/lib/storage';
-import { computeStreak, entriesThisWeek, entryTitle, relativeDay } from '@/lib/journal';
 import { cn } from '@/lib/utils';
 
 type Filter = { label: string; test: (e: JournalEntry) => boolean };
-
 const filters: Filter[] = [
   { label: 'All', test: () => true },
-  { label: 'Grateful', test: (e) => e.mood === 'joyful' || e.mood === 'content' },
-  { label: 'At peace', test: (e) => e.mood === 'peaceful' },
-  { label: 'Heavy', test: (e) => ['sad', 'anxious', 'overwhelmed', 'stressed'].includes(e.mood) },
-  { label: 'With verse', test: (e) => Boolean(e.verse) },
+  { label: 'Gratitude', test: (e) => e.mood === 'joyful' || e.mood === 'content' },
+  { label: 'Reflection', test: (e) => Boolean(e.reflection) },
+  { label: 'Scripture', test: (e) => Boolean(e.verse) },
 ];
 
-const moodColor: Partial<Record<Mood, string>> = {
-  joyful: 'var(--gold)', content: 'var(--gold)', hopeful: 'var(--sky)',
-  peaceful: 'var(--sage)', neutral: 'var(--muted-foreground)',
-  anxious: 'var(--clay)', sad: 'var(--plum)', stressed: 'var(--clay)',
-  angry: 'var(--clay)', overwhelmed: 'var(--plum)',
+const barColor: Partial<Record<Mood, string>> = {
+  joyful: 'hsl(var(--gold))', content: 'hsl(var(--gold))', hopeful: 'hsl(var(--sky))',
+  peaceful: 'hsl(var(--sage))', neutral: 'hsl(var(--muted-foreground))',
+  anxious: 'hsl(var(--clay))', stressed: 'hsl(var(--clay))', overwhelmed: 'hsl(var(--clay))',
+  angry: 'hsl(var(--clay))', sad: 'hsl(var(--plum))',
 };
+
+/** category tag (icon + label + color) for an entry */
+const tagFor = (e: JournalEntry): { label: string; icon: LucideIcon; hsl: string } => {
+  if (e.verse) return { label: 'Scripture', icon: BookOpen, hsl: '40 42% 50%' };
+  if (e.reflection) return { label: 'Reflection', icon: Leaf, hsl: '95 21% 48%' };
+  if (e.mood === 'joyful' || e.mood === 'content') return { label: 'Gratitude', icon: Leaf, hsl: '40 42% 50%' };
+  if (['sad', 'anxious', 'overwhelmed', 'stressed'].includes(e.mood)) return { label: 'Prayer', icon: HandHeart, hsl: '264 18% 58%' };
+  return { label: 'Reflection', icon: Leaf, hsl: '95 21% 48%' };
+};
+
+const fmtDate = (e: JournalEntry) =>
+  new Date(e.createdAt || e.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
 const SelahJournalPage = () => {
   const navigate = useNavigate();
   const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [active, setActive] = useState('All');
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState('');
 
   useEffect(() => {
-    const all = getJournalEntries().sort(
-      (a, b) => (b.createdAt || +new Date(b.date)) - (a.createdAt || +new Date(a.date)),
+    setEntries(
+      getJournalEntries().sort(
+        (a, b) => (b.createdAt || +new Date(b.date)) - (a.createdAt || +new Date(a.date)),
+      ),
     );
-    setEntries(all);
   }, []);
 
-  const streak = useMemo(() => computeStreak(entries), [entries]);
-  const thisWeek = useMemo(() => entriesThisWeek(entries), [entries]);
-
   const visible = useMemo(() => {
-    const f = filters.find((x) => x.label === activeFilter) || filters[0];
+    const f = filters.find((x) => x.label === active) || filters[0];
     const q = query.trim().toLowerCase();
     return entries.filter(
-      (e) =>
-        f.test(e) &&
-        (!q ||
-          e.content?.toLowerCase().includes(q) ||
-          e.reflection?.toLowerCase().includes(q) ||
-          e.verse?.reference.toLowerCase().includes(q)),
+      (e) => f.test(e) && (!q || e.content?.toLowerCase().includes(q) || e.reflection?.toLowerCase().includes(q) || e.verse?.reference.toLowerCase().includes(q)),
     );
-  }, [entries, activeFilter, query]);
+  }, [entries, active, query]);
 
   return (
     <SelahShell title="Journal">
-      {/* header */}
-      <header className="mb-4 mt-2 flex items-center justify-between">
-        <h1 className="font-serif text-[30px] font-semibold tracking-tight text-ink">Journal</h1>
+      {/* top bar */}
+      <div className="flex items-center justify-between pt-1">
+        <Sparkles className="h-5 w-5 text-gold" />
         <button
           onClick={() => setSearching((s) => !s)}
-          className="flex h-11 w-11 items-center justify-center rounded-[14px] border border-line bg-card"
-          aria-label="Search entries"
+          className="flex h-10 w-10 items-center justify-center rounded-full border border-line bg-card"
+          aria-label="Search"
         >
-          {searching ? <X className="h-5 w-5 text-ink-soft" /> : <Search className="h-5 w-5 text-ink-soft" />}
+          {searching ? <X className="h-4 w-4 text-ink-soft" /> : <Search className="h-4 w-4 text-ink-soft" />}
         </button>
-      </header>
+      </div>
+      <h1 className="-mt-6 text-center font-display text-[36px] font-semibold tracking-tight text-forest">Journal</h1>
+      <SprigDivider className="mb-5 mt-1" />
 
       {searching && (
-        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="mb-4">
-          <input
-            autoFocus
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search your reflections…"
-            className="w-full rounded-[16px] border border-line bg-card px-4 py-3 text-[15px] text-ink outline-none placeholder:text-muted-foreground focus:border-clay/40"
-          />
-        </motion.div>
+        <motion.input
+          initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}
+          autoFocus value={query} onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search your reflections…"
+          className="mb-4 w-full rounded-full border border-line bg-card px-4 py-2.5 text-[15px] text-ink outline-none placeholder:text-muted-foreground focus:border-forest/40"
+        />
       )}
 
-      {/* filter chips */}
-      <div className="-mx-5 mb-4 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {filters.map((f) => (
-          <button
-            key={f.label}
-            onClick={() => setActiveFilter(f.label)}
-            className={cn(
-              'shrink-0 rounded-full border px-3.5 py-2 text-[13px] font-semibold transition-colors',
-              activeFilter === f.label
-                ? 'border-transparent bg-clay-soft text-clay'
-                : 'border-line bg-card text-ink-soft',
-            )}
-          >
-            {f.label}
-          </button>
-        ))}
+      {/* filters */}
+      <div className="-mx-5 mb-5 flex gap-2.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        {filters.map((f) => {
+          const on = active === f.label;
+          const Icon = f.label === 'Gratitude' ? Leaf : f.label === 'Reflection' ? HandHeart : f.label === 'Scripture' ? BookOpen : null;
+          return (
+            <button
+              key={f.label}
+              onClick={() => setActive(f.label)}
+              className={cn(
+                'flex shrink-0 items-center gap-1.5 rounded-full border px-4 py-2 text-[13.5px] font-medium transition-colors',
+                on ? 'border-transparent bg-forest text-primary-foreground' : 'border-line bg-card text-ink-soft',
+              )}
+            >
+              {Icon && <Icon className="h-3.5 w-3.5" />}
+              {f.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* stats */}
-      <div className="mb-4 flex gap-3">
-        {[
-          { n: entries.length, l: 'entries', c: 'text-clay' },
-          { n: streak, l: 'day streak', c: 'text-sage' },
-          { n: thisWeek, l: 'this week', c: 'text-gold' },
-        ].map((s) => (
-          <div key={s.l} className="flex-1 rounded-[18px] border border-line bg-card p-3.5">
-            <div className={cn('font-serif text-[26px] font-semibold leading-none', s.c)}>{s.n}</div>
-            <div className="mt-1 text-[12px] font-semibold text-muted-foreground">{s.l}</div>
-          </div>
-        ))}
-      </div>
-
-      {/* entries */}
       {visible.length === 0 ? (
-        <div className="mt-14 flex flex-col items-center px-6 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-[22px] bg-sage-soft">
-            <Feather className="h-7 w-7 text-sage" />
+        <div className="mt-10 flex flex-col items-center px-6 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-forest-soft">
+            <LeafSprig className="h-7 w-10 text-forest" />
           </div>
-          <h2 className="mt-4 font-serif text-[20px] font-semibold text-ink">
-            {entries.length === 0 ? 'Your first page awaits' : 'Nothing here yet'}
-          </h2>
-          <p className="mt-1.5 text-[14px] leading-relaxed text-muted-foreground">
-            {entries.length === 0
-              ? 'Begin a reflection and it will live here — private, and just for you.'
-              : 'Try a different filter or search.'}
+          <h2 className="mt-4 font-display text-[24px] font-semibold leading-tight text-ink">Your journal is<br />a sacred space</h2>
+          <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">
+            {entries.length === 0 ? 'Start writing to reflect, grow, and draw closer to God.' : 'Nothing matches this filter yet.'}
           </p>
           {entries.length === 0 && (
-            <button
-              onClick={() => navigate('/journal/new-flow')}
-              className="mt-5 rounded-[16px] bg-clay px-6 py-3 text-[15px] font-bold text-white shadow-glow-clay"
-            >
+            <button onClick={() => navigate('/journal/new-flow')} className="mt-5 rounded-full bg-forest px-6 py-3 font-display text-[18px] font-semibold text-primary-foreground shadow-soft">
               Write your first entry
             </button>
           )}
         </div>
       ) : (
-        <ul className="space-y-3">
-          {visible.map((e, i) => (
-            <motion.li
-              key={e.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: Math.min(i * 0.04, 0.3) }}
-            >
-              <button
-                onClick={() => navigate(`/journal/${e.id}`)}
-                className="w-full rounded-[22px] border border-line bg-card p-4 text-left shadow-soft"
+        <ul className="space-y-3.5">
+          {visible.map((e, i) => {
+            const tag = tagFor(e);
+            return (
+              <motion.li
+                key={e.id}
+                initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: Math.min(i * 0.05, 0.3) }}
               >
-                <div className="flex gap-3.5">
-                  <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[13px] bg-secondary text-[21px]"
-                    aria-hidden
-                  >
-                    {moodEmojis[e.mood] || '🕊️'}
+                <button
+                  onClick={() => navigate(`/journal/${e.id}`)}
+                  className="flex w-full gap-3.5 overflow-hidden rounded-[18px] border border-line bg-card p-4 pl-3 text-left shadow-soft"
+                  style={{ borderLeft: `5px solid ${barColor[e.mood] || 'hsl(var(--line))'}` }}
+                >
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-[22px]" aria-hidden>
+                    {moodEmojis[e.mood]}
                   </span>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="truncate font-serif text-[17px] font-semibold text-ink">{entryTitle(e)}</h3>
-                      <span className="shrink-0 text-[12px] font-semibold text-muted-foreground">
-                        {relativeDay(e)}
-                      </span>
-                    </div>
-                    {e.content && (
-                      <p className="mt-1 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">{e.content}</p>
-                    )}
-                    <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold capitalize text-muted-foreground">
-                        <span
-                          className="h-2 w-2 rounded-full"
-                          style={{ backgroundColor: `hsl(${moodColor[e.mood] || 'var(--muted-foreground)'})` }}
-                        />
-                        {e.mood}
-                      </span>
-                      {e.verse && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-sage-soft px-2.5 py-1 text-[11px] font-bold text-sage">
-                          <BookOpen className="h-3 w-3" /> {e.verse.reference}
-                        </span>
-                      )}
-                      {e.reflection && (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-gold-soft px-2.5 py-1 text-[11px] font-bold text-gold">
-                          Reflection
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </button>
-            </motion.li>
-          ))}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between">
+                      <span className="text-[12px] font-medium text-muted-foreground">{fmtDate(e)}</span>
+                      <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
+                    </span>
+                    <p className="mt-1.5 line-clamp-3 font-serif text-[16.5px] leading-snug text-ink">
+                      {e.content || e.reflection || 'A quiet moment with God.'}
+                    </p>
+                    <span
+                      className="mt-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold"
+                      style={{ backgroundColor: `hsl(${tag.hsl} / 0.14)`, color: `hsl(${tag.hsl})` }}
+                    >
+                      <tag.icon className="h-3 w-3" /> {tag.label}
+                    </span>
+                  </span>
+                </button>
+              </motion.li>
+            );
+          })}
         </ul>
       )}
 
@@ -196,9 +162,9 @@ const SelahJournalPage = () => {
       <button
         onClick={() => navigate('/journal/new-flow')}
         aria-label="New entry"
-        className="fixed bottom-[104px] left-1/2 z-40 ml-[122px] flex h-[60px] w-[60px] -translate-x-1/2 items-center justify-center rounded-[22px] bg-clay shadow-glow-clay"
+        className="fixed bottom-[100px] left-1/2 z-40 ml-[128px] flex h-14 w-14 -translate-x-1/2 items-center justify-center rounded-full bg-forest shadow-soft"
       >
-        <Plus className="h-7 w-7 text-white" strokeWidth={2.4} />
+        <Plus className="h-6 w-6 text-primary-foreground" strokeWidth={2.2} />
       </button>
     </SelahShell>
   );

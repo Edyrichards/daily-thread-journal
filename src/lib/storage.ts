@@ -169,6 +169,20 @@ export function addPrayer(content: string, title?: string): Prayer {
   return prayer;
 }
 
+// Days on which the user prayed (for the prayer streak)
+export function getPrayerDays(): number[] {
+  try { return JSON.parse(localStorage.getItem('prayer_days') || '[]'); } catch { return []; }
+}
+function recordPrayerDay(): void {
+  const d = new Date();
+  const key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  const days = getPrayerDays();
+  if (!days.includes(key)) {
+    days.push(key);
+    localStorage.setItem('prayer_days', JSON.stringify(days));
+  }
+}
+
 // Record that the user prayed for a request today
 export function logPrayer(id: string): void {
   const prayers = getPrayers();
@@ -178,6 +192,7 @@ export function logPrayer(id: string): void {
     prayers[i].lastPrayedAt = Date.now();
     prayers[i].updatedAt = Date.now();
     localStorage.setItem('prayers', JSON.stringify(prayers));
+    recordPrayerDay();
   }
 }
 

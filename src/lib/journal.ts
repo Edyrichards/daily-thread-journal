@@ -40,6 +40,18 @@ export const entryTitle = (e: JournalEntry): string => {
   return words.length > 7 ? `${title}…` : title;
 };
 
+/** Consecutive days (ending today or yesterday) present in a set of day-timestamps. */
+export const streakFromDayKeys = (keys: number[]): number => {
+  if (!keys.length) return 0;
+  const set = new Set(keys);
+  const k = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
+  let s = 0;
+  const c = new Date();
+  if (!set.has(k(c))) c.setDate(c.getDate() - 1);
+  while (set.has(k(c))) { s += 1; c.setDate(c.getDate() - 1); }
+  return s;
+};
+
 /** "Today" / "Yesterday" / "Jun 14" */
 export const relativeDay = (e: JournalEntry): string => {
   const d = entryDate(e);
