@@ -1,249 +1,182 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import {
-  Flame, Bookmark, Feather, Share2, ChevronRight, BookOpen, Heart, Check,
-} from 'lucide-react';
+import { Heart, PenLine, ChevronRight, MoreHorizontal } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
+import { Feather, SunSprout, SprigDivider, MoodFace, LeafSprig } from '@/components/threads/Botanical';
 import { getRandomVerse } from '@/lib/api';
-import { getJournalEntries, getPrayers, JournalEntry, Mood } from '@/lib/storage';
-import { cn } from '@/lib/utils';
+import { getJournalEntries, JournalEntry, Mood, moodEmojis } from '@/lib/storage';
+import { entryTitle, relativeDay } from '@/lib/journal';
 
-/* ----------------------------- helpers ----------------------------- */
-const greeting = () => {
-  const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
-};
-
-const isSameDay = (a: Date, b: Date) =>
-  a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
-
-/** Consecutive days (ending today or yesterday) with at least one entry. */
-const computeStreak = (entries: JournalEntry[]): number => {
-  if (!entries.length) return 0;
-  const days = new Set(
-    entries.map((e) => {
-      const d = new Date(e.createdAt || e.date);
-      return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-    }),
-  );
-  let streak = 0;
-  const cursor = new Date();
-  // allow the streak to "start" yesterday if today isn't logged yet
-  if (!days.has(new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()).getTime())) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  while (days.has(new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate()).getTime())) {
-    streak += 1;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-  return streak;
-};
-
-const moodChips: { label: string; emoji: string; value: Mood; bg: string }[] = [
-  { label: 'At peace', emoji: '😌', value: 'peaceful', bg: 'bg-sage-soft' },
-  { label: 'Grateful', emoji: '😊', value: 'joyful', bg: 'bg-gold-soft' },
-  { label: 'Anxious', emoji: '😟', value: 'anxious', bg: 'bg-clay-soft' },
-  { label: 'Heavy', emoji: '😢', value: 'sad', bg: 'bg-sky/15' },
-  { label: 'Numb', emoji: '😶', value: 'neutral', bg: 'bg-secondary' },
+type MoodOpt = { label: string; mood: Mood; face: 'joyful' | 'peaceful' | 'overwhelmed' | 'grateful'; hsl: string };
+const moodOpts: MoodOpt[] = [
+  { label: 'Joyful', mood: 'joyful', face: 'joyful', hsl: '18 46% 54%' },
+  { label: 'Peaceful', mood: 'peaceful', face: 'peaceful', hsl: '95 21% 48%' },
+  { label: 'Overwhelmed', mood: 'overwhelmed', face: 'overwhelmed', hsl: '208 24% 56%' },
+  { label: 'Grateful', mood: 'content', face: 'grateful', hsl: '40 42% 50%' },
 ];
 
-/* ------------------------------ page ------------------------------- */
+const thumbGradients = [
+  'linear-gradient(135deg, hsl(95 26% 82%), hsl(95 20% 62%))',
+  'linear-gradient(135deg, hsl(40 45% 84%), hsl(30 38% 66%))',
+  'linear-gradient(135deg, hsl(208 28% 82%), hsl(208 22% 62%))',
+];
+
 const TodayPage = () => {
   const navigate = useNavigate();
   const [verse, setVerse] = useState<{ text: string; reference: string } | null>(null);
-  const [loadingVerse, setLoadingVerse] = useState(true);
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
-  const [prayedToday, setPrayedToday] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saved, setSaved] = useState(false);
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
 
   useEffect(() => {
     let active = true;
     getRandomVerse()
       .then((v) => active && setVerse({ ...v, text: v.text.trim() }))
-      .finally(() => active && setLoadingVerse(false));
-    setEntries(getJournalEntries());
-    setPrayedToday(
-      getPrayers().some((p) => p.lastPrayedAt && isSameDay(new Date(p.lastPrayedAt), new Date())),
+      .finally(() => active && setLoading(false));
+    setEntries(
+      getJournalEntries().sort(
+        (a, b) => (b.createdAt || +new Date(b.date)) - (a.createdAt || +new Date(a.date)),
+      ),
     );
-    return () => {
-      active = false;
-    };
+    return () => { active = false; };
   }, []);
 
-  const streak = useMemo(() => computeStreak(entries), [entries]);
-  const journaledToday = useMemo(
-    () => entries.some((e) => isSameDay(new Date(e.createdAt || e.date), new Date())),
-    [entries],
-  );
-  const userName = localStorage.getItem('userName') || 'friend';
-  const today = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
-
-  const rhythm = [
-    { icon: BookOpen, label: 'Read the Word', sub: 'A few verses to dwell on', href: '/bible', done: false },
-    { icon: Heart, label: 'Pray', sub: 'Bring your requests to God', href: '/prayer', done: prayedToday },
-    {
-      icon: Feather, label: 'Journal your reflection', sub: 'What is God saying to you?',
-      href: '/journal/new-flow', done: journaledToday,
-    },
-  ];
-  const doneCount = rhythm.filter((r) => r.done).length;
-
-  const share = () => {
-    if (verse && navigator.share) {
-      navigator.share({ text: `“${verse.text}” — ${verse.reference}`, title: 'Selah' }).catch(() => {});
-    }
-  };
+  const recent = useMemo(() => entries.slice(0, 2), [entries]);
 
   return (
-    <SelahShell title="Today">
-      {/* header */}
-      <motion.header
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
-        className="mb-5 flex items-start justify-between"
-      >
-        <div>
-          <p className="text-[13px] font-semibold text-muted-foreground">{today}</p>
-          <h1 className="mt-0.5 font-serif text-[30px] font-semibold leading-tight tracking-tight text-ink">
-            {greeting()},
-            <br />
-            <span className="capitalize">{userName}</span>
-          </h1>
-        </div>
-        <div className="flex items-center gap-2.5">
-          <div className="flex items-center gap-1.5 rounded-full bg-gold-soft px-3 py-2 text-[15px] font-bold text-gold">
-            <Flame className="h-4 w-4 fill-current" />
-            {streak}
-          </div>
-          <button
-            onClick={() => navigate('/settings')}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-clay to-gold text-[15px] font-bold text-white"
-            aria-label="Profile"
-          >
-            {userName.charAt(0).toUpperCase()}
-          </button>
-        </div>
-      </motion.header>
+    <SelahShell title="Home">
+      {/* wordmark */}
+      <header className="flex items-center justify-center gap-2.5 pb-2 pt-1">
+        <Feather className="h-[26px] w-[26px] text-gold" />
+        <h1 className="font-display text-[30px] font-semibold tracking-tight text-forest">
+          Threads <span className="italic font-medium">of</span> Grace
+        </h1>
+      </header>
 
-      {/* verse of the day */}
+      {/* today's scripture */}
       <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.05 }}
-        className="relative overflow-hidden rounded-[28px] bg-dawn p-6 text-white shadow-soft"
+        initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}
+        className="relative mt-2 overflow-hidden rounded-[22px] border border-gold/45 bg-card px-6 py-7 text-center shadow-soft"
       >
-        <div className="absolute -right-8 -top-8 h-36 w-36 rounded-full bg-white/10" />
-        <p className="text-[12px] font-bold uppercase tracking-[1.4px] text-white/85">Verse of the day</p>
-        {loadingVerse ? (
-          <div className="mt-3 space-y-2.5">
-            <div className="h-5 w-5/6 animate-pulse rounded-full bg-white/25" />
-            <div className="h-5 w-2/3 animate-pulse rounded-full bg-white/20" />
+        <div className="pointer-events-none absolute inset-0" style={{ background: 'radial-gradient(120% 80% at 85% 0%, hsl(var(--gold-soft)/0.8), transparent 55%), radial-gradient(90% 60% at 0% 100%, hsl(var(--sage-soft)/0.7), transparent 60%)' }} />
+        <LeafSprig className="pointer-events-none absolute -right-2 top-4 h-16 w-24 rotate-12 text-sage/30" />
+        <div className="relative">
+          <div className="flex items-center justify-center gap-2 text-gold">
+            <SunSprout className="h-4 w-7" />
+            <span className="eyebrow text-[11px]">Today’s Scripture</span>
           </div>
-        ) : (
-          <blockquote className="mt-3 font-serif text-[22px] font-medium leading-[1.45]">
-            “{verse?.text}”
-          </blockquote>
-        )}
-        <p className="mt-3 font-bold text-white/90">{verse?.reference}</p>
-        <div className="mt-5 flex items-center gap-5 text-[13px] font-semibold">
-          <button onClick={() => setSaved((s) => !s)} className="flex items-center gap-1.5">
-            <Bookmark className={cn('h-[17px] w-[17px]', saved && 'fill-current')} />
-            {saved ? 'Saved' : 'Save'}
-          </button>
-          <button onClick={() => navigate('/journal/new-flow')} className="flex items-center gap-1.5">
-            <Feather className="h-[17px] w-[17px]" /> Reflect
-          </button>
-          <button onClick={share} className="flex items-center gap-1.5">
-            <Share2 className="h-[17px] w-[17px]" /> Share
+          {loading ? (
+            <div className="mt-5 space-y-3">
+              <div className="mx-auto h-5 w-4/5 animate-pulse rounded-full bg-secondary" />
+              <div className="mx-auto h-5 w-3/5 animate-pulse rounded-full bg-secondary" />
+            </div>
+          ) : (
+            <blockquote className="mt-4 font-display text-[27px] font-medium italic leading-[1.25] text-ink">
+              “{verse?.text}”
+            </blockquote>
+          )}
+          <SprigDivider className="my-5" />
+          <p className="font-serif text-[16px] tracking-wide text-ink-soft">{verse?.reference}</p>
+          <button
+            onClick={() => setSaved((s) => !s)}
+            aria-label="Save verse"
+            className="mt-4 inline-flex text-clay/80"
+          >
+            <Heart className={saved ? 'h-5 w-5 fill-clay text-clay' : 'h-5 w-5'} />
           </button>
         </div>
       </motion.section>
 
-      {/* mood check-in */}
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.12 }}
-        className="mt-6"
-      >
-        <h2 className="mb-3 font-serif text-[18px] font-semibold text-ink">How is your heart today?</h2>
-        <div className="flex items-start justify-between">
-          {moodChips.map((m) => (
+      {/* mood */}
+      <section className="mt-7">
+        <p className="eyebrow text-[11px] text-muted-foreground">How are you feeling?</p>
+        <div className="mt-4 flex items-center justify-between">
+          {moodOpts.map((m) => (
             <button
-              key={m.value}
-              onClick={() => navigate(`/journal/new-flow?mood=${m.value}`)}
-              className="group flex flex-col items-center gap-1.5"
+              key={m.label}
+              onClick={() => navigate(`/journal/new-flow?mood=${m.mood}`)}
+              className="flex flex-col items-center gap-2"
             >
               <span
-                className={cn(
-                  'flex h-[54px] w-[54px] items-center justify-center rounded-[18px] text-[26px] transition-transform group-active:scale-95',
-                  m.bg,
-                )}
+                className="flex h-[58px] w-[58px] items-center justify-center rounded-full transition-transform active:scale-95"
+                style={{ backgroundColor: `hsl(${m.hsl} / 0.16)`, color: `hsl(${m.hsl})` }}
               >
-                {m.emoji}
+                <MoodFace type={m.face} className="h-8 w-8" />
               </span>
-              <span className="text-[11px] font-semibold text-ink-soft">{m.label}</span>
+              <span className="text-[12px] font-medium text-ink-soft">{m.label}</span>
             </button>
           ))}
+          <ChevronRight className="h-5 w-5 self-center text-muted-foreground" />
         </div>
-      </motion.section>
+      </section>
 
-      {/* today's rhythm */}
-      <motion.section
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.18 }}
-        className="mt-7"
+      {/* start writing */}
+      <button
+        onClick={() => navigate('/journal/new-flow')}
+        className="mt-7 flex w-full items-center justify-center gap-2.5 rounded-full bg-forest py-4 text-primary-foreground shadow-soft"
       >
-        <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-serif text-[18px] font-semibold text-ink">Today’s rhythm</h2>
-          <span className="text-[13px] font-semibold text-muted-foreground">{doneCount} of 3</span>
+        <PenLine className="h-[18px] w-[18px]" />
+        <span className="font-display text-[20px] font-semibold tracking-wide">Start Writing</span>
+      </button>
+
+      {/* recent entries */}
+      <section className="mt-7">
+        <div className="flex items-center justify-between">
+          <p className="eyebrow text-[11px] text-muted-foreground">Recent Entries</p>
+          <button onClick={() => navigate('/journal')} className="flex items-center gap-1 text-[12px] font-semibold text-gold">
+            View All <ChevronRight className="h-3.5 w-3.5" />
+          </button>
         </div>
-        <div className="rounded-[24px] border border-line bg-card px-4 shadow-soft">
-          {rhythm.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.label}
-                onClick={() => navigate(item.href)}
-                className={cn(
-                  'flex w-full items-center gap-3.5 py-3.5 text-left',
-                  i < rhythm.length - 1 && 'border-b border-line',
-                )}
-              >
-                <span
-                  className={cn(
-                    'flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-[10px]',
-                    item.done ? 'bg-sage-soft' : 'bg-secondary',
-                  )}
+
+        {recent.length === 0 ? (
+          <button
+            onClick={() => navigate('/journal/new-flow')}
+            className="mt-3 flex w-full items-center gap-3 rounded-[18px] border border-dashed border-line bg-card/60 px-4 py-5 text-left"
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-forest-soft text-forest">
+              <PenLine className="h-5 w-5" />
+            </span>
+            <span>
+              <span className="block font-serif text-[16px] text-ink">Your story begins here</span>
+              <span className="block text-[13px] text-muted-foreground">Write your first reflection →</span>
+            </span>
+          </button>
+        ) : (
+          <ul className="mt-3 space-y-3">
+            {recent.map((e, i) => (
+              <li key={e.id}>
+                <button
+                  onClick={() => navigate(`/journal/${e.id}`)}
+                  className="flex w-full items-stretch gap-3.5 rounded-[18px] border border-line bg-card p-3 text-left shadow-soft"
                 >
-                  {item.done ? (
-                    <Check className="h-[17px] w-[17px] text-sage" strokeWidth={2.4} />
-                  ) : (
-                    <Icon className="h-[17px] w-[17px] text-muted-foreground" strokeWidth={2} />
-                  )}
-                </span>
-                <span className="flex-1">
                   <span
-                    className={cn(
-                      'block text-[15px] font-semibold',
-                      item.done ? 'text-muted-foreground line-through' : 'text-ink',
-                    )}
+                    className="relative flex h-[74px] w-[74px] shrink-0 items-center justify-center overflow-hidden rounded-[14px]"
+                    style={{ background: thumbGradients[i % thumbGradients.length] }}
                   >
-                    {item.label}
+                    <LeafSprig className="h-8 w-12 text-white/55" />
                   </span>
-                  {!item.done && <span className="block text-[12px] text-muted-foreground">{item.sub}</span>}
-                </span>
-                {!item.done && <ChevronRight className="h-[18px] w-[18px] text-muted-foreground" />}
-              </button>
-            );
-          })}
-        </div>
-      </motion.section>
+                  <span className="min-w-0 flex-1 py-0.5">
+                    <span className="flex items-start justify-between gap-2">
+                      <span className="font-serif text-[18px] font-medium leading-tight text-ink">{entryTitle(e)}</span>
+                      <MoreHorizontal className="mt-1 h-4 w-4 shrink-0 text-muted-foreground" />
+                    </span>
+                    {e.content && (
+                      <span className="mt-1 line-clamp-2 block text-[13px] leading-snug text-ink-soft">{e.content}</span>
+                    )}
+                    <span className="mt-2 flex items-center justify-between">
+                      <span className="text-[12px] font-medium text-clay">{relativeDay(e)}</span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2.5 py-1 text-[11px] font-medium capitalize text-ink-soft">
+                        <span aria-hidden>{moodEmojis[e.mood]}</span> {e.mood}
+                      </span>
+                    </span>
+                  </span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </SelahShell>
   );
 };

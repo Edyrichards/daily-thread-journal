@@ -1,15 +1,15 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Sunrise, PenLine, Heart, BookOpen, BarChart3, LucideIcon } from 'lucide-react';
+import { Home, BookText, HandHeart, BookOpen, LineChart, LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type Tab = { name: string; href: string; icon: LucideIcon; match: (path: string) => boolean };
 
 const tabs: Tab[] = [
-  { name: 'Today', href: '/', icon: Sunrise, match: (p) => p === '/' },
-  { name: 'Journal', href: '/journal', icon: PenLine, match: (p) => p.startsWith('/journal') },
-  { name: 'Pray', href: '/prayer', icon: Heart, match: (p) => p.startsWith('/prayer') },
+  { name: 'Home', href: '/', icon: Home, match: (p) => p === '/' },
+  { name: 'Journal', href: '/journal', icon: BookText, match: (p) => p.startsWith('/journal') },
+  { name: 'Prayer', href: '/prayer', icon: HandHeart, match: (p) => p.startsWith('/prayer') },
   { name: 'Bible', href: '/bible', icon: BookOpen, match: (p) => p.startsWith('/bible') || p.startsWith('/scripture') },
-  { name: 'Insights', href: '/analytics', icon: BarChart3, match: (p) => p.startsWith('/analytics') || p.startsWith('/insights') || p.startsWith('/growth') },
+  { name: 'Journey', href: '/analytics', icon: LineChart, match: (p) => p.startsWith('/analytics') || p.startsWith('/insights') || p.startsWith('/growth') },
 ];
 
 const SelahBottomNav = () => {
@@ -18,7 +18,7 @@ const SelahBottomNav = () => {
   return (
     <div className="fixed bottom-0 left-1/2 z-50 w-full max-w-md -translate-x-1/2">
       <nav
-        className="flex items-start justify-around border-t border-line bg-card/95 px-2 pt-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md"
+        className="flex items-stretch justify-around border-t border-line bg-card/95 px-2 pt-2.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] backdrop-blur-md"
         aria-label="Primary"
       >
         {tabs.map(({ name, href, icon: Icon, match }) => {
@@ -28,16 +28,20 @@ const SelahBottomNav = () => {
               key={name}
               to={href}
               aria-current={active ? 'page' : undefined}
-              className="flex w-16 flex-col items-center gap-1.5 outline-none"
+              className="flex w-16 flex-col items-center gap-1 pt-1 outline-none"
             >
-              <Icon
-                className={cn('h-6 w-6 transition-colors', active ? 'text-clay' : 'text-muted-foreground')}
-                strokeWidth={active ? 2.1 : 1.8}
-              />
               <span
                 className={cn(
-                  'text-[11px] font-semibold transition-colors',
-                  active ? 'text-clay' : 'text-muted-foreground',
+                  'flex h-9 w-9 items-center justify-center rounded-full transition-colors',
+                  active ? 'bg-forest text-primary-foreground' : 'text-muted-foreground',
+                )}
+              >
+                <Icon className="h-[19px] w-[19px]" strokeWidth={active ? 2 : 1.7} />
+              </span>
+              <span
+                className={cn(
+                  'text-[10.5px] tracking-wide transition-colors',
+                  active ? 'font-semibold text-forest' : 'font-medium text-muted-foreground',
                 )}
               >
                 {name}

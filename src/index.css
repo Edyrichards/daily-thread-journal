@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap");
 @import "./styles/accessibility.css";
 @tailwind base;
 @tailwind components;
@@ -7,94 +7,111 @@
 
 @layer base {
   :root {
-    /* ---- Selah · "Dawn" (light) ---- */
-    --background: 39 47% 94%;        /* warm ivory paper */
-    --foreground: 27 14% 15%;        /* warm ink */
-    --card: 45 60% 99%;
-    --card-foreground: 27 14% 15%;
-    --popover: 45 60% 99%;
-    --popover-foreground: 27 14% 15%;
-    --primary: 16 49% 53%;           /* clay / terracotta CTA */
-    --primary-foreground: 45 60% 99%;
-    --secondary: 38 38% 92%;         /* sand */
-    --secondary-foreground: 30 13% 32%;
-    --muted: 38 38% 92%;
-    --muted-foreground: 33 11% 48%;
-    --accent: 108 24% 91%;           /* sage soft */
-    --accent-foreground: 124 16% 28%;
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 45 60% 99%;
-    --border: 38 38% 88%;
-    --input: 38 38% 88%;
-    --ring: 16 49% 53%;
-    --radius: 1.25rem;
+    /* ---- Threads of Grace · light ---- */
+    --background: 43 39% 93%;        /* warm ivory */
+    --foreground: 120 9% 18%;        /* deep green-charcoal ink */
+    --card: 44 46% 97%;
+    --card-foreground: 120 9% 18%;
+    --popover: 44 46% 97%;
+    --popover-foreground: 120 9% 18%;
+    --primary: 141 18% 24%;          /* forest green */
+    --primary-foreground: 44 46% 97%;
+    --secondary: 42 28% 89%;         /* sand */
+    --secondary-foreground: 141 18% 24%;
+    --muted: 42 28% 89%;
+    --muted-foreground: 40 9% 45%;
+    --accent: 95 22% 88%;            /* soft sage */
+    --accent-foreground: 141 18% 24%;
+    --destructive: 6 52% 46%;
+    --destructive-foreground: 44 46% 97%;
+    --border: 42 30% 85%;
+    --input: 42 30% 85%;
+    --ring: 141 18% 24%;
+    --radius: 1.1rem;
 
-    /* Selah brand tokens */
-    --paper: 39 47% 94%;
-    --sand: 38 38% 92%;
-    --line: 38 38% 88%;
-    --ink: 27 14% 15%;
-    --ink-soft: 30 13% 32%;
-    --sage: 124 13% 49%;
-    --sage-soft: 108 24% 91%;
-    --clay: 16 49% 53%;
-    --clay-soft: 20 60% 89%;
-    --gold: 40 65% 54%;
-    --gold-soft: 43 67% 88%;
-    --plum: 279 11% 47%;
-    --sky: 205 32% 64%;
+    /* brand tokens */
+    --paper: 43 39% 93%;
+    --sand: 42 28% 89%;
+    --line: 42 30% 85%;
+    --ink: 120 9% 18%;
+    --ink-soft: 40 10% 34%;
+    --forest: 141 18% 24%;
+    --forest-soft: 95 22% 88%;
+    --gold: 40 42% 50%;
+    --gold-soft: 42 50% 88%;
+    --clay: 18 46% 54%;
+    --clay-soft: 22 55% 90%;
+    --sage: 95 21% 48%;
+    --sage-soft: 95 22% 88%;
+    --plum: 264 18% 58%;
+    --sky: 208 24% 56%;
+    --lavender: 264 18% 62%;
+    --lavender-soft: 268 34% 94%;
+    /* mood data palette */
+    --mood-happy: 95 21% 48%;
+    --mood-calm: 208 24% 56%;
+    --mood-anxious: 18 46% 54%;
+    --mood-grateful: 264 18% 60%;
 
-    /* legacy (kept so un-migrated pages don't break) */
-    --grace-100: 108 24% 91%;
-    --grace-200: 38 38% 85%;
-    --grace-blue: 205 32% 64%;
-    --grace-gold: 40 65% 54%;
-    --light-beige: 38 38% 92%;
-    --soft-peach: 20 60% 89%;
+    /* legacy compat */
+    --grace-100: 95 22% 88%;
+    --grace-200: 42 28% 85%;
+    --grace-blue: 208 24% 56%;
+    --grace-gold: 40 42% 50%;
+    --light-beige: 42 28% 89%;
+    --soft-peach: 22 55% 90%;
   }
 
   .dark {
-    /* ---- Selah · "Vespers" (dark) ---- */
-    --background: 270 15% 13%;
-    --foreground: 38 43% 91%;
-    --card: 270 14% 18%;
-    --card-foreground: 38 43% 91%;
-    --popover: 270 14% 18%;
-    --popover-foreground: 38 43% 91%;
-    --primary: 18 55% 60%;
-    --primary-foreground: 270 15% 13%;
-    --secondary: 268 12% 22%;
-    --secondary-foreground: 38 43% 91%;
-    --muted: 268 12% 22%;
-    --muted-foreground: 270 8% 65%;
-    --accent: 130 12% 24%;
-    --accent-foreground: 108 24% 85%;
-    --destructive: 0 62% 45%;
-    --destructive-foreground: 38 43% 91%;
-    --border: 264 13% 24%;
-    --input: 264 13% 24%;
-    --ring: 18 55% 60%;
+    /* ---- Threads of Grace · after dark ---- */
+    --background: 132 12% 10%;
+    --foreground: 44 32% 90%;
+    --card: 132 10% 14%;
+    --card-foreground: 44 32% 90%;
+    --popover: 132 10% 14%;
+    --popover-foreground: 44 32% 90%;
+    --primary: 95 28% 60%;
+    --primary-foreground: 132 12% 10%;
+    --secondary: 130 8% 20%;
+    --secondary-foreground: 44 32% 90%;
+    --muted: 130 8% 20%;
+    --muted-foreground: 44 12% 64%;
+    --accent: 130 14% 20%;
+    --accent-foreground: 95 28% 78%;
+    --destructive: 6 48% 50%;
+    --destructive-foreground: 44 32% 90%;
+    --border: 130 8% 22%;
+    --input: 130 8% 22%;
+    --ring: 95 28% 60%;
 
-    --paper: 270 15% 13%;
-    --sand: 268 12% 22%;
-    --line: 264 13% 24%;
-    --ink: 38 43% 91%;
-    --ink-soft: 270 8% 78%;
-    --sage: 124 16% 62%;
-    --sage-soft: 130 12% 24%;
-    --clay: 18 55% 62%;
-    --clay-soft: 16 30% 26%;
-    --gold: 40 60% 60%;
-    --gold-soft: 38 28% 24%;
-    --plum: 279 18% 66%;
-    --sky: 205 30% 66%;
+    --paper: 132 12% 10%;
+    --sand: 130 8% 20%;
+    --line: 130 8% 22%;
+    --ink: 44 32% 90%;
+    --ink-soft: 44 14% 74%;
+    --forest: 95 28% 60%;
+    --forest-soft: 130 14% 20%;
+    --gold: 40 48% 60%;
+    --gold-soft: 40 20% 22%;
+    --clay: 18 50% 60%;
+    --clay-soft: 16 28% 24%;
+    --sage: 95 26% 62%;
+    --sage-soft: 130 14% 20%;
+    --plum: 264 22% 68%;
+    --sky: 208 26% 64%;
+    --lavender: 264 22% 70%;
+    --lavender-soft: 264 16% 24%;
+    --mood-happy: 95 26% 62%;
+    --mood-calm: 208 26% 64%;
+    --mood-anxious: 18 50% 60%;
+    --mood-grateful: 264 22% 70%;
 
-    --grace-100: 130 12% 24%;
-    --grace-200: 268 12% 30%;
-    --grace-blue: 205 30% 50%;
-    --grace-gold: 40 60% 45%;
-    --light-beige: 268 12% 18%;
-    --soft-peach: 16 30% 24%;
+    --grace-100: 130 14% 20%;
+    --grace-200: 130 8% 28%;
+    --grace-blue: 208 26% 56%;
+    --grace-gold: 40 48% 50%;
+    --light-beige: 130 8% 16%;
+    --soft-peach: 16 28% 22%;
   }
 }
 
@@ -104,11 +121,8 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "cv11", "ss01";
+    font-feature-settings: "liga" 1;
     -webkit-font-smoothing: antialiased;
-  }
-  .font-serif {
-    font-feature-settings: "liga" 1, "dlig" 1;
   }
 }
 
@@ -119,6 +133,11 @@
   .focus-visible-ring {
     @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
-  /* hairline that respects the warm line token */
-  .border-hair { border-color: hsl(var(--line)); }
+  /* letterspaced section eyebrow */
+  .eyebrow {
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    font-weight: 600;
+  }
 }

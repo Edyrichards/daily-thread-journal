@@ -93,6 +93,20 @@ export default {
 				},
 				plum: 'hsl(var(--plum))',
 				sky: 'hsl(var(--sky))',
+				forest: {
+					DEFAULT: 'hsl(var(--forest))',
+					soft: 'hsl(var(--forest-soft))'
+				},
+				lavender: {
+					DEFAULT: 'hsl(var(--lavender))',
+					soft: 'hsl(var(--lavender-soft))'
+				},
+				mood: {
+					happy: 'hsl(var(--mood-happy))',
+					calm: 'hsl(var(--mood-calm))',
+					anxious: 'hsl(var(--mood-anxious))',
+					grateful: 'hsl(var(--mood-grateful))'
+				},
 			},
 			backgroundImage: {
 				'dawn': 'linear-gradient(150deg,#E9B98A 0%,#C26B4A 45%,#7A6A86 100%)',
@@ -153,7 +167,8 @@ export default {
 				'fade-out': 'fade-out 0.3s ease-out'
 			},
 			fontFamily: {
-				'serif': ['Fraunces', 'Georgia', 'serif'],
+				'display': ['Cormorant Garamond', 'Georgia', 'serif'],
+				'serif': ['EB Garamond', 'Georgia', 'serif'],
 				'sans': ['Inter', 'system-ui', 'sans-serif']
 			}
 		}
