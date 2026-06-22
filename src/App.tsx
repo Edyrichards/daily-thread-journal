@@ -35,6 +35,7 @@ import VoiceJournalPage from '@/pages/VoiceJournalPage';
 import NewJournalFlowPage from '@/pages/NewJournalFlowPage';
 import SelahNewEntryPage from '@/pages/SelahNewEntryPage';
 import OnboardingPage from '@/pages/OnboardingPage';
+import SelahOnboardingPage from '@/pages/SelahOnboardingPage';
 import EnhancedPrayerPage from '@/pages/EnhancedPrayerPage';
 import GuidedPrayerPage from '@/pages/GuidedPrayerPage';
 import SelahGuidedPrayerPage from '@/pages/SelahGuidedPrayerPage';
@@ -114,7 +115,8 @@ function App() {
                 <Route path="/settings-legacy" element={<SettingsPage />} />
                 <Route path="/data" element={<DataManagementPage />} />
                 <Route path="/voice" element={<VoiceJournalPage />} />
-                <Route path="/onboarding" element={<OnboardingPage />} />
+                <Route path="/onboarding" element={<SelahOnboardingPage />} />
+                <Route path="/onboarding-legacy" element={<OnboardingPage />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </div>
