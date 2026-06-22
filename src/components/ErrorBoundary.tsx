@@ -96,7 +96,7 @@ class ErrorBoundary extends Component<Props, State> {
               We're sorry, but something unexpected happened. This error has been logged.
             </p>
             
-            {process.env.NODE_ENV === 'development' && this.state.error && (
+            {import.meta.env.DEV && this.state.error && (
               <details className="text-xs bg-muted p-2 rounded">
                 <summary className="cursor-pointer font-medium">Error Details</summary>
                 <pre className="mt-2 whitespace-pre-wrap">{this.state.error.message}</pre>

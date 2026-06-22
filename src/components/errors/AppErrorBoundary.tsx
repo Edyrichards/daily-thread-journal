@@ -122,7 +122,7 @@ class AppErrorBoundary extends Component<Props, State> {
                 This error has been logged for review.
               </p>
               
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {import.meta.env.DEV && this.state.error && (
                 <details className="text-xs bg-muted p-2 rounded">
                   <summary className="cursor-pointer font-medium flex items-center">
                     <Bug size={14} className="mr-1" />
