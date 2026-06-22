@@ -116,7 +116,7 @@ const SelahBiblePage = () => {
           >
             <Ring pct={p.pct} light={p.feature} />
             <span className="min-w-0">
-              <span className={cn('block font-serif text-[15px] font-semibold leading-tight', p.feature ? 'text-white' : 'text-ink')}>{p.title}</span>
+              <span className={cn('block text-[14px] font-semibold leading-tight', p.feature ? 'text-white' : 'text-ink')}>{p.title}</span>
               <span className={cn('mt-0.5 block text-[12px]', p.feature ? 'text-white/80' : 'text-muted-foreground')}>{p.sub}</span>
             </span>
           </button>
@@ -152,7 +152,7 @@ const SelahBiblePage = () => {
       <div className="grid grid-cols-3 gap-2.5">
         {books.map((b) => (
           <div key={b.name} className="rounded-[12px] border border-line bg-card px-2 py-2.5 text-center shadow-soft">
-            <span className="font-serif text-[14px]" style={{ color: `hsl(${catHsl[b.cat]})` }}>{b.name}</span>
+            <span className="text-[13px] font-medium" style={{ color: `hsl(${catHsl[b.cat]})` }}>{b.name}</span>
           </div>
         ))}
       </div>

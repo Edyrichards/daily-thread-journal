@@ -140,7 +140,7 @@ const SelahJournalPage = () => {
                       <span className="text-[12px] font-medium text-muted-foreground">{fmtDate(e)}</span>
                       <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
                     </span>
-                    <p className="mt-1.5 line-clamp-3 font-serif text-[16.5px] leading-snug text-ink">
+                    <p className="mt-1.5 line-clamp-3 text-[14px] leading-relaxed text-ink-soft">
                       {e.content || e.reflection || 'A quiet moment with God.'}
                     </p>
                     <span

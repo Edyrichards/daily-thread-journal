@@ -79,7 +79,7 @@ const SelahPrayerPage = () => {
       <div className="mb-5 flex items-center justify-center gap-3 rounded-[18px] border border-line bg-card px-5 py-3.5 shadow-soft">
         <Flame className="h-7 w-7 text-clay" />
         <div className="text-center">
-          <p className="font-serif text-[19px] font-semibold text-ink">
+          <p className="text-[18px] font-semibold text-ink">
             <span className="text-clay">{streak}</span> Day Prayer Streak
           </p>
           <p className="text-[12.5px] text-muted-foreground">Keep seeking. Keep believing.</p>
@@ -94,7 +94,7 @@ const SelahPrayerPage = () => {
               <textarea
                 autoFocus value={draft} onChange={(e) => setDraft(e.target.value)}
                 placeholder="What would you like to pray about?"
-                className="min-h-[76px] w-full resize-none rounded-[14px] bg-secondary/60 p-3 font-serif text-[16px] text-ink outline-none placeholder:text-muted-foreground"
+                className="min-h-[76px] w-full resize-none rounded-[14px] bg-secondary/60 p-3 text-[15px] text-ink outline-none placeholder:text-muted-foreground"
               />
               <div className="mt-2.5 flex justify-end gap-2">
                 <button onClick={() => setComposing(false)} className="px-4 py-2 text-[14px] font-medium text-muted-foreground">Cancel</button>
@@ -128,7 +128,7 @@ const SelahPrayerPage = () => {
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="font-serif text-[16px] leading-snug text-ink">{ptitle(p)}</p>
+                      <p className="text-[15px] font-medium leading-snug text-ink">{ptitle(p)}</p>
                       {!answered && (
                         <button onClick={() => markAnswered(p)} aria-label="Mark answered"><MoreHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" /></button>
                       )}
@@ -166,7 +166,7 @@ const SelahPrayerPage = () => {
                   <span className="text-[13px] font-semibold text-ink">{r.isAnonymous ? 'Anonymous' : 'A friend'} <span className="ml-1 font-normal text-muted-foreground">{ago(r.createdAt)}</span></span>
                   <Bookmark className="h-4 w-4 text-muted-foreground" />
                 </div>
-                <p className="mt-1 font-serif text-[15.5px] leading-snug text-ink-soft">{r.text}</p>
+                <p className="mt-1 text-[14px] leading-relaxed text-ink-soft">{r.text}</p>
                 <div className="mt-2.5 flex items-center gap-5 text-[12.5px] font-semibold text-muted-foreground">
                   <button onClick={() => prayWall(r)} className="flex items-center gap-1.5 text-clay"><Heart className="h-4 w-4" /> {r.prayedCount}</button>
                   <span className="flex items-center gap-1.5"><HandHeart className="h-4 w-4" /> {r.comments?.length || 0}</span>

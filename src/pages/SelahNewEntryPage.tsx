@@ -285,7 +285,7 @@ const SelahNewEntryPage = () => {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Begin writing, or tap the mic to speak…"
-                    className="h-full min-h-[240px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
+                    className="h-full min-h-[240px] w-full resize-none rounded-[24px] border border-line bg-card p-5 text-[16px] leading-[1.7] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
                   />
                   <div className="pointer-events-none absolute bottom-4 left-5 text-[12px] font-semibold text-muted-foreground">
                     {wordCount} {wordCount === 1 ? 'word' : 'words'} · saved
@@ -324,11 +324,11 @@ const SelahNewEntryPage = () => {
                   value={reflection}
                   onChange={(e) => setReflection(e.target.value)}
                   placeholder="A sentence is enough. What will you carry with you?"
-                  className="min-h-[150px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
+                  className="min-h-[150px] w-full resize-none rounded-[24px] border border-line bg-card p-5 text-[16px] leading-[1.7] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
                 />
                 <div className="mt-5 rounded-[20px] border border-line bg-card p-4">
                   <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Your entry</p>
-                  <p className="mt-1.5 line-clamp-2 font-serif text-[15px] text-ink-soft">
+                  <p className="mt-1.5 line-clamp-2 text-[14px] text-ink-soft">
                     {text || 'No writing yet.'}
                   </p>
                 </div>

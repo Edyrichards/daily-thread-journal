@@ -79,7 +79,7 @@ const SelahCommunityPage = () => {
               </div>
               <MoreHorizontal className="h-5 w-5 text-muted-foreground" />
             </div>
-            <p className={cn('mt-3 text-ink', p.verse ? 'font-display text-[19px] italic leading-snug' : 'font-serif text-[16px] leading-relaxed')}>{p.text}</p>
+            <p className={cn('mt-3 text-ink', p.verse ? 'font-display text-[19px] italic leading-snug' : 'text-[15px] leading-relaxed')}>{p.text}</p>
             <p className="eyebrow mt-2 text-[10.5px] text-gold">{p.ref}</p>
             <div className="mt-3 flex items-center gap-6 text-[13px] font-semibold text-muted-foreground">
               <button onClick={() => setLiked((l) => ({ ...l, [i]: !l[i] }))} className={cn('flex items-center gap-1.5', liked[i] && 'text-clay')}>
@@ -99,7 +99,7 @@ const SelahCommunityPage = () => {
         <LeafSprig className="pointer-events-none absolute -right-2 bottom-0 h-16 w-24 text-white/20" />
         <div className="relative flex-1">
           <p className="eyebrow text-[10px] text-white/85">Daily Challenge</p>
-          <p className="mt-1 font-serif text-[17px] leading-snug">Spend 10 minutes in silence with God today.</p>
+          <p className="mt-1 text-[15px] font-medium leading-snug">Spend 10 minutes in silence with God today.</p>
         </div>
         <button className="relative shrink-0 rounded-full bg-white px-5 py-2 text-[14px] font-bold text-clay">Join</button>
       </div>
@@ -116,7 +116,7 @@ const SelahCommunityPage = () => {
                 <p className="text-[10.5px] text-muted-foreground">{r.t}</p>
               </div>
             </div>
-            <p className="mt-2 line-clamp-2 font-serif text-[14px] leading-snug text-ink-soft">{r.text}</p>
+            <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">{r.text}</p>
             <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-clay"><HandHeart className="h-4 w-4" /> {r.count}</p>
           </div>
         ))}
@@ -129,7 +129,7 @@ const SelahCommunityPage = () => {
           <LeafSprig className="h-7 w-10 text-white/55" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-serif text-[15px] leading-snug text-ink">God’s timing is perfect, even when we don’t understand the delay.</p>
+          <p className="text-[14px] leading-relaxed text-ink">God’s timing is perfect, even when we don’t understand the delay.</p>
           <div className="mt-1.5 flex items-center gap-4 text-[12px] text-muted-foreground">
             <span>By Olivia M.</span>
             <span className="flex items-center gap-1 text-clay"><Heart className="h-3.5 w-3.5" /> 76</span>
