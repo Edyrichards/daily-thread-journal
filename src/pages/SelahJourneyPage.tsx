@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, User, BookOpen, Flame, Heart } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { LeafSprig, SunSprout } from '@/components/threads/Botanical';
-import { getRandomVerse } from '@/lib/api';
+import { verseOfDay } from '@/lib/bible';
 import { getJournalEntries, JournalEntry, Mood } from '@/lib/storage';
 import { computeStreak } from '@/lib/journal';
 
@@ -53,7 +53,7 @@ const SelahJourneyPage = () => {
 
   useEffect(() => {
     setEntries(getJournalEntries());
-    getRandomVerse().then((v) => setVerse({ ...v, text: v.text.trim() }));
+    verseOfDay().then((v) => setVerse({ ...v, text: v.text.trim() }));
   }, []);
 
   const byDay = useMemo(() => {

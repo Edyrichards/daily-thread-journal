@@ -4,9 +4,8 @@ import { motion } from 'framer-motion';
 import { Book, Crown, Search, Star, Bookmark, ChevronRight } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { SunSprout, LeafSprig } from '@/components/threads/Botanical';
-import { getRandomVerse } from '@/lib/api';
 import {
-  BOOKS, CATEGORIES, CAT_HSL, PLANS, planPct, getBookmarks, isBookmarked,
+  verseOfDay, BOOKS, CATEGORIES, CAT_HSL, PLANS, planPct, getBookmarks, isBookmarked,
   toggleBookmark, parseReference, Bookmark as Bk,
 } from '@/lib/bible';
 import { useToast } from '@/hooks/use-toast';
@@ -42,7 +41,7 @@ const SelahBiblePage = () => {
   const [showAll, setShowAll] = useState(false);
 
   useEffect(() => {
-    getRandomVerse().then((v) => { const vv = { ...v, text: v.text.trim() }; setVerse(vv); setStarred(isBookmarked(vv.reference)); });
+    verseOfDay().then((v) => { const vv = { ...v, text: v.text.trim() }; setVerse(vv); setStarred(isBookmarked(vv.reference)); });
     setBookmarks(getBookmarks());
   }, []);
 

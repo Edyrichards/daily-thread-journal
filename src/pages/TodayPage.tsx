@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Heart, PenLine, ChevronRight, MoreHorizontal } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { Feather, SunSprout, SprigDivider, MoodFace, LeafSprig } from '@/components/threads/Botanical';
-import { getRandomVerse } from '@/lib/api';
+import { verseOfDay } from '@/lib/bible';
 import { getJournalEntries, JournalEntry, Mood, moodEmojis } from '@/lib/storage';
 import { entryTitle, relativeDay } from '@/lib/journal';
 
@@ -31,7 +31,7 @@ const TodayPage = () => {
 
   useEffect(() => {
     let active = true;
-    getRandomVerse()
+    verseOfDay()
       .then((v) => active && setVerse({ ...v, text: v.text.trim() }))
       .finally(() => active && setLoading(false));
     setEntries(

@@ -1,77 +1,49 @@
-
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'next-themes';
 import { Toaster } from '@/components/ui/toaster';
 import { Toaster as Sonner } from '@/components/ui/sonner';
-
-// Import all pages
-import Index from '@/pages/Index';
-import TodayPage from '@/pages/TodayPage';
-import JournalPage from '@/pages/JournalPage';
-import SelahJournalPage from '@/pages/SelahJournalPage';
-import NewJournalEntry from '@/pages/NewJournalEntry';
-import JournalEntryDetail from '@/pages/JournalEntryDetail';
-import SelahEntryDetailPage from '@/pages/SelahEntryDetailPage';
-import PrayerPage from '@/pages/PrayerPage';
-import SelahPrayerPage from '@/pages/SelahPrayerPage';
-import BiblePage from '@/pages/BiblePage';
-import SelahBiblePage from '@/pages/SelahBiblePage';
-import SelahReaderPage from '@/pages/SelahReaderPage';
-import SelahPlanPage from '@/pages/SelahPlanPage';
-import ScripturePage from '@/pages/ScripturePage';
-import ScriptureDiscoveryPage from '@/pages/ScriptureDiscoveryPage';
-import DevotionalPage from '@/pages/DevotionalPage';
-import WeeklyDevotionalPage from '@/pages/WeeklyDevotionalPage';
-import MoodTrackerPage from '@/pages/MoodTrackerPage';
-import HabitTrackerPage from '@/pages/HabitTrackerPage';
-import GrowthDashboard from '@/pages/GrowthDashboard';
-import SpiritualGrowthPage from '@/pages/SpiritualGrowthPage';
-import CommunityPage from '@/pages/CommunityPage';
-import SelahCommunityPage from '@/pages/SelahCommunityPage';
-import PrayerWallPage from '@/pages/PrayerWallPage';
-import SettingsPage from '@/pages/SettingsPage';
-import SelahSettingsPage from '@/pages/SelahSettingsPage';
-import DataManagementPage from '@/pages/DataManagementPage';
-import VoiceJournalPage from '@/pages/VoiceJournalPage';
-import NewJournalFlowPage from '@/pages/NewJournalFlowPage';
-import SelahNewEntryPage from '@/pages/SelahNewEntryPage';
-import OnboardingPage from '@/pages/OnboardingPage';
-import SelahOnboardingPage from '@/pages/SelahOnboardingPage';
-import EnhancedPrayerPage from '@/pages/EnhancedPrayerPage';
-import GuidedPrayerPage from '@/pages/GuidedPrayerPage';
-import SelahGuidedPrayerPage from '@/pages/SelahGuidedPrayerPage';
-import NotFound from '@/pages/NotFound';
-
-// New Phase 2 pages
-import EnhancedJournalPage from '@/pages/EnhancedJournalPage';
-import PrayerInsightsPage from '@/pages/PrayerInsightsPage';
-import AnalyticsPage from '@/pages/AnalyticsPage';
-import SelahJourneyPage from '@/pages/SelahJourneyPage';
-
-// Enhanced components
 import ErrorBoundary from '@/components/ErrorBoundary';
 import OfflineIndicator from '@/components/OfflineIndicator';
-
 import '@/styles/accessibility.css';
+
+// Code-split every route so the initial bundle stays small.
+const TodayPage = lazy(() => import('@/pages/TodayPage'));
+const SelahJournalPage = lazy(() => import('@/pages/SelahJournalPage'));
+const SelahNewEntryPage = lazy(() => import('@/pages/SelahNewEntryPage'));
+const SelahEntryDetailPage = lazy(() => import('@/pages/SelahEntryDetailPage'));
+const SelahPrayerPage = lazy(() => import('@/pages/SelahPrayerPage'));
+const SelahGuidedPrayerPage = lazy(() => import('@/pages/SelahGuidedPrayerPage'));
+const SelahBiblePage = lazy(() => import('@/pages/SelahBiblePage'));
+const SelahReaderPage = lazy(() => import('@/pages/SelahReaderPage'));
+const SelahPlanPage = lazy(() => import('@/pages/SelahPlanPage'));
+const SelahCommunityPage = lazy(() => import('@/pages/SelahCommunityPage'));
+const SelahJourneyPage = lazy(() => import('@/pages/SelahJourneyPage'));
+const SelahSettingsPage = lazy(() => import('@/pages/SelahSettingsPage'));
+const SelahOnboardingPage = lazy(() => import('@/pages/SelahOnboardingPage'));
+const NotFound = lazy(() => import('@/pages/NotFound'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 5 * 60 * 1000,
       retry: (failureCount, error) => {
-        // Don't retry on 4xx errors except 408 (timeout)
         if (error instanceof Error && 'status' in error) {
           const status = (error as any).status;
-          if (status >= 400 && status < 500 && status !== 408) {
-            return false;
-          }
+          if (status >= 400 && status < 500 && status !== 408) return false;
         }
         return failureCount < 3;
-      }
-    }
-  }
+      },
+    },
+  },
 });
+
+const RouteFallback = () => (
+  <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-forest" />
+  </div>
+);
 
 function App() {
   return (
@@ -81,48 +53,29 @@ function App() {
           <Router>
             <div className="min-h-screen bg-background">
               <OfflineIndicator />
-              <Routes>
-                <Route path="/" element={<TodayPage />} />
-                <Route path="/home-legacy" element={<Index />} />
-                <Route path="/journal" element={<SelahJournalPage />} />
-                <Route path="/journal-legacy" element={<JournalPage />} />
-                <Route path="/journal/enhanced" element={<EnhancedJournalPage />} />
-                <Route path="/journal/new" element={<NewJournalEntry />} />
-                <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
-                <Route path="/journal/new-flow-legacy" element={<NewJournalFlowPage />} />
-                <Route path="/journal/:id" element={<SelahEntryDetailPage />} />
-                <Route path="/journal-legacy/:id" element={<JournalEntryDetail />} />
-                <Route path="/prayer" element={<SelahPrayerPage />} />
-                <Route path="/prayer-legacy" element={<PrayerPage />} />
-                <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
-                <Route path="/prayer/guided" element={<SelahGuidedPrayerPage />} />
-                <Route path="/prayer/guided-legacy" element={<GuidedPrayerPage />} />
-                <Route path="/prayer/insights" element={<PrayerInsightsPage />} />
-                <Route path="/bible/read" element={<SelahReaderPage />} />
-                <Route path="/bible/plan/:id" element={<SelahPlanPage />} />
-                <Route path="/bible" element={<SelahBiblePage />} />
-                <Route path="/bible-legacy" element={<BiblePage />} />
-                <Route path="/scripture" element={<ScripturePage />} />
-                <Route path="/scripture/discovery" element={<ScriptureDiscoveryPage />} />
-                <Route path="/devotional" element={<DevotionalPage />} />
-                <Route path="/devotional/weekly" element={<WeeklyDevotionalPage />} />
-                <Route path="/mood" element={<MoodTrackerPage />} />
-                <Route path="/habits" element={<HabitTrackerPage />} />
-                <Route path="/growth" element={<GrowthDashboard />} />
-                <Route path="/spiritual-growth" element={<SpiritualGrowthPage />} />
-                <Route path="/analytics" element={<SelahJourneyPage />} />
-                <Route path="/analytics-legacy" element={<AnalyticsPage />} />
-                <Route path="/community" element={<SelahCommunityPage />} />
-                <Route path="/community-legacy" element={<CommunityPage />} />
-                <Route path="/prayer-wall" element={<PrayerWallPage />} />
-                <Route path="/settings" element={<SelahSettingsPage />} />
-                <Route path="/settings-legacy" element={<SettingsPage />} />
-                <Route path="/data" element={<DataManagementPage />} />
-                <Route path="/voice" element={<VoiceJournalPage />} />
-                <Route path="/onboarding" element={<SelahOnboardingPage />} />
-                <Route path="/onboarding-legacy" element={<OnboardingPage />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <Suspense fallback={<RouteFallback />}>
+                <Routes>
+                  <Route path="/" element={<TodayPage />} />
+                  <Route path="/onboarding" element={<SelahOnboardingPage />} />
+
+                  <Route path="/journal" element={<SelahJournalPage />} />
+                  <Route path="/journal/new-flow" element={<SelahNewEntryPage />} />
+                  <Route path="/journal/:id" element={<SelahEntryDetailPage />} />
+
+                  <Route path="/prayer" element={<SelahPrayerPage />} />
+                  <Route path="/prayer/guided" element={<SelahGuidedPrayerPage />} />
+
+                  <Route path="/bible" element={<SelahBiblePage />} />
+                  <Route path="/bible/read" element={<SelahReaderPage />} />
+                  <Route path="/bible/plan/:id" element={<SelahPlanPage />} />
+
+                  <Route path="/community" element={<SelahCommunityPage />} />
+                  <Route path="/analytics" element={<SelahJourneyPage />} />
+                  <Route path="/settings" element={<SelahSettingsPage />} />
+
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
             </div>
             <Toaster />
             <Sonner />

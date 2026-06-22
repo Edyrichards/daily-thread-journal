@@ -1,33 +1,17 @@
-
 {
   "name": "Threads of Grace",
-  "short_name": "ToG",
-  "description": "Your spiritual journey companion for daily journaling, prayer tracking, and faith growth",
+  "short_name": "Threads",
+  "description": "A calm, sacred space for daily scripture, prayer, and reflection.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#8b5cf6",
+  "background_color": "#F5F0E8",
+  "theme_color": "#324A3A",
   "orientation": "portrait-primary",
   "icons": [
-    {
-      "src": "/placeholder.svg",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/placeholder.svg",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
-  "categories": ["lifestyle", "productivity", "health"],
-  "screenshots": [
-    {
-      "src": "/placeholder.svg",
-      "sizes": "540x720",
-      "type": "image/svg+xml"
-    }
-  ]
+  "categories": ["lifestyle", "health", "books"]
 }

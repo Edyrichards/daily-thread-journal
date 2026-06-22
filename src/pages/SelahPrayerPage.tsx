@@ -108,7 +108,7 @@ const SelahPrayerPage = () => {
       {/* my prayers */}
       <div className="mb-3 flex items-center justify-between">
         <h2 className="font-display text-[24px] font-semibold text-ink">My Prayers</h2>
-        <button onClick={() => navigate('/prayer/all')} className="flex items-center gap-1 text-[12px] font-semibold text-gold">View All <ChevronRight className="h-3.5 w-3.5" /></button>
+        <button onClick={() => navigate('/community')} className="flex items-center gap-1 text-[12px] font-semibold text-accent">View All <ChevronRight className="h-3.5 w-3.5" /></button>
       </div>
 
       {mine.length === 0 ? (

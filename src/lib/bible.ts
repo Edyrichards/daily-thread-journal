@@ -131,6 +131,36 @@ export async function fetchPassage(book: string, chapter: number): Promise<Passa
   return { reference: `${book} ${chapter}`, translation: translationLabel(trans), verses };
 }
 
+/* --------------------------- verse of the day --------------------------- */
+const VOTD: string[] = [
+  'John 3:16', 'Psalms 23:1', 'Philippians 4:6', 'Isaiah 41:10', 'Jeremiah 29:11',
+  'Psalms 46:10', 'Romans 8:28', 'Proverbs 3:5', 'Matthew 6:33', 'Psalms 27:1',
+  'Joshua 1:9', 'Philippians 4:13', 'Psalms 118:24', 'Isaiah 40:31', 'Psalms 121:1',
+  'Matthew 11:28', 'Romans 12:2', 'Psalms 34:8', 'Lamentations 3:22', '1 Peter 5:7',
+  'John 14:27', 'Psalms 16:11', 'Hebrews 11:1', 'Psalms 19:14', 'Galatians 5:22',
+  'Colossians 3:23', 'Psalms 51:10', 'Micah 6:8', 'James 1:5', 'Psalms 90:12',
+];
+const FALLBACK_VOTD = {
+  text: 'For God so loved the world, that he gave his one and only Son, that whoever believes in him should not perish, but have eternal life.',
+  reference: 'John 3:16',
+};
+
+/** Deterministic daily verse, loaded from the bundled offline Bible. */
+export async function verseOfDay(): Promise<{ text: string; reference: string }> {
+  const ref = VOTD[Math.floor(Date.now() / 86400000) % VOTD.length];
+  const m = ref.match(/^(.*?)\s+(\d+):(\d+)$/);
+  if (m) {
+    const book = findBook(m[1])?.name || m[1];
+    const chapter = Number(m[2]), verse = Number(m[3]);
+    try {
+      const data = await loadBook(book, translationPref());
+      const text = data[String(chapter)]?.[String(verse)];
+      if (text) return { text, reference: `${book} ${chapter}:${verse}` };
+    } catch { /* fall through */ }
+  }
+  return FALLBACK_VOTD;
+}
+
 /* ----------------------------- bookmarks ----------------------------- */
 export interface Bookmark { text: string; reference: string; createdAt: number; }
 const BK = 'bookmarked_verses';
