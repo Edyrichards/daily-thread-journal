@@ -28,7 +28,17 @@ const P = {
   plus:`<path d="M12 5v14M5 12h14"/>`,
   check:`<path d="m4 12 5 5L20 6"/>`,
   chev:`<path d="m9 6 6 6-6 6"/>`,
+  play:`<path d="M7 5l12 7-12 7V5Z"/>`,
+  sparkle:`<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/>`,
+  note:`<path d="M4 4h16v12l-4 4H4V4Z"/><path d="M16 20v-4h4"/>`,
 };
+const prayersData = [['Mom’s health','Praying 9 days','14',false],['Wisdom for the job decision','Praying 4 days','3',true],['Patience with the kids','Praying 21 days','7',false]];
+const bibleLines = [
+  ['1','The Lord is my shepherd, I lack nothing.',false],
+  ['2','He makes me lie down in green pastures, he leads me beside quiet waters,','hl'],
+  ['3','he refreshes my soul. He guides me along the right paths for his name’s sake.',false],
+  ['4','Even though I walk through the darkest valley, I will fear no evil, for you are with me.',false],
+];
 const ic = (n, w=24, sw=1.9) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round">${P[n]}</svg>`;
 const icf = (n, w=24) => `<svg width="${w}" height="${w}" viewBox="0 0 24 24" fill="currentColor" stroke="none">${P[n]}</svg>`;
 
@@ -305,6 +315,137 @@ body{width:${W}px;height:${H}px;overflow:hidden;}
 svg{display:block;}
 `;
 
+/* ---- NOCTURNE: prayer + bible ---- */
+nocturne.prayer = `
+  <div class="status-wrap">${statusbar('#EAF0FF')}</div>
+  <div class="pad">
+    <div class="row jb" style="margin-top:6px;"><div class="display" style="font-size:31px;font-weight:600;">Prayer</div>
+      <div class="panel" style="width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;color:#9FB0E0;">${ic('plus',22,2)}</div></div>
+    <div class="row" style="gap:9px;margin:16px 0;">
+      <div class="grad" style="padding:9px 16px;border-radius:999px;font-size:13px;font-weight:700;color:#fff;">Active · 6</div>
+      <div class="panel mut" style="padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;">Answered · 8</div>
+    </div>
+    <div class="panel" style="padding:0;overflow:hidden;position:relative;margin-bottom:18px;">
+      <div class="grad" style="position:absolute;inset:0;opacity:.18;"></div>
+      <div style="position:relative;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;">
+        <div><div class="gradtext" style="font-size:11px;font-weight:800;letter-spacing:2px;">GUIDED SESSION</div>
+          <div class="display" style="font-size:20px;font-weight:600;margin-top:6px;">Pray through A.C.T.S.</div>
+          <div class="mut" style="font-size:12px;margin-top:3px;">Adoration · Confession · Thanks</div></div>
+        <div class="grad" style="width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;">${icf('play',18)}</div>
+      </div>
+    </div>
+    ${prayersData.map(([t,s,n,done])=>`<div class="panel" style="padding:15px;margin-bottom:11px;">
+      <div class="row jb"><div style="font-weight:600;font-size:16px;">${t}</div><div class="mut row" style="gap:5px;font-size:12px;font-weight:600;"><span style="color:#FF7A98">${icf('heart',13)}</span>${n}</div></div>
+      <div class="mut" style="font-size:12px;margin-top:3px;">${s}</div>
+      <div class="row" style="gap:14px;margin-top:12px;align-items:center;">
+        <div class="${done?'':'grad'}" style="padding:8px 16px;border-radius:999px;font-size:13px;font-weight:700;${done?'background:rgba(45,224,200,.16);color:#48E6C8;':'color:#fff;'}">${done?'✓ Prayed today':'Pray now'}</div>
+        <div class="mut" style="font-size:13px;font-weight:600;">Mark answered</div>
+      </div>
+    </div>`).join('')}
+  </div>
+  ${navDark('Pray')}
+`;
+nocturne.bible = `
+  <div class="status-wrap">${statusbar('#EAF0FF')}</div>
+  <div class="pad">
+    <div class="row jb" style="margin-top:6px;align-items:center;">
+      <div class="display row" style="font-size:24px;font-weight:600;gap:8px;align-items:center;">Psalm 23 <span class="mut">${ic('chev',20)}</span></div>
+      <div class="panel" style="padding:9px 14px;border-radius:999px;font-size:12px;font-weight:700;">NIV</div>
+    </div>
+    <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.95;margin-top:22px;color:#D9E2F7;">
+      ${bibleLines.map(([n,t,hl])=>`<p style="margin:0 0 16px;"><sup class="mut" style="font-size:12px;font-family:Inter;">${n}</sup> ${hl?t.replace('quiet waters',`<span class="grad" style="-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic;">quiet waters</span>`):t}</p>`).join('')}
+    </div>
+  </div>
+  <div class="panel" style="position:absolute;left:20px;right:20px;bottom:98px;padding:13px;border-radius:24px;display:flex;justify-content:space-around;">
+    ${[['bookmark','Highlight'],['note','Note'],['heart','Pray'],['play','Listen'],['share','Share']].map(([i,l])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:#AFC0EA;">${ic(i,20)}<span style="font-size:11px;font-weight:600;">${l}</span></div>`).join('')}
+  </div>
+  ${navDark('Bible')}
+`;
+
+/* ---- QUIET: prayer + bible ---- */
+quiet.prayer = `
+  <div class="status-wrap">${statusbar('#16160F')}</div>
+  <div class="pad" style="padding-left:26px;padding-right:26px;">
+    <div class="row jb" style="margin-top:12px;align-items:center;"><div class="serif" style="font-size:34px;">Prayer</div><span class="mut">${ic('plus',22)}</span></div>
+    <div class="row" style="gap:24px;margin-top:18px;border-bottom:1px solid var(--line);">
+      ${['Active','Answered'].map((t,i)=>`<div style="font-size:14px;font-weight:${i===0?600:500};padding-bottom:12px;${i===0?'border-bottom:1.5px solid var(--ever);margin-bottom:-1px;':'color:var(--mut);'}">${t}</div>`).join('')}
+    </div>
+    <div style="margin-top:20px;border:1px solid var(--line);border-radius:18px;padding:18px;display:flex;align-items:center;justify-content:space-between;">
+      <div><div class="kick">Guided session</div><div class="serif" style="font-size:21px;margin-top:7px;">Pray through A.C.T.S.</div></div>
+      <span style="color:var(--ever)">${icf('play',22)}</span>
+    </div>
+    ${prayersData.map(([t,s,n,done])=>`<div style="padding:19px 0;border-bottom:1px solid var(--line);">
+       <div class="row jb" style="align-items:baseline;"><div class="serif" style="font-size:20px;">${t}</div><div class="kick">${n} prayers</div></div>
+       <div class="row jb" style="margin-top:11px;align-items:center;">
+         <div class="mut" style="font-size:13px;">${s}</div>
+         <div style="font-size:13px;font-weight:600;color:${done?'var(--mut)':'var(--ever)'};">${done?'✓ Prayed today':'Pray now →'}</div>
+       </div>
+    </div>`).join('')}
+  </div>
+  ${navQuiet('Pray')}
+`;
+quiet.bible = `
+  <div class="status-wrap">${statusbar('#16160F')}</div>
+  <div class="pad" style="padding-left:26px;padding-right:26px;">
+    <div class="row jb" style="margin-top:12px;align-items:baseline;"><div class="serif" style="font-size:31px;">Psalm 23</div><div class="kick">NIV · ${'▾'}</div></div>
+    <div class="rule" style="margin:20px 0;"></div>
+    <div class="serif" style="font-size:21px;line-height:2.0;">
+      ${bibleLines.map(([n,t,hl])=>`<p style="margin:0 0 16px;"><sup class="mut" style="font-size:12px;font-family:Inter;">${n}</sup> ${hl?t.replace('quiet waters',`<span style="box-shadow:inset 0 -11px 0 rgba(34,57,47,.14);">quiet waters</span>`):t}</p>`).join('')}
+    </div>
+  </div>
+  <div style="position:absolute;left:26px;right:26px;bottom:100px;border-top:1px solid var(--line);padding-top:16px;display:flex;justify-content:space-between;color:var(--mut);font-size:13px;font-weight:500;">
+    <span>Highlight</span><span>Note</span><span>Pray</span><span>Listen</span><span>Share</span>
+  </div>
+  ${navQuiet('Bible')}
+`;
+
+/* ---- BLOOM: prayer + bible ---- */
+bloom.prayer = `
+  <div class="status-wrap">${statusbar('#1B2240')}</div>
+  <div class="pad">
+    <div class="row jb" style="margin-top:6px;align-items:center;"><div style="font-size:30px;font-weight:800;letter-spacing:-.02em;">Prayer</div>
+      <div style="width:46px;height:46px;border-radius:16px;background:#fff;box-shadow:0 8px 20px -12px rgba(40,52,110,.4);display:flex;align-items:center;justify-content:center;color:var(--indigo);">${ic('plus',22,2.2)}</div></div>
+    <div class="row" style="gap:9px;margin:16px 0;">
+      <div style="background:var(--indigo);color:#fff;padding:9px 16px;border-radius:999px;font-size:13px;font-weight:800;">Active · 6</div>
+      <div style="background:#fff;color:var(--mut);padding:9px 16px;border-radius:999px;font-size:13px;font-weight:700;">Answered · 8</div>
+    </div>
+    <div class="card" style="padding:18px;margin-bottom:16px;background:linear-gradient(135deg,#19C9A0,#0FB6C4);color:#fff;display:flex;align-items:center;justify-content:between;gap:12px;">
+      <div style="flex:1;"><div style="font-size:11px;font-weight:800;letter-spacing:1.4px;opacity:.9;">GUIDED SESSION</div>
+        <div style="font-size:20px;font-weight:800;margin-top:6px;letter-spacing:-.01em;">Pray through A.C.T.S.</div></div>
+      <div style="width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;">${icf('play',18)}</div>
+    </div>
+    ${prayersData.map(([t,s,n,done],i)=>{const c=['indigo','coral','amber'][i];return `<div class="card" style="padding:16px;margin-bottom:12px;">
+      <div class="row" style="gap:13px;align-items:stretch;">
+        <div style="width:5px;border-radius:999px;background:var(--${c});"></div>
+        <div style="flex:1;">
+          <div class="row jb"><div style="font-weight:800;font-size:16px;letter-spacing:-.01em;">${t}</div><div style="color:var(--coral);font-size:12px;font-weight:800;display:flex;gap:4px;align-items:center;">${icf('heart',13)} ${n}</div></div>
+          <div class="mut" style="font-size:12px;font-weight:700;margin-top:3px;">${s}</div>
+          <div class="row" style="gap:12px;margin-top:12px;align-items:center;">
+            <div style="padding:8px 16px;border-radius:999px;font-size:13px;font-weight:800;${done?'background:var(--mint-s);color:var(--mint);':'background:var(--indigo);color:#fff;'}">${done?'✓ Prayed today':'Pray now'}</div>
+            <div class="mut" style="font-size:13px;font-weight:700;">Mark answered</div>
+          </div>
+        </div>
+      </div></div>`;}).join('')}
+  </div>
+  ${navBloom('Pray')}
+`;
+bloom.bible = `
+  <div class="status-wrap">${statusbar('#1B2240')}</div>
+  <div class="pad">
+    <div class="row jb" style="margin-top:6px;align-items:center;">
+      <div class="row" style="gap:8px;align-items:center;font-size:24px;font-weight:800;letter-spacing:-.02em;">Psalm 23 <span class="mut">${ic('chev',20,2.2)}</span></div>
+      <div style="background:var(--indigo-s);color:var(--indigo);padding:9px 15px;border-radius:999px;font-size:12px;font-weight:800;">NIV</div>
+    </div>
+    <div style="font-family:'Newsreader',serif;font-size:21px;line-height:1.95;margin-top:20px;color:#2A3150;">
+      ${bibleLines.map(([n,t,hl])=>`<p style="margin:0 0 15px;"><sup style="color:var(--mut);font-size:12px;font-family:'Plus Jakarta Sans';font-weight:700;">${n}</sup> ${hl?t.replace('quiet waters',`<span style="background:var(--indigo-s);color:var(--indigo);border-radius:8px;padding:1px 6px;">quiet waters</span>`):t}</p>`).join('')}
+    </div>
+  </div>
+  <div class="card" style="position:absolute;left:20px;right:20px;bottom:98px;padding:13px;border-radius:24px;display:flex;justify-content:space-around;">
+    ${[['bookmark','Highlight','amber'],['note','Note','mint'],['heart','Pray','coral'],['play','Listen','indigo'],['share','Share','mut']].map(([i,l,c])=>`<div style="display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--${c});"><div>${ic(i,20,2)}</div><span style="font-size:11px;font-weight:700;color:var(--ink);">${l}</span></div>`).join('')}
+  </div>
+  ${navBloom('Bible')}
+`;
+
 const dirs = [nocturne, quiet, bloom];
 const html = (dir, body) => `<!doctype html><html><head><meta charset="utf-8"><style>${FONTS}</style><style>${baseCSS}${dir.css}</style></head><body><div class="screen">${body}</div></body></html>`;
 
@@ -312,7 +453,7 @@ const browser = await puppeteer.launch({ headless:'new', args:['--no-sandbox','-
 const page = await browser.newPage();
 await page.setViewport({ width:W, height:H, deviceScaleFactor:3 });
 for (const dir of dirs) {
-  for (const screen of ['today','journal']) {
+  for (const screen of ['today','journal','prayer','bible']) {
     const doc = html(dir, dir[screen]);
     await page.setContent(doc, { waitUntil:'load' });
     await page.evaluate(async()=>{await document.fonts.ready;});
