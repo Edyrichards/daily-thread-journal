@@ -20,12 +20,12 @@ const bookmarks = [
 ];
 
 const categories = [
-  { label: 'Law', hsl: '95 21% 48%' },
-  { label: 'History', hsl: '40 42% 50%' },
-  { label: 'Poetry', hsl: '264 18% 58%' },
-  { label: 'Prophets', hsl: '18 46% 54%' },
-  { label: 'Gospels', hsl: '6 52% 52%' },
-  { label: 'Epistles', hsl: '208 24% 56%' },
+  { label: 'Law', hsl: '105 18% 52%' },      // sage
+  { label: 'History', hsl: '24 24% 50%' },    // clay
+  { label: 'Poetry', hsl: '154 14% 49%' },    // teal
+  { label: 'Prophets', hsl: '30 33% 58%' },   // terracotta
+  { label: 'Gospels', hsl: '155 24% 22%' },   // forest
+  { label: 'Epistles', hsl: '33 36% 52%' },   // sand
 ];
 const catHsl: Record<string, string> = Object.fromEntries(categories.map((c) => [c.label, c.hsl]));
 const books: { name: string; cat: string }[] = [

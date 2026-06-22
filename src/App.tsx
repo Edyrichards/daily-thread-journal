@@ -25,6 +25,7 @@ import HabitTrackerPage from '@/pages/HabitTrackerPage';
 import GrowthDashboard from '@/pages/GrowthDashboard';
 import SpiritualGrowthPage from '@/pages/SpiritualGrowthPage';
 import CommunityPage from '@/pages/CommunityPage';
+import SelahCommunityPage from '@/pages/SelahCommunityPage';
 import PrayerWallPage from '@/pages/PrayerWallPage';
 import SettingsPage from '@/pages/SettingsPage';
 import DataManagementPage from '@/pages/DataManagementPage';
@@ -40,6 +41,7 @@ import NotFound from '@/pages/NotFound';
 import EnhancedJournalPage from '@/pages/EnhancedJournalPage';
 import PrayerInsightsPage from '@/pages/PrayerInsightsPage';
 import AnalyticsPage from '@/pages/AnalyticsPage';
+import SelahJourneyPage from '@/pages/SelahJourneyPage';
 
 // Enhanced components
 import ErrorBoundary from '@/components/ErrorBoundary';
@@ -98,8 +100,10 @@ function App() {
                 <Route path="/habits" element={<HabitTrackerPage />} />
                 <Route path="/growth" element={<GrowthDashboard />} />
                 <Route path="/spiritual-growth" element={<SpiritualGrowthPage />} />
-                <Route path="/analytics" element={<AnalyticsPage />} />
-                <Route path="/community" element={<CommunityPage />} />
+                <Route path="/analytics" element={<SelahJourneyPage />} />
+                <Route path="/analytics-legacy" element={<AnalyticsPage />} />
+                <Route path="/community" element={<SelahCommunityPage />} />
+                <Route path="/community-legacy" element={<CommunityPage />} />
                 <Route path="/prayer-wall" element={<PrayerWallPage />} />
                 <Route path="/settings" element={<SettingsPage />} />
                 <Route path="/data" element={<DataManagementPage />} />

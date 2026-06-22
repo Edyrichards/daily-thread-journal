@@ -1,5 +1,5 @@
 
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600;700&display=swap");
 @import "./styles/accessibility.css";
 @tailwind base;
 @tailwind components;
@@ -7,111 +7,126 @@
 
 @layer base {
   :root {
-    /* ---- Threads of Grace · light ---- */
-    --background: 43 39% 93%;        /* warm ivory */
-    --foreground: 120 9% 18%;        /* deep green-charcoal ink */
-    --card: 44 46% 97%;
-    --card-foreground: 120 9% 18%;
-    --popover: 44 46% 97%;
-    --popover-foreground: 120 9% 18%;
-    --primary: 141 18% 24%;          /* forest green */
-    --primary-foreground: 44 46% 97%;
-    --secondary: 42 28% 89%;         /* sand */
-    --secondary-foreground: 141 18% 24%;
-    --muted: 42 28% 89%;
-    --muted-foreground: 40 9% 45%;
-    --accent: 95 22% 88%;            /* soft sage */
-    --accent-foreground: 141 18% 24%;
+    /* ---- Threads of Grace · Sacred Minimalism (light) — per design.md ---- */
+    --background: 36 33% 96%;        /* warm cream canvas */
+    --foreground: 155 24% 22%;       /* deep forest text */
+    --card: 0 0% 100%;               /* white elevated surfaces */
+    --card-foreground: 155 24% 22%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 155 24% 22%;
+    --primary: 155 24% 22%;          /* deep forest green */
+    --primary-foreground: 36 33% 96%;
+    --secondary: 36 20% 90%;
+    --secondary-foreground: 155 24% 22%;
+    --muted: 36 20% 90%;
+    --muted-foreground: 155 10% 40%;
+    --accent: 30 33% 64%;            /* soft terracotta / clay */
+    --accent-foreground: 155 24% 22%;
     --destructive: 6 52% 46%;
-    --destructive-foreground: 44 46% 97%;
-    --border: 42 30% 85%;
-    --input: 42 30% 85%;
-    --ring: 141 18% 24%;
-    --radius: 1.1rem;
+    --destructive-foreground: 36 33% 96%;
+    --border: 36 20% 85%;
+    --input: 36 20% 85%;
+    --ring: 155 24% 22%;
+    --radius: 1rem;
 
-    /* brand tokens */
-    --paper: 43 39% 93%;
-    --sand: 42 28% 89%;
-    --line: 42 30% 85%;
-    --ink: 120 9% 18%;
-    --ink-soft: 40 10% 34%;
-    --forest: 141 18% 24%;
-    --forest-soft: 95 22% 88%;
-    --gold: 40 42% 50%;
-    --gold-soft: 42 50% 88%;
-    --clay: 18 46% 54%;
-    --clay-soft: 22 55% 90%;
-    --sage: 95 21% 48%;
-    --sage-soft: 95 22% 88%;
-    --plum: 264 18% 58%;
-    --sky: 208 24% 56%;
-    --lavender: 264 18% 62%;
-    --lavender-soft: 268 34% 94%;
-    /* mood data palette */
-    --mood-happy: 95 21% 48%;
-    --mood-calm: 208 24% 56%;
-    --mood-anxious: 18 46% 54%;
-    --mood-grateful: 264 18% 60%;
+    /* tinted elevation */
+    --shadow-sm: 0 1px 2px hsl(155 24% 22% / 0.04);
+    --shadow-card: 0 4px 16px hsl(155 24% 22% / 0.06);
+    --shadow-lifted: 0 12px 40px hsl(155 24% 22% / 0.10);
+
+    /* brand + data-viz tokens — earth-tone palette only */
+    --paper: 36 33% 96%;
+    --sand: 33 42% 71%;              /* #D4B896 */
+    --line: 36 20% 85%;
+    --ink: 155 24% 22%;
+    --ink-soft: 155 10% 40%;
+    --forest: 155 24% 22%;
+    --forest-soft: 105 22% 88%;
+    --sage: 105 18% 52%;             /* #7D9B76 */
+    --sage-soft: 105 22% 89%;
+    --clay: 24 24% 54%;              /* #A8826B */
+    --clay-soft: 30 33% 89%;
+    --teal: 154 14% 49%;             /* #6B8E7F */
+    --teal-soft: 154 16% 89%;
+    --terracotta: 30 33% 64%;        /* #C4A484 */
+    /* aliases kept so existing classes resolve to earth tones (no gold/blue/purple) */
+    --gold: 24 24% 50%;              /* -> clay for legible accent text/borders */
+    --gold-soft: 33 40% 88%;         /* -> sand soft */
+    --plum: 154 14% 49%;             /* -> teal */
+    --sky: 154 14% 49%;              /* -> teal */
+    --lavender: 30 33% 60%;          /* -> terracotta */
+    --lavender-soft: 36 20% 91%;     /* -> warm muted */
+    --mood-happy: 105 18% 52%;       /* sage */
+    --mood-calm: 154 14% 49%;        /* teal */
+    --mood-anxious: 24 24% 54%;      /* clay */
+    --mood-grateful: 30 33% 60%;     /* terracotta */
 
     /* legacy compat */
-    --grace-100: 95 22% 88%;
-    --grace-200: 42 28% 85%;
-    --grace-blue: 208 24% 56%;
-    --grace-gold: 40 42% 50%;
-    --light-beige: 42 28% 89%;
-    --soft-peach: 22 55% 90%;
+    --grace-100: 105 22% 89%;
+    --grace-200: 36 20% 85%;
+    --grace-blue: 154 14% 49%;
+    --grace-gold: 24 24% 50%;
+    --light-beige: 36 20% 90%;
+    --soft-peach: 30 33% 89%;
   }
 
   .dark {
-    /* ---- Threads of Grace · after dark ---- */
-    --background: 132 12% 10%;
-    --foreground: 44 32% 90%;
-    --card: 132 10% 14%;
-    --card-foreground: 44 32% 90%;
-    --popover: 132 10% 14%;
-    --popover-foreground: 44 32% 90%;
-    --primary: 95 28% 60%;
-    --primary-foreground: 132 12% 10%;
-    --secondary: 130 8% 20%;
-    --secondary-foreground: 44 32% 90%;
-    --muted: 130 8% 20%;
-    --muted-foreground: 44 12% 64%;
-    --accent: 130 14% 20%;
-    --accent-foreground: 95 28% 78%;
-    --destructive: 6 48% 50%;
-    --destructive-foreground: 44 32% 90%;
-    --border: 130 8% 22%;
-    --input: 130 8% 22%;
-    --ring: 95 28% 60%;
+    /* ---- Sacred Minimalism (dark) ---- */
+    --background: 150 9% 11%;        /* deep forest night #1A1F1C */
+    --foreground: 40 33% 93%;        /* cream */
+    --card: 140 8% 15%;              /* #242A26 */
+    --card-foreground: 40 33% 93%;
+    --popover: 140 8% 15%;
+    --popover-foreground: 40 33% 93%;
+    --primary: 140 18% 71%;          /* sage (inverted CTA) #A8C0B0 */
+    --primary-foreground: 150 9% 11%;
+    --secondary: 140 7% 20%;
+    --secondary-foreground: 40 33% 93%;
+    --muted: 140 7% 20%;
+    --muted-foreground: 40 12% 68%;
+    --accent: 30 33% 64%;            /* terracotta preserved */
+    --accent-foreground: 150 9% 11%;
+    --destructive: 6 48% 52%;
+    --destructive-foreground: 40 33% 93%;
+    --border: 140 7% 22%;
+    --input: 140 7% 22%;
+    --ring: 140 18% 71%;
 
-    --paper: 132 12% 10%;
-    --sand: 130 8% 20%;
-    --line: 130 8% 22%;
-    --ink: 44 32% 90%;
-    --ink-soft: 44 14% 74%;
-    --forest: 95 28% 60%;
-    --forest-soft: 130 14% 20%;
-    --gold: 40 48% 60%;
-    --gold-soft: 40 20% 22%;
-    --clay: 18 50% 60%;
-    --clay-soft: 16 28% 24%;
-    --sage: 95 26% 62%;
-    --sage-soft: 130 14% 20%;
-    --plum: 264 22% 68%;
-    --sky: 208 26% 64%;
-    --lavender: 264 22% 70%;
-    --lavender-soft: 264 16% 24%;
-    --mood-happy: 95 26% 62%;
-    --mood-calm: 208 26% 64%;
-    --mood-anxious: 18 50% 60%;
-    --mood-grateful: 264 22% 70%;
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.2);
+    --shadow-card: 0 4px 16px hsl(0 0% 0% / 0.28);
+    --shadow-lifted: 0 12px 40px hsl(0 0% 0% / 0.4);
 
-    --grace-100: 130 14% 20%;
-    --grace-200: 130 8% 28%;
-    --grace-blue: 208 26% 56%;
-    --grace-gold: 40 48% 50%;
-    --light-beige: 130 8% 16%;
-    --soft-peach: 16 28% 22%;
+    --paper: 150 9% 11%;
+    --sand: 33 28% 58%;
+    --line: 140 7% 22%;
+    --ink: 40 33% 93%;
+    --ink-soft: 40 14% 74%;
+    --forest: 140 18% 71%;
+    --forest-soft: 140 10% 22%;
+    --sage: 105 20% 64%;
+    --sage-soft: 140 10% 22%;
+    --clay: 24 30% 64%;
+    --clay-soft: 24 18% 26%;
+    --teal: 154 16% 60%;
+    --teal-soft: 154 12% 24%;
+    --terracotta: 30 33% 64%;
+    --gold: 30 34% 64%;
+    --gold-soft: 30 16% 24%;
+    --plum: 154 16% 60%;
+    --sky: 154 16% 60%;
+    --lavender: 30 33% 64%;
+    --lavender-soft: 140 8% 20%;
+    --mood-happy: 105 20% 64%;
+    --mood-calm: 154 16% 60%;
+    --mood-anxious: 24 30% 64%;
+    --mood-grateful: 30 33% 64%;
+
+    --grace-100: 140 10% 22%;
+    --grace-200: 140 7% 28%;
+    --grace-blue: 154 16% 56%;
+    --grace-gold: 30 34% 56%;
+    --light-beige: 140 8% 16%;
+    --soft-peach: 24 18% 24%;
   }
 }
 
@@ -121,23 +136,26 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, sans-serif;
     font-feature-settings: "liga" 1;
     -webkit-font-smoothing: antialiased;
   }
 }
 
 @layer utilities {
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
-  }
-  .focus-visible-ring {
-    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
-  }
-  /* letterspaced section eyebrow */
+  .focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2; }
+  .focus-visible-ring { @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2; }
   .eyebrow {
     font-family: 'Inter', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.18em;
     font-weight: 600;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
   }
 }

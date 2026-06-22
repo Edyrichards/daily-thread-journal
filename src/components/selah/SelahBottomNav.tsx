@@ -36,7 +36,7 @@ const SelahBottomNav = () => {
                   active ? 'bg-forest text-primary-foreground' : 'text-muted-foreground',
                 )}
               >
-                <Icon className="h-[19px] w-[19px]" strokeWidth={active ? 2 : 1.7} />
+                <Icon className="h-[19px] w-[19px]" strokeWidth={active ? 1.8 : 1.5} />
               </span>
               <span
                 className={cn(

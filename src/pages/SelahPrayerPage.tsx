@@ -186,10 +186,10 @@ const SelahPrayerPage = () => {
       <button
         onClick={() => navigate('/prayer/guided')}
         className="mt-6 flex w-full items-center justify-center gap-2.5 rounded-full py-4 text-white shadow-soft"
-        style={{ background: 'linear-gradient(135deg, hsl(264 26% 64%), hsl(264 22% 54%))' }}
+        style={{ background: 'linear-gradient(135deg, hsl(30 36% 64%), hsl(24 28% 52%))' }}
       >
         <Sparkles className="h-[18px] w-[18px]" />
-        <span className="font-display text-[20px] font-semibold tracking-wide">Start Guided Prayer</span>
+        <span className="font-sans text-[16px] font-semibold tracking-wide">Start Guided Prayer</span>
       </button>
 
       {/* FAB */}

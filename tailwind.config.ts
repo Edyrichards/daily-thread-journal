@@ -97,6 +97,11 @@ export default {
 					DEFAULT: 'hsl(var(--forest))',
 					soft: 'hsl(var(--forest-soft))'
 				},
+				teal: {
+					DEFAULT: 'hsl(var(--teal))',
+					soft: 'hsl(var(--teal-soft))'
+				},
+				terracotta: 'hsl(var(--terracotta))',
 				lavender: {
 					DEFAULT: 'hsl(var(--lavender))',
 					soft: 'hsl(var(--lavender-soft))'
@@ -114,8 +119,11 @@ export default {
 				'vesper': 'radial-gradient(120% 90% at 50% 18%,#3a2f49 0%,#241d2d 55%,#171320 100%)',
 			},
 			boxShadow: {
-				'soft': '0 10px 30px -12px rgba(60,45,30,0.18)',
-				'glow-clay': '0 12px 28px -8px rgba(194,107,74,0.45)',
+				'sm': 'var(--shadow-sm)',
+				'card': 'var(--shadow-card)',
+				'lifted': 'var(--shadow-lifted)',
+				'soft': 'var(--shadow-card)',
+				'glow-clay': 'var(--shadow-lifted)',
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -168,7 +176,7 @@ export default {
 			},
 			fontFamily: {
 				'display': ['Cormorant Garamond', 'Georgia', 'serif'],
-				'serif': ['EB Garamond', 'Georgia', 'serif'],
+				'serif': ['Cormorant Garamond', 'Georgia', 'serif'],
 				'sans': ['Inter', 'system-ui', 'sans-serif']
 			}
 		}

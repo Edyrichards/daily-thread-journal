@@ -24,11 +24,11 @@ const barColor: Partial<Record<Mood, string>> = {
 
 /** category tag (icon + label + color) for an entry */
 const tagFor = (e: JournalEntry): { label: string; icon: LucideIcon; hsl: string } => {
-  if (e.verse) return { label: 'Scripture', icon: BookOpen, hsl: '40 42% 50%' };
-  if (e.reflection) return { label: 'Reflection', icon: Leaf, hsl: '95 21% 48%' };
-  if (e.mood === 'joyful' || e.mood === 'content') return { label: 'Gratitude', icon: Leaf, hsl: '40 42% 50%' };
-  if (['sad', 'anxious', 'overwhelmed', 'stressed'].includes(e.mood)) return { label: 'Prayer', icon: HandHeart, hsl: '264 18% 58%' };
-  return { label: 'Reflection', icon: Leaf, hsl: '95 21% 48%' };
+  if (e.verse) return { label: 'Scripture', icon: BookOpen, hsl: '24 24% 50%' };
+  if (e.reflection) return { label: 'Reflection', icon: Leaf, hsl: '105 18% 52%' };
+  if (e.mood === 'joyful' || e.mood === 'content') return { label: 'Gratitude', icon: Leaf, hsl: '24 24% 50%' };
+  if (['sad', 'anxious', 'overwhelmed', 'stressed'].includes(e.mood)) return { label: 'Prayer', icon: HandHeart, hsl: '30 33% 60%' };
+  return { label: 'Reflection', icon: Leaf, hsl: '105 18% 52%' };
 };
 
 const fmtDate = (e: JournalEntry) =>
@@ -113,8 +113,7 @@ const SelahJournalPage = () => {
             {entries.length === 0 ? 'Start writing to reflect, grow, and draw closer to God.' : 'Nothing matches this filter yet.'}
           </p>
           {entries.length === 0 && (
-            <button onClick={() => navigate('/journal/new-flow')} className="mt-5 rounded-full bg-forest px-6 py-3 font-display text-[18px] font-semibold text-primary-foreground shadow-soft">
-              Write your first entry
+            <button onClick={() => navigate('/journal/new-flow')} className="mt-5 rounded-full bg-forest px-6 py-3 font-sans text-[15px] font-semibold text-primary-foreground shadow-soft">Write your first entry
             </button>
           )}
         </div>

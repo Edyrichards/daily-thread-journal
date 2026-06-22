@@ -10,16 +10,16 @@ import { entryTitle, relativeDay } from '@/lib/journal';
 
 type MoodOpt = { label: string; mood: Mood; face: 'joyful' | 'peaceful' | 'overwhelmed' | 'grateful'; hsl: string };
 const moodOpts: MoodOpt[] = [
-  { label: 'Joyful', mood: 'joyful', face: 'joyful', hsl: '18 46% 54%' },
-  { label: 'Peaceful', mood: 'peaceful', face: 'peaceful', hsl: '95 21% 48%' },
-  { label: 'Overwhelmed', mood: 'overwhelmed', face: 'overwhelmed', hsl: '208 24% 56%' },
-  { label: 'Grateful', mood: 'content', face: 'grateful', hsl: '40 42% 50%' },
+  { label: 'Joyful', mood: 'joyful', face: 'joyful', hsl: '24 24% 54%' },
+  { label: 'Peaceful', mood: 'peaceful', face: 'peaceful', hsl: '105 18% 52%' },
+  { label: 'Overwhelmed', mood: 'overwhelmed', face: 'overwhelmed', hsl: '154 14% 49%' },
+  { label: 'Grateful', mood: 'content', face: 'grateful', hsl: '24 24% 50%' },
 ];
 
 const thumbGradients = [
   'linear-gradient(135deg, hsl(95 26% 82%), hsl(95 20% 62%))',
   'linear-gradient(135deg, hsl(40 45% 84%), hsl(30 38% 66%))',
-  'linear-gradient(135deg, hsl(208 28% 82%), hsl(208 22% 62%))',
+  'linear-gradient(135deg, hsl(154 16% 84%), hsl(154 14% 54%))',
 ];
 
 const TodayPage = () => {
@@ -117,7 +117,7 @@ const TodayPage = () => {
         className="mt-7 flex w-full items-center justify-center gap-2.5 rounded-full bg-forest py-4 text-primary-foreground shadow-soft"
       >
         <PenLine className="h-[18px] w-[18px]" />
-        <span className="font-display text-[20px] font-semibold tracking-wide">Start Writing</span>
+        <span className="font-sans text-[16px] font-semibold tracking-wide">Start Writing</span>
       </button>
 
       {/* recent entries */}
