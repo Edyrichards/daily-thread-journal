@@ -15,6 +15,7 @@ import JournalEntryDetail from '@/pages/JournalEntryDetail';
 import PrayerPage from '@/pages/PrayerPage';
 import SelahPrayerPage from '@/pages/SelahPrayerPage';
 import BiblePage from '@/pages/BiblePage';
+import SelahBiblePage from '@/pages/SelahBiblePage';
 import ScripturePage from '@/pages/ScripturePage';
 import ScriptureDiscoveryPage from '@/pages/ScriptureDiscoveryPage';
 import DevotionalPage from '@/pages/DevotionalPage';
@@ -87,7 +88,8 @@ function App() {
                 <Route path="/prayer/enhanced" element={<EnhancedPrayerPage />} />
                 <Route path="/prayer/guided" element={<GuidedPrayerPage />} />
                 <Route path="/prayer/insights" element={<PrayerInsightsPage />} />
-                <Route path="/bible" element={<BiblePage />} />
+                <Route path="/bible" element={<SelahBiblePage />} />
+                <Route path="/bible-legacy" element={<BiblePage />} />
                 <Route path="/scripture" element={<ScripturePage />} />
                 <Route path="/scripture/discovery" element={<ScriptureDiscoveryPage />} />
                 <Route path="/devotional" element={<DevotionalPage />} />
