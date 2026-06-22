@@ -173,8 +173,8 @@ const SelahNewEntryPage = () => {
             const active = i + 1 <= step;
             return (
               <div key={label} className="flex-1">
-                <div className={cn('h-[5px] rounded-full transition-colors', active ? 'bg-clay' : 'bg-line')} />
-                <div className={cn('mt-1.5 text-[11px] font-bold', active ? 'text-clay' : 'text-muted-foreground')}>
+                <div className={cn('h-[5px] rounded-full transition-colors', active ? 'bg-forest' : 'bg-line')} />
+                <div className={cn('mt-1.5 text-[11px] font-bold', active ? 'text-forest' : 'text-muted-foreground')}>
                   {label}
                 </div>
               </div>
@@ -195,7 +195,7 @@ const SelahNewEntryPage = () => {
                 transition={{ duration: 0.3 }}
                 className="flex flex-1 flex-col"
               >
-                <h1 className="mb-6 mt-7 font-serif text-[26px] font-semibold leading-tight text-ink">
+                <h1 className="mb-6 mt-7 font-display text-[28px] font-semibold leading-tight text-ink">
                   How are you feeling<br />right now?
                 </h1>
                 <div className="grid grid-cols-2 gap-3.5">
@@ -229,7 +229,7 @@ const SelahNewEntryPage = () => {
                 <p className="mb-2 mt-7 text-[13px] font-bold uppercase tracking-[1.2px] text-muted-foreground">
                   A word for your heart
                 </p>
-                <h1 className="mb-6 font-serif text-[24px] font-semibold leading-tight text-ink">
+                <h1 className="mb-6 font-display text-[26px] font-semibold leading-tight text-ink">
                   Because you feel {moodMeta?.label.toLowerCase()} {moodMeta?.emoji}
                 </h1>
 
@@ -276,7 +276,7 @@ const SelahNewEntryPage = () => {
                     </span>
                   )}
                 </div>
-                <h1 className="mb-4 font-serif text-[25px] font-semibold leading-tight text-ink">
+                <h1 className="mb-4 font-display text-[27px] font-semibold leading-tight text-ink">
                   {(mood && prompts[mood]) || 'What’s on your heart right now?'}
                 </h1>
 
@@ -285,7 +285,7 @@ const SelahNewEntryPage = () => {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="Begin writing, or tap the mic to speak…"
-                    className="h-full min-h-[240px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-clay/40"
+                    className="h-full min-h-[240px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
                   />
                   <div className="pointer-events-none absolute bottom-4 left-5 text-[12px] font-semibold text-muted-foreground">
                     {wordCount} {wordCount === 1 ? 'word' : 'words'} · saved
@@ -317,14 +317,14 @@ const SelahNewEntryPage = () => {
                 <div className="mb-3 mt-6 inline-flex items-center gap-1.5 self-start rounded-full bg-gold-soft px-3 py-1.5 text-[12px] font-bold text-gold">
                   <Sparkles className="h-3.5 w-3.5" /> One last pause
                 </div>
-                <h1 className="mb-4 font-serif text-[25px] font-semibold leading-tight text-ink">
+                <h1 className="mb-4 font-display text-[27px] font-semibold leading-tight text-ink">
                   What is God saying<br />to you in this?
                 </h1>
                 <textarea
                   value={reflection}
                   onChange={(e) => setReflection(e.target.value)}
                   placeholder="A sentence is enough. What will you carry with you?"
-                  className="min-h-[150px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-clay/40"
+                  className="min-h-[150px] w-full resize-none rounded-[24px] border border-line bg-card p-5 font-serif text-[17px] leading-[1.6] text-ink shadow-soft outline-none placeholder:text-muted-foreground/70 focus:border-forest/40"
                 />
                 <div className="mt-5 rounded-[20px] border border-line bg-card p-4">
                   <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Your entry</p>
@@ -348,7 +348,7 @@ const SelahNewEntryPage = () => {
                     aria-label={listening ? 'Stop recording' : 'Voice journaling'}
                     className={cn(
                       'flex h-12 w-12 items-center justify-center rounded-[15px] border transition-colors',
-                      listening ? 'border-transparent bg-clay text-white' : 'border-line bg-card text-ink-soft',
+                      listening ? 'border-transparent bg-forest text-primary-foreground' : 'border-line bg-card text-ink-soft',
                     )}
                   >
                     {listening ? <Square className="h-5 w-5 fill-current" /> : <Mic className="h-[21px] w-[21px]" />}
@@ -362,7 +362,7 @@ const SelahNewEntryPage = () => {
                 </div>
                 <button
                   onClick={() => setStep(4)}
-                  className="flex items-center gap-1.5 rounded-[18px] bg-clay px-6 py-3.5 text-[16px] font-bold text-white shadow-glow-clay"
+                  className="flex items-center gap-1.5 rounded-[18px] bg-forest px-6 py-3.5 text-[16px] font-bold text-primary-foreground shadow-soft"
                 >
                   Continue <ChevronRight className="h-[18px] w-[18px]" />
                 </button>
@@ -388,14 +388,14 @@ const SelahNewEntryPage = () => {
               ) : step === 4 ? (
                 <button
                   onClick={save}
-                  className="flex flex-[2] items-center justify-center gap-2 rounded-[18px] bg-clay py-3.5 text-[16px] font-bold text-white shadow-glow-clay"
+                  className="flex flex-[2] items-center justify-center gap-2 rounded-[18px] bg-forest py-3.5 text-[16px] font-bold text-primary-foreground shadow-soft"
                 >
                   <Check className="h-[19px] w-[19px]" /> Save entry
                 </button>
               ) : (
                 <button
                   onClick={() => setStep(step + 1)}
-                  className="flex flex-[2] items-center justify-center gap-1.5 rounded-[18px] bg-clay py-3.5 text-[16px] font-bold text-white shadow-glow-clay"
+                  className="flex flex-[2] items-center justify-center gap-1.5 rounded-[18px] bg-forest py-3.5 text-[16px] font-bold text-primary-foreground shadow-soft"
                 >
                   Continue <ChevronRight className="h-[18px] w-[18px]" />
                 </button>
