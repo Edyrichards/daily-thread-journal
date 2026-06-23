@@ -23,6 +23,8 @@ const to12h = (hhmm: string) => {
 
 const BACKUP_KEYS = ['journal_entries', 'prayers', 'prayer_requests', 'prayer_days', 'userName'];
 const sizes = ['Small', 'Medium', 'Large'];
+// TODO: replace with the hosted URLs (see legal/ for the source markdown).
+const LEGAL = { privacy: 'https://threadsofgrace.app/privacy', terms: 'https://threadsofgrace.app/terms' };
 
 const Section = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <section className="mt-6">
@@ -171,9 +173,9 @@ const SelahSettingsPage = () => {
       </Section>
 
       <Section title="About">
-        <Row icon={Info} label="App Version" value="1.2.0" />
-        <Row icon={Shield} label="Privacy Policy" onClick={() => toast({ title: 'Privacy', description: 'Your reflections stay on your device.' })} />
-        <Row icon={FileText} label="Terms of Service" last onClick={() => toast({ title: 'Terms', description: 'Opening terms…' })} />
+        <Row icon={Info} label="App Version" value="1.0.0" />
+        <Row icon={Shield} label="Privacy Policy" onClick={() => window.open(LEGAL.privacy, '_blank')} />
+        <Row icon={FileText} label="Terms of Service" last onClick={() => window.open(LEGAL.terms, '_blank')} />
       </Section>
 
       <button

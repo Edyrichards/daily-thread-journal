@@ -1,0 +1,70 @@
+name: Android Release (AAB)
+
+# Builds a signed Android App Bundle for Play. Trigger by pushing a tag like
+# v1.0.0, or run manually. Requires the repository/Environment secrets listed
+# under "env" below (see store/SIGNING.md).
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - uses: android-actions/setup-android@v3
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build web + sync Capacitor
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        run: |
+          npm run build
+          npx cap sync android
+
+      - name: Build release bundle
+        working-directory: android
+        run: ./gradlew bundleRelease --no-daemon
+
+      - name: Sign AAB
+        env:
+          KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          STORE_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          echo "$KEYSTORE_B64" | base64 -d > upload.keystore
+          AAB=android/app/build/outputs/bundle/release/app-release.aab
+          "$ANDROID_HOME"/build-tools/34.0.0/apksigner sign \
+            --ks upload.keystore --ks-pass pass:"$STORE_PASS" \
+            --ks-key-alias "$KEY_ALIAS" --key-pass pass:"$KEY_PASS" \
+            --min-sdk-version 23 "$AAB" || \
+          jarsigner -keystore upload.keystore -storepass "$STORE_PASS" \
+            -keypass "$KEY_PASS" "$AAB" "$KEY_ALIAS"
+          rm -f upload.keystore
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: threads-of-grace-release-aab
+          path: android/app/build/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
+
+      # To auto-publish to a Play track, add the google-play-action step here
+      # with a service-account JSON secret (see store/SIGNING.md).
