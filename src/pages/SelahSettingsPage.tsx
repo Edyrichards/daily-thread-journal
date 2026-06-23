@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTheme } from 'next-themes';
 import {
   Bell, BookOpen, Moon, Type, Upload, UploadCloud, RotateCcw, Info, Shield,
-  FileText, ChevronRight, LogOut, LucideIcon,
+  FileText, ChevronRight, LogOut, Cloud, CloudOff, LucideIcon,
 } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { SprigDivider, LeafSprig } from '@/components/threads/Botanical';
 import { getReminderTime, setDailyReminder, cancelDailyReminder } from '@/lib/reminders';
 import { saveJson } from '@/lib/exporter';
+import { useAuth } from '@/lib/cloud/auth';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -50,6 +51,7 @@ const SelahSettingsPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { resolvedTheme, setTheme } = useTheme();
+  const { configured, user, signOut } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [size, setSize] = useState(() => Number(localStorage.getItem('fontScale') ?? 1));
   const [version, setVersion] = useState(() => ((localStorage.getItem('bibleVersionPreference') || 'WEB').toUpperCase() === 'KJV' ? 'KJV' : 'WEB'));
@@ -115,6 +117,16 @@ const SelahSettingsPage = () => {
         <ChevronRight className="h-5 w-5 text-muted-foreground" />
       </button>
 
+      <Section title="Account">
+        {user ? (
+          <Row icon={Cloud} label="Synced" value={user.email ?? 'Signed in'} last />
+        ) : configured ? (
+          <Row icon={Cloud} label="Sign in to sync & join Community" onClick={() => navigate('/auth')} last />
+        ) : (
+          <Row icon={CloudOff} label="Cloud sync" value="Not set up" last />
+        )}
+      </Section>
+
       <Section title="Preferences">
         <Row icon={Bell} label="Daily Reminder" value={to12h(reminder)} onClick={() => {
           const el = timeRef.current as any;
@@ -165,7 +177,7 @@ const SelahSettingsPage = () => {
       </Section>
 
       <button
-        onClick={() => { toast({ title: 'Signed out', description: 'Peace be with you.' }); navigate('/onboarding'); }}
+        onClick={async () => { if (user) await signOut(); toast({ title: 'Signed out', description: 'Peace be with you.' }); navigate('/onboarding'); }}
         className="mt-6 flex w-full items-center justify-center gap-2 rounded-full border border-destructive/30 bg-destructive/10 py-3.5 text-[15px] font-semibold text-destructive"
       >
         <LogOut className="h-[18px] w-[18px]" strokeWidth={1.8} /> Sign Out

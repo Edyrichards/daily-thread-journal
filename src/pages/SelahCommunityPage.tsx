@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell, Globe, MoreHorizontal, Heart, MessageCircle, Share2, Bookmark, HandHeart, Plus, ChevronRight } from 'lucide-react';
+import { Bell, Globe, MoreHorizontal, Heart, MessageCircle, Share2, Bookmark, HandHeart, Plus, ChevronRight, Flag, Trash2 } from 'lucide-react';
 import SelahShell from '@/components/selah/SelahShell';
 import { LeafSprig } from '@/components/threads/Botanical';
 import { getPrayerRequests } from '@/lib/storage';
+import { useAuth } from '@/lib/cloud/auth';
+import { listWall, postRequest, togglePray, reportRequest, deleteRequest, WallRequest } from '@/lib/cloud/community';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 const grads = [
@@ -32,9 +35,40 @@ const fallbackReqs = [
   { id: 'c', text: 'Pray for peace and rest for my heart.', name: 'Sophia R.', t: '5h ago', count: 15 },
 ];
 
+const ago = (iso: string) => {
+  const h = Math.floor((Date.now() - new Date(iso).getTime()) / 36e5);
+  if (h < 1) return 'just now';
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+};
+
 const SelahCommunityPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const { configured, user } = useAuth();
+  const live = configured && !!user;
   const [liked, setLiked] = useState<Record<number, boolean>>({});
+  const [wall, setWall] = useState<WallRequest[]>([]);
+  const [composing, setComposing] = useState(false);
+  const [draft, setDraft] = useState('');
+  const [anon, setAnon] = useState(false);
+
+  const refreshWall = () => { if (live) listWall(20).then(setWall).catch(() => {}); };
+  useEffect(refreshWall, [live]);
+
+  const submitWall = async () => {
+    if (!draft.trim()) return;
+    await postRequest(draft, anon);
+    setDraft(''); setComposing(false); refreshWall();
+    toast({ title: 'Shared with the wall 🙏' });
+  };
+  const pray = async (r: WallRequest) => {
+    await togglePray(r.id, r.prayedByMe);
+    setWall((w) => w.map((x) => x.id === r.id ? { ...x, prayedByMe: !x.prayedByMe, prayCount: x.prayCount + (x.prayedByMe ? -1 : 1) } : x));
+  };
+  const report = async (r: WallRequest) => { await reportRequest(r.id); toast({ title: 'Reported', description: 'Thank you — we’ll review it.' }); };
+  const removeMine = async (r: WallRequest) => { await deleteRequest(r.id); refreshWall(); };
+
   const reqs = (() => {
     const real = getPrayerRequests();
     if (real.length) return real.slice(0, 3).map((r, i) => ({ id: r.id, text: r.text, name: r.isAnonymous ? 'Anonymous' : 'A friend', t: `${i + 1}h ago`, count: r.prayedCount }));
@@ -104,23 +138,79 @@ const SelahCommunityPage = () => {
         <button className="relative shrink-0 rounded-full bg-white px-5 py-2 text-[14px] font-bold text-clay">Join</button>
       </div>
 
+      {/* sign-in prompt when cloud is on but signed out */}
+      {configured && !user && (
+        <button onClick={() => navigate('/auth')} className="mt-5 flex w-full items-center gap-3 rounded-[18px] border border-border bg-accent/10 p-4 text-left">
+          <Globe className="h-5 w-5 shrink-0 text-accent" />
+          <span className="flex-1 text-[14px] text-ink-soft">Sign in to share requests and pray with the community.</span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
+        </button>
+      )}
+
       {/* prayer requests */}
-      <SectionHead title="Prayer Requests" onAction={() => navigate('/prayer')} />
-      <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-        {reqs.map((r, i) => (
-          <div key={r.id} className="flex w-[180px] shrink-0 flex-col rounded-[16px] border border-line bg-card p-3.5 shadow-soft">
-            <div className="flex items-center gap-2">
-              <Avatar name={r.name} i={i + 2} size={28} />
-              <div className="leading-tight">
-                <p className="text-[12px] font-semibold text-ink">{r.name}</p>
-                <p className="text-[10.5px] text-muted-foreground">{r.t}</p>
-              </div>
+      <SectionHead title="Prayer Requests" onAction={() => (live ? setComposing(true) : navigate('/prayer'))} />
+
+      {live && composing && (
+        <div className="mb-3 rounded-[16px] border border-border bg-card p-3.5 shadow-soft">
+          <textarea autoFocus value={draft} onChange={(e) => setDraft(e.target.value)} maxLength={1000}
+            placeholder="Share a request with the community…"
+            className="min-h-[70px] w-full resize-none rounded-[12px] bg-secondary/60 p-3 text-[14px] text-ink outline-none placeholder:text-muted-foreground" />
+          <div className="mt-2 flex items-center justify-between">
+            <button onClick={() => setAnon((a) => !a)} className={cn('flex items-center gap-1.5 text-[12px] font-semibold', anon ? 'text-accent' : 'text-muted-foreground')}>
+              <span className={cn('h-3.5 w-3.5 rounded-[4px] border', anon ? 'border-accent bg-accent' : 'border-border')} /> Post anonymously
+            </button>
+            <div className="flex gap-2">
+              <button onClick={() => setComposing(false)} className="px-3 py-1.5 text-[13px] font-medium text-muted-foreground">Cancel</button>
+              <button onClick={submitWall} className="rounded-full bg-forest px-4 py-1.5 text-[13px] font-semibold text-primary-foreground">Share</button>
             </div>
-            <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">{r.text}</p>
-            <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-clay"><HandHeart className="h-4 w-4" /> {r.count}</p>
           </div>
-        ))}
-      </div>
+        </div>
+      )}
+
+      {live ? (
+        wall.length === 0 ? (
+          <div className="rounded-[16px] border border-dashed border-border bg-card/60 p-5 text-center text-[14px] text-muted-foreground">
+            The wall is quiet. Be the first to share a request.
+          </div>
+        ) : (
+          <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {wall.map((r, i) => (
+              <div key={r.id} className="flex w-[200px] shrink-0 flex-col rounded-[16px] border border-line bg-card p-3.5 shadow-soft">
+                <div className="flex items-center gap-2">
+                  <Avatar name={r.authorName} i={i + 2} size={28} />
+                  <div className="flex-1 leading-tight">
+                    <p className="text-[12px] font-semibold text-ink">{r.authorName}</p>
+                    <p className="text-[10.5px] text-muted-foreground">{ago(r.createdAt)}</p>
+                  </div>
+                  {r.mine
+                    ? <button onClick={() => removeMine(r)} aria-label="Delete"><Trash2 className="h-3.5 w-3.5 text-muted-foreground" /></button>
+                    : <button onClick={() => report(r)} aria-label="Report"><Flag className="h-3.5 w-3.5 text-muted-foreground" /></button>}
+                </div>
+                <p className="mt-2 line-clamp-3 flex-1 text-[13px] leading-relaxed text-ink-soft">{r.text}</p>
+                <button onClick={() => pray(r)} className={cn('mt-2 flex items-center gap-1.5 text-[12px] font-semibold', r.prayedByMe ? 'text-clay' : 'text-muted-foreground')}>
+                  <HandHeart className={cn('h-4 w-4', r.prayedByMe && 'fill-clay')} /> {r.prayCount} prayed
+                </button>
+              </div>
+            ))}
+          </div>
+        )
+      ) : (
+        <div className="-mx-5 flex gap-3 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {reqs.map((r, i) => (
+            <div key={r.id} className="flex w-[180px] shrink-0 flex-col rounded-[16px] border border-line bg-card p-3.5 shadow-soft">
+              <div className="flex items-center gap-2">
+                <Avatar name={r.name} i={i + 2} size={28} />
+                <div className="leading-tight">
+                  <p className="text-[12px] font-semibold text-ink">{r.name}</p>
+                  <p className="text-[10.5px] text-muted-foreground">{r.t}</p>
+                </div>
+              </div>
+              <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">{r.text}</p>
+              <p className="mt-2 flex items-center gap-1.5 text-[12px] font-semibold text-clay"><HandHeart className="h-4 w-4" /> {r.count}</p>
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* shared insights */}
       <SectionHead title="Shared Insights" onAction={() => {}} />
